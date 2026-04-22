@@ -668,7 +668,7 @@
           "options": [
             "Use public cloud providers - they have global infrastructure",
             "On-premises data center only - no cloud, eliminates multi-region concerns",
-            "Hybrid architecture with on-premises data + local cloud regions, data replication only within country",
+            "Hybrid architecture with on-premises data + local cloud regions, data replication only within country boundaries",
             "Use cloud but encrypt data so location doesn't matter"
           ],
           "correctAnswer": 2,
@@ -684,6 +684,61 @@
               "Firewall rules: block any egress from on-prem data center to other countries",
               "Test: attempt to replicate to different-country Azure region - blocked by network policy",
               "Audit: verify all data stays within country using VPN logs + Azure diagnostics"
+            ]
+          }
+        },
+        {
+          "id": "secarch_006",
+          "difficulty": "advanced",
+          "type": "mcq",
+          "question": "In a defense-in-depth architecture, what principle should guide the placement of security controls across network layers?",
+          "options": [
+            "All security controls should be at the perimeter - internal network is trusted",
+            "Each layer should have independent security controls; failure of one doesn't compromise others; no implicit trust based on layer",
+            "Security controls should only monitor, never block - blocking slows performance",
+            "Cloud-based security is always superior to on-premises controls"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Defense-in-depth (layered security) means: each layer is independent and capable of blocking threats. Example: perimeter firewall, network IDS, host-based firewall, EDR, application security, data encryption. If perimeter is breached, internal layers still protect. Each layer assumes compromise is possible.",
+          "homelab": {
+            "title": "Multi-Layer Security Defense Simulation",
+            "description": "Build and test multiple security layers to verify independence.",
+            "steps": [
+              "Layer 1 (Perimeter): Deploy pfSense firewall - blocks malicious IPs",
+              "Layer 2 (Network): Deploy Suricata IDS - detects exploitation attempts",
+              "Layer 3 (Host): Deploy Windows Defender - detects/blocks malware",
+              "Layer 4 (App): Deploy WAF (ModSecurity) - blocks web attacks",
+              "Layer 5 (Data): Enable encryption - data is unreadable if exfiltrated",
+              "Simulate breach: attacker bypasses perimeter firewall",
+              "Verify: IDS detects exploitation, Host AV blocks execution, WAF blocks injection",
+              "Result: even with perimeter breach, inner layers prevent compromise"
+            ]
+          }
+        },
+        {
+          "id": "secarch_007",
+          "difficulty": "intermediate",
+          "type": "mcq",
+          "question": "Your organization uses a traditional DMZ (demilitarized zone) architecture. What is the primary limitation of this approach in modern cloud environments?",
+          "options": [
+            "DMZ is outdated and should never be used",
+            "DMZ provides clear network boundaries, but assumes a single perimeter which doesn't work with cloud's distributed resources",
+            "DMZ requires too much manual configuration",
+            "Cloud providers don't support DMZ architecture"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Traditional DMZ: single network segment with firewall rules separating untrusted (internet), semi-trusted (DMZ), and trusted (internal) zones. Cloud breaks this: resources are globally distributed, users connect from anywhere, no single 'inside' vs 'outside'. Modern approach: Zero Trust (no implicit network trust), micro-segmentation (encrypt + authenticate each flow), cloud-native security (identity-based, not network-based).",
+          "homelab": {
+            "title": "Transition from DMZ to Cloud-Native Zero Trust",
+            "description": "Compare traditional DMZ with modern cloud security.",
+            "steps": [
+              "Traditional DMZ setup: firewall → public servers (web) → internal servers (DB)",
+              "Demonstrate limitation: if DMZ server is compromised, attacker can access internal servers",
+              "Cloud-native approach: Replace network trust with identity + device + encryption",
+              "Deploy: Azure resources with Network Security Groups (NSGs) based on identity",
+              "Enable: Azure AD conditional access (MFA required for access)",
+              "Deploy: micro-segmentation (each resource group has tight network policies)",
+              "Test: User with MFA can access resource, non-compliant device is blocked (regardless of network location)"
             ]
           }
         }
@@ -911,6 +966,107 @@
               "Debrief: timeline of attack, what worked, what was detected/missed"
             ]
           }
+        },
+        {
+          "id": "secplus_009",
+          "difficulty": "intermediate",
+          "type": "mcq",
+          "question": "Which protocol is used to securely exchange symmetric encryption keys over an insecure channel?",
+          "options": [
+            "AES - uses symmetric keys directly",
+            "RSA - asymmetric encryption used for key exchange",
+            "MD5 - hashing algorithm, not for key exchange",
+            "HTTP - unencrypted, not secure for key exchange"
+          ],
+          "correctAnswer": 1,
+          "explanation": "RSA (and ECDH) enables secure key exchange: Party A generates AES key, encrypts it with Party B's public key, sends it. Party B decrypts with their private key (only they can decrypt). Attacker intercepting the message can't decrypt (would need private key). This solves the 'key distribution problem' - securely share symmetric keys.",
+          "homelab": {
+            "title": "Implement RSA-Based Key Exchange",
+            "description": "Demonstrate secure symmetric key exchange using RSA.",
+            "steps": [
+              "Generate RSA key pair: openssl genrsa -out private_key.pem 2048",
+              "Extract public key: openssl rsa -in private_key.pem -pubout -out public_key.pem",
+              "User A: Generate AES key, encrypt with User B's public key",
+              "User A sends encrypted AES key over internet (eavesdropper sees ciphertext)",
+              "User B: Decrypt with private key (only they can decrypt)",
+              "User A & B now share symmetric AES key securely",
+              "Use AES key for bulk data encryption (fast and secure)"
+            ]
+          }
+        },
+        {
+          "id": "secplus_010",
+          "difficulty": "intermediate",
+          "type": "free_response",
+          "question": "What is the AAA model in cybersecurity? Explain Authentication, Authorization, and Accounting with real-world examples.",
+          "modelAnswer": "AAA = Authentication, Authorization, Accounting. AUTHENTICATION: Verify identity. Example: user logs in with password + MFA (username = who you claim, password = proof you're them). AUTHORIZATION: Grant access based on role. Example: same user might have admin rights on some systems, read-only on others (same person, different permissions by role). ACCOUNTING: Log and audit actions. Example: who accessed what, when, what changes were made. SIEM correlates logs to detect anomalies. All three required for secure, compliant system. Combined example: RADIUS server (AAA protocol) authenticates user with password, checks group membership (authorization), logs login attempt (accounting).",
+          "homelab": {
+            "title": "Implement AAA with RADIUS Server",
+            "description": "Set up AAA using open-source RADIUS (FreeRADIUS).",
+            "steps": [
+              "Install FreeRADIUS: sudo apt install freeradius",
+              "Configure users database: /etc/freeradius/users (defines Authentication)",
+              "Configure groups: AD/LDAP integration (defines Authorization by role)",
+              "Configure logging: radiusd -X (log all AAA events)",
+              "Test: radiusclient-ng - connect with username/password",
+              "Verify: Authentication succeeds, authorization checks group, accounting logged",
+              "Advanced: integrate with NAS (Network Access Server) - e.g., switch, VPN, WiFi"
+            ]
+          }
+        },
+        {
+          "id": "secplus_011",
+          "difficulty": "foundational",
+          "type": "mcq",
+          "question": "Which of the following is a preventive control?",
+          "options": [
+            "Security audit log - detects and documents attacks after they happen (detective)",
+            "MFA (multi-factor authentication) - prevents unauthorized access before it happens (preventive)",
+            "Intrusion detection system (IDS) - alerts on suspicious activity (detective)",
+            "Incident response plan - used after compromise (corrective)"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Control types: PREVENTIVE (stops attack before it happens - MFA, firewall, encryption), DETECTIVE (identifies attack - logs, IDS, SIEM), CORRECTIVE (fixes after attack - incident response, patching), DETERRENT (discourages attack - security cameras, legal consequences). Good security uses all types.",
+          "homelab": {
+            "title": "Classify Controls by Type",
+            "description": "Identify and implement preventive, detective, and corrective controls.",
+            "steps": [
+              "Preventive: MFA on all accounts, firewall blocks port 23, antivirus blocks known malware",
+              "Detective: Windows Event Viewer logs failed logins, IDS alerts on exploit attempts, EDR detects anomalous process",
+              "Corrective: Runbook to isolate compromised host, restore from backup, incident response playbook",
+              "Deterrent: 'Authorized Access Only' signs, security awareness training",
+              "Build complete security: all control types working together",
+              "Test: simulate attack, verify preventive stops it, detective logs it, corrective responds"
+            ]
+          }
+        },
+        {
+          "id": "secplus_012",
+          "difficulty": "intermediate",
+          "type": "mcq",
+          "question": "What is the primary goal of disaster recovery (DR) planning?",
+          "options": [
+            "Prevent all security incidents - eliminate risk completely",
+            "Minimize downtime and data loss after a disaster through planned recovery procedures and backups",
+            "Eliminate the need for backups - if DR is good, backups aren't needed",
+            "Replace cybersecurity measures - DR is more important than prevention"
+          ],
+          "correctAnswer": 1,
+          "explanation": "DR focuses on recovery, not prevention. RTO (Recovery Time Objective) = acceptable downtime, RPO (Recovery Point Objective) = acceptable data loss. Combined: if RTO=4 hours and RPO=1 hour, system must recover within 4 hours with max 1 hour of lost data. Strategy: frequent backups (minimize RPO), redundant systems (minimize RTO).",
+          "homelab": {
+            "title": "Design & Test Disaster Recovery Plan",
+            "description": "Create DR plan with defined RTO/RPO and practice recovery.",
+            "steps": [
+              "Define RTO: 4 hours (acceptable downtime)",
+              "Define RPO: 1 hour (acceptable data loss)",
+              "Backup strategy: hourly incremental, daily full (meets 1-hour RPO)",
+              "Redundancy: hot standby system in different location (meets 4-hour RTO)",
+              "Create recovery runbook: step-by-step to restore from backup",
+              "Test quarterly: simulate failure, practice actual recovery",
+              "Measure: Did we meet RTO/RPO targets? If not, improve backups or redundancy",
+              "Document: what worked, what failed, update procedures"
+            ]
+          }
         }
       ]
     },
@@ -946,171 +1102,193 @@
               "Practice: reset Employee's password and re-verify account security"
             ]
           }
+        },
+        {
+          "id": "m365_002",
+          "difficulty": "intermediate",
+          "type": "mcq",
+          "question": "A user's OneDrive is taking up 1TB of their storage quota, and they can't upload new files. They claim they've deleted old files, but storage still shows full. What is the most likely cause?",
+          "options": [
+            "OneDrive cache on their PC needs clearing - delete C:\\Users\\Username\\AppData\\Local\\Microsoft\\OneDrive",
+            "Deleted files are in the Recycle Bin - deleted files stay in bin for 93 days and still count against quota",
+            "Their license downgraded - they're now sharing someone else's OneDrive",
+            "OneDrive version is outdated - update from Microsoft Store"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Deleted files remain in OneDrive Recycle Bin for 93 days and still consume quota. User must permanently delete from bin to free space. Check: Settings > Storage > View > Recycle Bin. Alternatively, check if files are in version history (previous versions also count toward quota). Clear both Recycle Bin and old versions.",
+          "homelab": {
+            "title": "OneDrive Storage Quota Management",
+            "description": "Manage OneDrive quotas and clean up deleted/versioned files.",
+            "steps": [
+              "Create M365 test account with 1TB quota",
+              "Upload large files to fill quota to 90%",
+              "Delete some files - verify they go to Recycle Bin",
+              "Upload new file - fails (quota full)",
+              "Check available storage: shows full despite deleted files",
+              "Empty Recycle Bin: Settings > Storage > Recycle Bin > Empty",
+              "Now upload same file again - succeeds",
+              "Check file versions: Settings > Version history - see accumulated versions taking space",
+              "Clean old versions: right-click file > Version history > delete old versions"
+            ]
+          }
+        },
+        {
+          "id": "m365_003",
+          "difficulty": "intermediate",
+          "type": "mcq",
+          "question": "Your organization uses Conditional Access policies to require MFA for risky sign-ins. A user's account is flagged as risky, but they're already using MFA. They get blocked. What should you investigate?",
+          "options": [
+            "The MFA they're using is too old - upgrade to Windows Hello",
+            "Azure AD Conditional Access evaluated the sign-in as risky (unusual location, anomalous behavior) - even with MFA, policies might block if risk level exceeds threshold",
+            "The user's license expired - MFA only works for active licenses",
+            "MFA failed silently - reset the user's password"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Conditional Access can be configured to block risky sign-ins even if MFA succeeds. Risk levels are evaluated by Azure AD Identity Protection based on: new location, impossible travel, anomalous token, malware linked, suspicious activity. Even with MFA, a high-risk sign-in might trigger a block policy. Admin must: 1) review risk details in Azure AD > Security > Risky sign-ins, 2) dismiss the risk if legitimate, 3) require user to change password from safe location.",
+          "homelab": {
+            "title": "Manage Risky Sign-Ins & Risk-Based CA Policies",
+            "description": "Set up risk-based Conditional Access and handle risky sign-ins.",
+            "steps": [
+              "Azure portal: Security > Conditional Access > create new policy",
+              "Condition: User risk = High",
+              "Action: Require password change",
+              "Simulate risky sign-in from unusual location using test account",
+              "Azure logs it as risky - user required to change password",
+              "User changes password from trusted location",
+              "Review: Azure AD > Risky sign-ins > dismiss the risk",
+              "User can now sign in normally"
+            ]
+          }
+        },
+        {
+          "id": "m365_004",
+          "difficulty": "foundational",
+          "type": "mcq",
+          "question": "A user's Teams status shows 'Away' even though they're actively using their PC. They have Teams set to auto-update status based on PC activity. What is most likely the issue?",
+          "options": [
+            "Teams app is running in the background, not in focus",
+            "Their activity status is disabled in Teams settings",
+            "Both A and B are possible - Teams only updates status while the app window is in focus; disabling activity updates also prevents status changes"
+          ],
+          "correctAnswer": 2,
+          "explanation": "Teams activity detection requires: 1) Teams app in focus (foreground), 2) Activity status enabled in Settings. If the user switches to another window, Teams goes inactive. Even if PC is in use, if Teams app isn't in focus, status won't update to Active. Alternative: user might have manually set status to 'Away', which overrides activity detection.",
+          "homelab": {
+            "title": "Troubleshoot Teams Activity Status",
+            "description": "Test Teams activity status detection and manual overrides.",
+            "steps": [
+              "Install Teams on Windows 10 VM",
+              "Set status to Auto-Detect in Settings > Privacy > Activity status",
+              "Open Teams, note status shows Active",
+              "Switch to another window (e.g., Notepad) - Teams status changes to Away after 5 minutes",
+              "Switch back to Teams - status returns to Active (may take up to 1 minute)",
+              "Manually set status to Do Not Disturb - status no longer auto-updates",
+              "Verify: Settings > Activity status shows toggle for 'Show my activity status'"
+            ]
+          }
+        },
+        {
+          "id": "m365_005",
+          "difficulty": "advanced",
+          "type": "mcq",
+          "question": "Your organization is investigating a suspected data exfiltration incident. You need to review which users accessed a sensitive SharePoint document and when. Where do you look?",
+          "options": [
+            "SharePoint document properties - shows Last Modified by and view history",
+            "Microsoft Purview Audit Log (Unified Audit Log) - search for document ID, user, and access events",
+            "User's Teams chat history - they might have mentioned accessing the document",
+            "Windows Event Viewer on the user's PC - logs local file access"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Purview Audit Log (formerly Office 365 Audit Log) is the authoritative source for M365 activity: file access, deletion, sharing, downloads. Filter by: object ID (SharePoint file), user, date range, activity (FileAccessed, FileDownloaded, SharingSet). Document properties only show 'Last Modified' user, not all access. This is critical for compliance and incident response.",
+          "homelab": {
+            "title": "Use Purview Audit Log for Incident Investigation",
+            "description": "Practice audit log analysis for access investigation.",
+            "steps": [
+              "M365 admin center: Audit logs (or Purview) > New Search",
+              "Create shared document in SharePoint > record Document ID",
+              "Have test users access document via different methods: browser, OneDrive sync, Teams share",
+              "Search audit logs: filter by Document ID",
+              "Review results: shows each user access, timestamp, action (FileAccessed, FileDownloaded)",
+              "Export CSV: analyze data in Excel, create timeline",
+              "Advanced: filter by 'Shared' events to see who shared document and with whom"
+            ]
+          }
+        },
+        {
+          "id": "m365_006",
+          "difficulty": "intermediate",
+          "type": "free_response",
+          "question": "A VP's email account was compromised 2 days ago. Attackers used it to send phishing emails to the entire company before being detected. Walk through your response: what data do you need to gather, what actions should be taken immediately, and how do you prevent future incidents?",
+          "modelAnswer": "Immediate: 1) Reset VP's password, invalidate all sessions (Azure AD > User > Sessions), enable MFA. 2) Determine breach window: review Azure audit logs for sign-in events (Risky sign-ins), identify first unauthorized access. 3) Check for forwarding rules: Exchange admin center > recipients > mailbox > Forwarding - delete any attacker-created rules. 4) Review sent items: period matching compromise window, delete phishing emails if possible (Recall). 5) Notify affected users: they received phishing from compromised account. 6) Revoke OAuth tokens: if attackers created app registrations. 7) Check for persistence: rule-based deletion rules, suspicious delegates, OOF rules. Prevention: 1) Mandate MFA for all users, especially VPs. 2) Enable Advanced Audit logging. 3) Deploy Defender for Office 365: phishing simulation, email filtering. 4) Set password expiration policies. 5) Implement conditional access: block legacy auth, require managed devices.",
+          "homelab": {
+            "title": "Simulate & Respond to Email Compromise",
+            "description": "Practice incident response for a compromised M365 account.",
+            "steps": [
+              "Create test VP account in M365",
+              "Create forward rule simulating attacker: Set-Mailbox -Identity VP -ForwardingAddress attacker@external.com",
+              "Send phishing email from VP's account to test user",
+              "As admin: detect compromise via audit logs - search for Forwarding rule creation",
+              "Immediate response: Reset-UserPassword, Revoke-UserSessions, Remove forwarding rule",
+              "Check sent items: identify phishing email date range",
+              "Enable MFA: Set-MsolUser -UserPrincipalName VP -StrongAuthenticationRequirements",
+              "Review audit logs: create report of all actions taken during incident window"
+            ]
+          }
+        },
+        {
+          "id": "m365_007",
+          "difficulty": "intermediate",
+          "type": "mcq",
+          "question": "Your organization wants to prevent users from sharing files outside the company domain via SharePoint. You set up External Sharing controls. However, users are still sharing with external accounts via OneDrive 'Share Link' with no expiration. What is the issue?",
+          "options": [
+            "SharePoint and OneDrive sharing settings are separate - OneDrive sharing must also be restricted",
+            "Users have 'Share Link' permission, which bypasses external sharing restrictions",
+            "External sharing is domain-restricted, but 'Share Link' creates anonymous links that work anyway",
+            "All of the above - separate configuration + special handling needed"
+          ],
+          "correctAnswer": 3,
+          "explanation": "SharePoint and OneDrive external sharing are configured separately in M365 admin center. Additionally, 'Share Link' (anonymous sharing) can be restricted to specific settings: no anonymous links, or limited to specific expiration/permissions. Full control: 1) Org-level in SharePoint admin: Policies > External sharing, 2) Per-site/user in OneDrive settings, 3) Restrict Share Link type (allow only 'People you specify' or 'Specific people' links).",
+          "homelab": {
+            "title": "Lock Down OneDrive & SharePoint External Sharing",
+            "description": "Configure granular external sharing restrictions.",
+            "steps": [
+              "M365 admin center > SharePoint admin > Policies > External sharing",
+              "Set to 'Most restrictive': Only allow existing external users (no new external sharing)",
+              "OneDrive settings: also set to 'Most restrictive'",
+              "Enable: Require password for shared links, set expiration (e.g., 14 days)",
+              "Test: Try to create external share link from OneDrive - blocked if at 'Most restrictive'",
+              "Adjust to 'Anyone' with restrictions: allow anonymous links but require password and set 24-hour expiration",
+              "Test: Anonymous link works but only for 24 hours, requires password"
+            ]
+          }
+        },
+        {
+          "id": "m365_008",
+          "difficulty": "foundational",
+          "type": "mcq",
+          "question": "A user cannot add an on-premises resource to their Teams channel via an app/connector. The error is 'Authentication Failed: Invalid Tenant ID'. What is the likely cause?",
+          "options": [
+            "The on-premises server doesn't have internet access",
+            "The app wasn't registered in Azure AD with the correct tenant ID, or tenant ID in the app config is mismatched",
+            "Teams only works with cloud resources - on-premises apps are not supported",
+            "The user's license doesn't include 'App Connectors'"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Teams apps connecting to on-premises resources require Azure AD app registration with the correct tenant ID. If the app was registered in a different tenant, or the app's config has the wrong tenant ID, authentication fails. Fix: 1) Verify app registration in Azure AD > App registrations, 2) Confirm tenant ID in app settings matches your M365 tenant, 3) Check app permissions are granted (Redirect URIs must match Teams app URL).",
+          "homelab": {
+            "title": "Register On-Premises App with Azure AD for Teams",
+            "description": "Create and register an on-premises app connector for Teams.",
+            "steps": [
+              "Azure portal: App registrations > New registration > name 'Teams-OnPrem-App'",
+              "Get Tenant ID: Azure AD > Properties > Directory ID",
+              "Set Redirect URI: https://yourdomain.com/auth/callback",
+              "Create Client Secret: Certificates & secrets > New client secret",
+              "On-premises app config: add Tenant ID, Client ID, Client Secret",
+              "Teams admin center: Manage apps > Upload custom app",
+              "Test connection: add app to Teams channel > authenticate > should succeed now"
+            ]
+          }
         }
       ]
     }
-
-    {
-  "secarchitecture": {
-    "secarch_006": {
-      "id": "secarch_006",
-      "difficulty": "advanced",
-      "type": "mcq",
-      "question": "In a defense-in-depth architecture, what principle should guide the placement of security controls across network layers?",
-      "options": [
-        "All security controls should be at the perimeter - internal network is trusted",
-        "Each layer should have independent security controls; failure of one doesn't compromise others; no implicit trust based on layer",
-        "Security controls should only monitor, never block - blocking slows performance",
-        "Cloud-based security is always superior to on-premises controls"
-      ],
-      "correctAnswer": 1,
-      "explanation": "Defense-in-depth (layered security) means: each layer is independent and capable of blocking threats. Example: perimeter firewall, network IDS, host-based firewall, EDR, application security, data encryption. If perimeter is breached, internal layers still protect. Each layer assumes compromise is possible.",
-      "homelab": {
-        "title": "Multi-Layer Security Defense Simulation",
-        "description": "Build and test multiple security layers to verify independence.",
-        "steps": [
-          "Layer 1 (Perimeter): Deploy pfSense firewall - blocks malicious IPs",
-          "Layer 2 (Network): Deploy Suricata IDS - detects exploitation attempts",
-          "Layer 3 (Host): Deploy Windows Defender - detects/blocks malware",
-          "Layer 4 (App): Deploy WAF (ModSecurity) - blocks web attacks",
-          "Layer 5 (Data): Enable encryption - data is unreadable if exfiltrated",
-          "Simulate breach: attacker bypasses perimeter firewall",
-          "Verify: IDS detects exploitation, Host AV blocks execution, WAF blocks injection",
-          "Result: even with perimeter breach, inner layers prevent compromise"
-        ]
-      }
-    },
-    "secarch_007": {
-      "id": "secarch_007",
-      "difficulty": "intermediate",
-      "type": "mcq",
-      "question": "Your organization uses a traditional DMZ (demilitarized zone) architecture. What is the primary limitation of this approach in modern cloud environments?",
-      "options": [
-        "DMZ is outdated and should never be used",
-        "DMZ provides clear network boundaries, but assumes a single perimeter which doesn't work with cloud's distributed resources",
-        "DMZ requires too much manual configuration",
-        "Cloud providers don't support DMZ architecture"
-      ],
-      "correctAnswer": 1,
-      "explanation": "Traditional DMZ: single network segment with firewall rules separating untrusted (internet), semi-trusted (DMZ), and trusted (internal) zones. Cloud breaks this: resources are globally distributed, users connect from anywhere, no single 'inside' vs 'outside'. Modern approach: Zero Trust (no implicit network trust), micro-segmentation (encrypt + authenticate each flow), cloud-native security (identity-based, not network-based).",
-      "homelab": {
-        "title": "Transition from DMZ to Cloud-Native Zero Trust",
-        "description": "Compare traditional DMZ with modern cloud security.",
-        "steps": [
-          "Traditional DMZ setup: firewall → public servers (web) → internal servers (DB)",
-          "Demonstrate limitation: if DMZ server is compromised, attacker can access internal servers",
-          "Cloud-native approach: Replace network trust with identity + device + encryption",
-          "Deploy: Azure resources with Network Security Groups (NSGs) based on identity",
-          "Enable: Azure AD conditional access (MFA required for access)",
-          "Deploy: micro-segmentation (each resource group has tight network policies)",
-          "Test: User with MFA can access resource, non-compliant device is blocked (regardless of network location)"
-        ]
-      }
-    }
-  },
-  "secplus": {
-    "secplus_009": {
-      "id": "secplus_009",
-      "difficulty": "intermediate",
-      "type": "mcq",
-      "question": "Which protocol is used to securely exchange symmetric encryption keys over an insecure channel?",
-      "options": [
-        "AES - uses symmetric keys directly",
-        "RSA - asymmetric encryption used for key exchange",
-        "MD5 - hashing algorithm, not for key exchange",
-        "HTTP - unencrypted, not secure for key exchange"
-      ],
-      "correctAnswer": 1,
-      "explanation": "RSA (and ECDH) enables secure key exchange: Party A generates AES key, encrypts it with Party B's public key, sends it. Party B decrypts with their private key (only they can decrypt). Attacker intercepting the message can't decrypt (would need private key). This solves the 'key distribution problem' - securely share symmetric keys.",
-      "homelab": {
-        "title": "Implement RSA-Based Key Exchange",
-        "description": "Demonstrate secure symmetric key exchange using RSA.",
-        "steps": [
-          "Generate RSA key pair: openssl genrsa -out private_key.pem 2048",
-          "Extract public key: openssl rsa -in private_key.pem -pubout -out public_key.pem",
-          "User A: Generate AES key, encrypt with User B's public key",
-          "User A sends encrypted AES key over internet (eavesdropper sees ciphertext)",
-          "User B: Decrypt with private key (only they can decrypt)",
-          "User A & B now share symmetric AES key securely",
-          "Use AES key for bulk data encryption (fast and secure)"
-        ]
-      }
-    },
-    "secplus_010": {
-      "id": "secplus_010",
-      "difficulty": "intermediate",
-      "type": "free_response",
-      "question": "What is the AAA model in cybersecurity? Explain Authentication, Authorization, and Accounting with real-world examples.",
-      "modelAnswer": "AAA = Authentication, Authorization, Accounting. AUTHENTICATION: Verify identity. Example: user logs in with password + MFA (username = who you claim, password = proof you're them). AUTHORIZATION: Grant access based on role. Example: same user might have admin rights on some systems, read-only on others (same person, different permissions by role). ACCOUNTING: Log and audit actions. Example: who accessed what, when, what changes were made. SIEM correlates logs to detect anomalies. All three required for secure, compliant system. Combined example: RADIUS server (AAA protocol) authenticates user with password, checks group membership (authorization), logs login attempt (accounting).",
-      "homelab": {
-        "title": "Implement AAA with RADIUS Server",
-        "description": "Set up AAA using open-source RADIUS (FreeRADIUS).",
-        "steps": [
-          "Install FreeRADIUS: sudo apt install freeradius",
-          "Configure users database: /etc/freeradius/users (defines Authentication)",
-          "Configure groups: AD/LDAP integration (defines Authorization by role)",
-          "Configure logging: radiusd -X (log all AAA events)",
-          "Test: radiusclient-ng - connect with username/password",
-          "Verify: Authentication succeeds, authorization checks group, accounting logged",
-          "Advanced: integrate with NAS (Network Access Server) - e.g., switch, VPN, WiFi"
-        ]
-      }
-    },
-    "secplus_011": {
-      "id": "secplus_011",
-      "difficulty": "foundational",
-      "type": "mcq",
-      "question": "Which of the following is a preventive control?",
-      "options": [
-        "Security audit log - detects and documents attacks after they happen (detective)",
-        "MFA (multi-factor authentication) - prevents unauthorized access before it happens (preventive)",
-        "Intrusion detection system (IDS) - alerts on suspicious activity (detective)",
-        "Incident response plan - used after compromise (corrective)"
-      ],
-      "correctAnswer": 1,
-      "explanation": "Control types: PREVENTIVE (stops attack before it happens - MFA, firewall, encryption), DETECTIVE (identifies attack - logs, IDS, SIEM), CORRECTIVE (fixes after attack - incident response, patching), DETERRENT (discourages attack - security cameras, legal consequences). Good security uses all types.",
-      "homelab": {
-        "title": "Classify Controls by Type",
-        "description": "Identify and implement preventive, detective, and corrective controls.",
-        "steps": [
-          "Preventive: MFA on all accounts, firewall blocks port 23, antivirus blocks known malware",
-          "Detective: Windows Event Viewer logs failed logins, IDS alerts on exploit attempts, EDR detects anomalous process",
-          "Corrective: Runbook to isolate compromised host, restore from backup, incident response playbook",
-          "Deterrent: 'Authorized Access Only' signs, security awareness training",
-          "Build complete security: all control types working together",
-          "Test: simulate attack, verify preventive stops it, detective logs it, corrective responds"
-        ]
-      }
-    },
-    "secplus_012": {
-      "id": "secplus_012",
-      "difficulty": "intermediate",
-      "type": "mcq",
-      "question": "What is the primary goal of disaster recovery (DR) planning?",
-      "options": [
-        "Prevent all security incidents - eliminate risk completely",
-        "Minimize downtime and data loss after a disaster through planned recovery procedures and backups",
-        "Eliminate the need for backups - if DR is good, backups aren't needed",
-        "Replace cybersecurity measures - DR is more important than prevention"
-      ],
-      "correctAnswer": 1,
-      "explanation": "DR focuses on recovery, not prevention. RTO (Recovery Time Objective) = acceptable downtime, RPO (Recovery Point Objective) = acceptable data loss. Combined: if RTO=4 hours and RPO=1 hour, system must recover within 4 hours with max 1 hour of lost data. Strategy: frequent backups (minimize RPO), redundant systems (minimize RTO).",
-      "homelab": {
-        "title": "Design & Test Disaster Recovery Plan",
-        "description": "Create DR plan with defined RTO/RPO and practice recovery.",
-        "steps": [
-          "Define RTO: 4 hours (acceptable downtime)",
-          "Define RPO: 1 hour (acceptable data loss)",
-          "Backup strategy: hourly incremental, daily full (meets 1-hour RPO)",
-          "Redundancy: hot standby system in different location (meets 4-hour RTO)",
-          "Create recovery runbook: step-by-step to restore from backup",
-          "Test quarterly: simulate failure, practice actual recovery",
-          "Measure: Did we meet RTO/RPO targets? If not, improve backups or redundancy",
-          "Document: what worked, what failed, update procedures"
-        ]
-      }
-    }
-  }
-}
   }
 }
