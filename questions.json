@@ -1,0 +1,1468 @@
+{
+  "questionBanks": {
+    "helpdesk": {
+      "displayName": "Help Desk / SysAdmin",
+      "icon": "🖥️",
+      "color": "#00e5ff",
+      "questions": [
+        {
+          "id": "hd_001",
+          "difficulty": "foundational",
+          "type": "mcq",
+          "question": "A user's PC is showing IP address 169.254.88.34. They can't reach anything on the network. What is happening and what do you do first?",
+          "options": [
+            "The IP is in a reserved range for site-local traffic - route it through the VPN gateway",
+            "The machine got an APIPA address, meaning it failed to get a DHCP lease - check if the DHCP server is reachable and run ipconfig /release then /renew",
+            "The subnet mask is wrong - change it from /16 to /24 manually",
+            "The network adapter needs to be re-registered in DNS - run ipconfig /registerdns"
+          ],
+          "correctAnswer": 1,
+          "explanation": "169.254.x.x is an APIPA (Automatic Private IP Addressing) address - Windows assigns this automatically when DHCP fails. Causes: DHCP server down, scope exhausted, network connectivity issue between the client and DHCP server (wrong VLAN, blocked port 67/68). Steps: ping the DHCP server, check DHCP console for scope exhaustion, verify the switch port, run ipconfig /release && ipconfig /renew. If it persists, check the Windows DHCP client service is running.",
+          "homelab": {
+            "title": "Set Up a DHCP Server in Hyper-V",
+            "description": "Build a Windows Server 2022 DHCP server and intentionally break it to trigger APIPA on a client VM, then fix it.",
+            "steps": [
+              "Create 2 VMs: Server2022 (DHCP server) and Windows 11 (client)",
+              "On Server2022: Assign static IP (192.168.1.10/24), hostname DC01",
+              "On Server2022: Install DHCP role via Server Manager > New Scope 192.168.1.0/24, lease time 8 hours",
+              "On Windows 11: Set to DHCP, verify you get 192.168.1.x address",
+              "On Server2022: Stop the DHCP service (Services.msc)",
+              "On Windows 11: Run ipconfig /release - watch it grab 169.254.x.x",
+              "On Server2022: Restart DHCP service",
+              "On Windows 11: Run ipconfig /renew - watch it get proper IP back",
+              "Check Event Viewer on Server2022 for DHCP events"
+            ]
+          }
+        },
+        {
+          "id": "hd_002",
+          "difficulty": "foundational",
+          "type": "mcq",
+          "question": "A user gets 'Access Denied' when trying to open a folder on a file server. You verify their AD account is active and in the correct department group. What do you check next?",
+          "options": [
+            "Reset their password - Access Denied always indicates a Kerberos token issue",
+            "Check the share permissions AND the NTFS permissions - both must allow access, and the effective permission is the most restrictive intersection",
+            "Add them directly to the local Administrators group on the file server",
+            "Check if the file server's domain trust is intact using nltest /sc_verify"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Windows file access has two permission layers: Share Permissions (control network access to the share) and NTFS Permissions (control the actual file/folder). The effective permission is the most restrictive combination of both. Common scenario: NTFS allows the group, but Share permissions are set to 'Everyone: Read' - user can read but not write. Always check both.",
+          "homelab": {
+            "title": "Permission Layers Lab - Share vs NTFS",
+            "description": "Create a shared folder with mismatched Share and NTFS permissions to understand effective permissions.",
+            "steps": [
+              "On Windows Server 2022: Create folder C:\\SharedData",
+              "Right-click > Properties > Sharing tab > Advanced Sharing > Share this folder",
+              "Share Permissions: set Everyone to 'Read' only",
+              "NTFS Permissions (Security tab): set Domain Users to 'Modify'",
+              "From a client (joined to domain): Map the share as a domain user",
+              "Try to create a new file - it will fail (blocked by Share permissions)",
+              "Now change Share permissions to 'Change' > retry creating file > success",
+              "Document: effective permission = most restrictive layer"
+            ]
+          }
+        },
+        {
+          "id": "hd_003",
+          "difficulty": "intermediate",
+          "type": "mcq",
+          "question": "You need to force-apply a GPO to a set of machines immediately without waiting for the default 90-minute refresh interval. What command do you run on the target machines?",
+          "options": [
+            "gpupdate on each machine manually; there's no remote option",
+            "gpupdate /force on each machine; remotely use Invoke-GPUpdate -Computer from the GPMC module or psexec",
+            "net group 'Policy' /add on each machine",
+            "Restart the 'Group Policy Client' service remotely"
+          ],
+          "correctAnswer": 1,
+          "explanation": "gpupdate /force re-applies all policies regardless of whether they've changed. Remotely: use Invoke-GPUpdate -Computer via GPMC PowerShell module, or Invoke-Command -ComputerName (list) -ScriptBlock { gpupdate /force } if WinRM is enabled. The /force flag is critical - without it, gpupdate skips unchanged policies.",
+          "homelab": {
+            "title": "GPO Application & Remote Enforcement",
+            "description": "Create a GPO, link it to an OU, then use gpupdate /force to test immediate application.",
+            "steps": [
+              "On DC: Open Group Policy Management > Create new GPO 'Test-Policy'",
+              "Edit GPO: Computer Configuration > Policies > Windows Settings > Security Settings > Password Policy > set Min length to 14",
+              "Link GPO to an OU containing your test client VM",
+              "On test client: Run 'gpupdate /force' in Command Prompt as admin",
+              "Check: gpresult /h c:\\report.html to see which GPOs applied",
+              "Verify Password Policy applied: secpol.msc > check Min password length",
+              "Try remotely: From DC, run Invoke-Command -ComputerName TestClient -ScriptBlock { gpupdate /force }"
+            ]
+          }
+        },
+        {
+          "id": "hd_004",
+          "difficulty": "intermediate",
+          "type": "free_response",
+          "question": "HOME LAB SCENARIO: You're setting up a Windows Server 2022 domain controller at home. Walk through the exact steps to promote a server to DC, create an OU structure, and join a Windows 11 client to the domain. What DNS configuration is critical and why?",
+          "modelAnswer": "Steps: 1) Install AD DS role via Server Manager or PowerShell: Install-WindowsFeature AD-Domain-Services. 2) Promote to DC: Install-ADDSForest -DomainName 'lab.local' (will reboot). 3) The DC automatically becomes DNS for the domain - CRITICAL: DNS hosts SRV records (_ldap._tcp, _kerberos._tcp, _ldap._tcp.gc._msdcs) that clients use to find the DC. 4) Create OUs: Open Active Directory Users and Computers > create OU 'Workstations', 'Servers', 'Users'. 5) On Windows 11 client: Set DNS server to the DC's IP (NOT 8.8.8.8 - #1 mistake in home labs). 6) Join domain: Settings > System > About > Advanced > Change domain - enter lab.local. DNS must point to DC because domain join requires SRV record resolution. If DNS points to your router or ISP DNS, the client can't find the DC and join fails with 'The specified domain either does not exist or could not be contacted.'",
+          "homelab": {
+            "title": "Build Your First Domain Controller",
+            "description": "Complete walkthrough to set up a working domain with multiple OUs and a joined client.",
+            "steps": [
+              "VM Setup: Create Server2022 VM (4GB RAM, 60GB disk) and Windows 11 VM on same virtual network",
+              "On Server2022: Assign static IP (192.168.100.10/24), hostname DC01",
+              "On Server2022: Install AD DS role via Server Manager",
+              "Promote to DC: Install-ADDSForest -DomainName 'lab.local' -SafeModeAdministratorPassword (SecureString)",
+              "Wait for reboot - DC role is now active",
+              "Create OU structure: Active Directory Users and Computers > right-click domain > New > OU",
+              "Create: Workstations, Servers, ServiceAccounts OUs",
+              "On Windows 11: Open Settings > Network > Change adapter options > DNS servers: 192.168.100.10",
+              "On Windows 11: Settings > System > About > Advanced > Computer Name > Change to lab.local",
+              "Verify join: Open Command Prompt, run 'whoami' - should show LAB\\username",
+              "On DC: Verify client appears in Active Directory Users and Computers > Workstations OU"
+            ]
+          }
+        },
+        {
+          "id": "hd_005",
+          "difficulty": "intermediate",
+          "type": "mcq",
+          "question": "You notice that after running a GPO to deploy a software package via MSI, the software installs on some machines but not others. GPRESULT /H shows the GPO is applying to all machines. What is the most likely cause?",
+          "options": [
+            "The MSI file path is case-sensitive and fails on some machines",
+            "Software installation GPOs only apply at computer startup or user logon - machines that were already logged in when the GPO applied haven't restarted yet",
+            "The MSI is corrupt on half the machines due to a SYSVOL replication issue",
+            "Software deployment via GPO requires the local administrator account to be enabled"
+          ],
+          "correctAnswer": 1,
+          "explanation": "GPO software installation runs at startup (Computer Configuration) or logon (User Configuration). If machines were already running when the GPO was linked, they won't install until next boot/logon. GPRESULT showing the GPO applies just means the machine received the policy - not that the installer ran.",
+          "homelab": {
+            "title": "GPO Software Deployment Timing",
+            "description": "Create a software deployment GPO and observe when installation triggers.",
+            "steps": [
+              "Host an MSI file on a network share (e.g., \\\\DC01\\Software\\7zip.msi)",
+              "Create GPO: Computer Configuration > Policies > Software Settings > Software Installation",
+              "Deploy 7zip.msi from network share",
+              "Link GPO to test OU",
+              "On test client already running: gpupdate /force - software does NOT install",
+              "Restart test client - software installs at startup",
+              "Note: Computer-level deployment = startup, User-level = logon"
+            ]
+          }
+        },
+        {
+          "id": "hd_006",
+          "difficulty": "advanced",
+          "type": "mcq",
+          "question": "A user reports that their mapped drives disappeared after logging into a new PC. Their AD account is correct and GPO shows drive mapping applied. The drives are mapped in gpresult /r but not visible. What is the most likely cause?",
+          "options": [
+            "UAC elevation is hiding the drives - mapped drives made under a standard user token are invisible when run as admin (token split)",
+            "The drive letters conflict with locally mapped DVDs or USB drives",
+            "The GP drive mapping is set to 'Replace' instead of 'Create'",
+            "The Workstation service is not running, blocking SMB drive mapping"
+          ],
+          "correctAnswer": 0,
+          "explanation": "This is a classic UAC elevation / linked connection issue. When a user runs a program 'as administrator,' Windows creates a separate elevated token. Mapped drives created under the standard user token are not visible to the elevated token. Fix: either map drives using the elevated context, or enable EnableLinkedConnections in HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System.",
+          "homelab": {
+            "title": "UAC Token Split & Mapped Drives",
+            "description": "Reproduce the UAC token split issue where mapped drives disappear.",
+            "steps": [
+              "Create a shared folder on server: \\\\DC01\\TestShare",
+              "Create GPO with drive mapping: Z: = \\\\DC01\\TestShare",
+              "Apply to test client, logon as regular user",
+              "Open File Explorer as normal user - drive Z: visible",
+              "Right-click Command Prompt > Run as administrator",
+              "In elevated CMD: net use - drive Z: is NOT listed",
+              "Fix: Enable linked connections: reg add HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System /v EnableLinkedConnections /t REG_DWORD /d 1",
+              "Reboot and retest - elevated apps now see mapped drives"
+            ]
+          }
+        },
+        {
+          "id": "hd_007",
+          "difficulty": "advanced",
+          "type": "free_response",
+          "question": "You want to replicate an enterprise environment with two domain controllers for redundancy. Explain how AD replication works between two DCs, how to verify replication health, and what FSMO roles are and which DC should hold them in a small lab.",
+          "modelAnswer": "AD replication: changes replicate via KCC (Knowledge Consistency Checker) which builds replication topology. Intrasite replication runs within 15 seconds of change. Intersite uses scheduled replication based on site link. Verify health: repadmin /replsummary (quick overview), repadmin /showrepl (detailed per-DC replication), dcdiag /test:replications (comprehensive health check). FSMO roles: 5 total - Schema Master (1 per forest), Domain Naming Master (1 per forest), PDC Emulator, RID Master, Infrastructure Master (3 per domain). In a 2-DC lab: put all 5 on DC1 (primary), DC2 is secondary. Transfer with Move-ADDirectoryServerOperationMasterRole if needed. PDC Emulator is most critical - handles password changes, time sync, account lockouts. If PDC Emulator fails, password changes queue until it's restored.",
+          "homelab": {
+            "title": "Multi-DC Replication & FSMO Roles",
+            "description": "Set up 2 domain controllers, monitor replication, and manage FSMO roles.",
+            "steps": [
+              "Prerequisites: DC01 (192.168.100.10) already exists with lab.local domain",
+              "Create DC02 VM: Server2022, IP 192.168.100.11",
+              "On DC02: Set DNS to DC01 (192.168.100.10) and join lab.local domain",
+              "Promote DC02 to domain controller: Install-ADDSDomainController -DomainName lab.local",
+              "After DC02 boots, verify replication: repadmin /replsummary",
+              "Create test user on DC01: New-ADUser -Name TestUser -SamAccountName testuser",
+              "On DC02, verify user appears: Get-ADUser testuser",
+              "Check FSMO roles: netdom query fsmo (shows which DC holds each role)",
+              "View detailed: Get-ADForest | select -ExpandProperty InfrastructureMaster",
+              "All 5 roles currently on DC01 - this is fine for lab",
+              "Monitor: repadmin /showrepl DC01 (shows outbound replication to DC02)"
+            ]
+          }
+        },
+        {
+          "id": "hd_008",
+          "difficulty": "foundational",
+          "type": "mcq",
+          "question": "A user calls saying they can't log into their domain-joined laptop. They can ping the domain controller, but Get-ADUser fails to find their account. What should you check first?",
+          "options": [
+            "Their password expired - reset it immediately",
+            "The user's account is likely disabled, locked, or in the wrong OU - check AD Users and Computers",
+            "The DNS suffix on their laptop is wrong",
+            "The Kerberos Key Distribution Center isn't running on the DC"
+          ],
+          "correctAnswer": 1,
+          "explanation": "If Get-ADUser can't find the account, it either doesn't exist or is in a different forest/domain. First: search AD Users and Computers to verify the account exists, is enabled, and hasn't been accidentally moved. Check account properties: enabled, not locked out, no expiration date set.",
+          "homelab": {
+            "title": "Troubleshoot Account Lockout & Disabled Accounts",
+            "description": "Create scenarios where accounts appear disabled or locked, then troubleshoot.",
+            "steps": [
+              "On DC01: Create test user 'LockedUser'",
+              "Disable the account: Set-ADUser -Identity LockedUser -Enabled $false",
+              "Try logon from client as LockedUser - fails",
+              "On DC: Get-ADUser LockedUser -Properties Enabled - shows False",
+              "Re-enable: Set-ADUser -Identity LockedUser -Enabled $true",
+              "Try logon again - succeeds",
+              "Create another user 'BadOU' in OU: New-ADUser -Path 'OU=Servers,DC=lab,DC=local'",
+              "Try logon as user expecting to find them in standard location - might not appear in quick search"
+            ]
+          }
+        },
+        {
+          "id": "hd_009",
+          "difficulty": "intermediate",
+          "type": "mcq",
+          "question": "You're troubleshooting a user's slow login times. Their laptop logs in within 2 seconds on your test network but takes 45+ seconds on their production network. What is the most likely cause?",
+          "options": [
+            "Their user profile is corrupted - delete and recreate it",
+            "GPO processing is slow due to WAN latency or large group membership - check gpresult /scope:user /v for processing time",
+            "Their hard drive is failing - run SMART diagnostics",
+            "Windows Update is running in the background"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Slow logins in production typically indicate GPO processing delays, especially on WAN links or with heavy group memberships. Use gpresult /scope:user /v to see which GPOs are taking time to apply. Check Group Policy processing times in Event Viewer > Windows Logs > System for 'Group Policy' events. Common fixes: optimize GPO links, reduce group membership depth, enable loopback processing if needed.",
+          "homelab": {
+            "title": "GPO Processing Performance Analysis",
+            "description": "Measure GPO processing time and optimize slow group policies.",
+            "steps": [
+              "Create multiple test GPOs with varying settings",
+              "Link them to multiple OUs and create complex group memberships",
+              "On test client: gpresult /scope:user /v > report.txt",
+              "Look for 'Group Policy processing time' at bottom of report",
+              "Enable Verbose logging: Event Viewer > Windows Logs > System, filter for 'Group Policy'",
+              "Run gpupdate /force and watch Event Viewer for processing events",
+              "Identify slowest GPOs by name",
+              "Optimize by unblocking GPO inheritance, consolidating GPOs, or adding security filters"
+            ]
+          }
+        },
+        {
+          "id": "hd_010",
+          "difficulty": "advanced",
+          "type": "free_response",
+          "question": "A high-value client's CEO cannot print to any network printer after their laptop was repaired by a vendor. Their laptop is domain-joined but NOT in the print queue security groups. Explain the troubleshooting process and the likely fix.",
+          "modelAnswer": "Process: 1) Verify laptop is domain-joined (whoami in PowerShell). 2) Confirm DNS works: nslookup to DC, nslookup to printer hostname. 3) Test printer connectivity: ping printer IP, then try lpstat or test print from Printers & Scanners. 4) Most likely: user/device NOT in print queue security groups - this is typically missed during hardware swap. 5) Solution: Add either the user or device to the print queue's 'Print Operators' or equivalent group, or add to the specific printer's DACL. 6) Verify via gpresult /h - check Device Settings and Folder Redirection sections for printer deployment GPOs. If still failing, check printer's IP permissions and SNMP community string. Clear print spooler after permission changes: net stop spooler && net start spooler.",
+          "homelab": {
+            "title": "Network Printer Permissions & Troubleshooting",
+            "description": "Set up printer sharing via GPO, restrict access, and troubleshoot permission issues.",
+            "steps": [
+              "On DC: Create shared printer share or add network printer via Printers & Devices",
+              "Set NTFS permissions on printer queue: Allow specific groups to print",
+              "Create GPO 'Deploy-Printers' with Folder Redirection or Device Settings",
+              "Create AD group 'PrintQueue-Users' and add test users",
+              "On test client NOT in group: Try to connect to printer - fails with 'Access Denied'",
+              "Add user to PrintQueue-Users group, gpupdate /force on client",
+              "Retry connection - succeeds",
+              "Simulate vendor repair scenario: Remove device from OU, rejoin in wrong OU, verify printer access breaks",
+              "Verify via Printer Properties > Security tab shows correct groups"
+            ]
+          }
+        },
+        {
+          "id": "hd_011",
+          "difficulty": "foundational",
+          "type": "mcq",
+          "question": "A Windows 10 PC shows a message 'Your device doesn't have the minimum security requirements to connect to this domain.' What is the primary cause?",
+          "options": [
+            "The device's BIOS needs a UEFI firmware update",
+            "Windows Defender is disabled - it must be active (even if another AV is present) for modern domain policies",
+            "The device lacks TPM 2.0 or has it disabled, or Secure Boot is off - modern Windows security baselines require these",
+            "The device's clock is more than 5 minutes out of sync with the DC"
+          ],
+          "correctAnswer": 2,
+          "explanation": "This error indicates the device doesn't meet Windows 11/10 security baseline requirements: TPM 2.0, Secure Boot enabled, UEFI firmware, and UEF variables properly configured. Modern enterprise policies require these. Fix: enable TPM 2.0 in BIOS (usually under Security settings), enable Secure Boot, verify UEFI is the boot mode. Alternatively, check if an outdated device policy is being applied - use gpresult to see which security policies failed.",
+          "homelab": {
+            "title": "TPM 2.0 & Secure Boot Validation",
+            "description": "Verify TPM and Secure Boot status, enable if needed, and test domain connectivity.",
+            "steps": [
+              "On test PC: Open Hyper-V Settings for VM > Security tab > check 'Enable TPM'",
+              "Reboot PC, enter BIOS (F2, F10, or Del depending on vendor)",
+              "Navigate to Security > TPM Settings > enable TPM 2.0",
+              "Enable Secure Boot (also in Security section)",
+              "Save and exit BIOS",
+              "Boot Windows, open Device Manager > expand Security devices > verify 'Trusted Platform Module 2.0' appears",
+              "Run tpm.msc to verify TPM status shows 'Ready'",
+              "Try domain join again - should succeed"
+            ]
+          }
+        },
+        {
+          "id": "hd_012",
+          "difficulty": "intermediate",
+          "type": "mcq",
+          "question": "You need to enable remote access for a help desk technician to troubleshoot user machines without using VPN. What is the MOST secure approach while minimizing infrastructure changes?",
+          "options": [
+            "Enable RDP on all user machines and assign a static port like 3390 for tech access",
+            "Deploy a Jump Host / Bastion server in the DMZ with MFA, restrict RDP inbound to that host only, and log all sessions",
+            "Enable WinRM on all machines and use Invoke-Command for remote troubleshooting",
+            "Set up a VPN - remote access without it is inherently insecure"
+          ],
+          "correctAnswer": 1,
+          "explanation": "A Jump Host / Bastion server is the enterprise standard for secure remote access. All remote connections funnel through one hardened server with MFA, session logging, and network isolation. This provides: 1) Single point of control, 2) Audit trail of all tech access, 3) Reduced attack surface (techs don't connect directly to user machines), 4) Easier compliance (HIPAA, PCI-DSS). Option 3 (WinRM) is fine for internal automation but doesn't replace a bastion for user-facing troubleshooting.",
+          "homelab": {
+            "title": "Deploy a Bastion Host for Secure Remote Access",
+            "description": "Set up a hardened jump server for secure remote troubleshooting.",
+            "steps": [
+              "Create BasionHost VM: Windows Server 2022, minimal services, hardened baseline",
+              "Install OpenSSH or keep RDP only - disable unnecessary services",
+              "Configure Windows Firewall: Allow RDP (3389) only from tech's IP",
+              "Install Event Log forwarding or third-party agent (e.g., Delinea/BeyondTrust) for session recording",
+              "Create AD group 'RDP-Admins' for technicians",
+              "Add RDP-Admins group to Bastion's Remote Desktop Users group",
+              "Restrict RDP network access to this group via GPO",
+              "From tech workstation: RDP to BasionHost first, then RDP to user machines from there",
+              "Review Event Viewer > Security > RDP/Terminal Services events to verify logging"
+            ]
+          }
+        }
+      ]
+    },
+    "networking": {
+      "displayName": "Network Engineering",
+      "icon": "🌐",
+      "color": "#b8ff57",
+      "questions": [
+        {
+          "id": "net_001",
+          "difficulty": "foundational",
+          "type": "mcq",
+          "question": "You're troubleshooting why two devices on the same switch can't communicate. Device A is 192.168.10.5/24 and Device B is 192.168.20.5/24. What is the problem?",
+          "options": [
+            "The switch needs a trunk port configured between the two ports",
+            "They're in different subnets - without a router or Layer 3 switch, they cannot communicate directly",
+            "The subnet masks are wrong - change both to /16",
+            "ARP cache needs clearing on both devices"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Devices communicate directly only if they're in the same subnet. 192.168.10.x/24 and 192.168.20.x/24 are different /24 networks. Device A will try to ARP for a router (its default gateway) to reach Device B - if no L3 device handles inter-subnet routing, the traffic goes nowhere.",
+          "homelab": {
+            "title": "VLAN Isolation & Inter-VLAN Routing",
+            "description": "Create two VLANs on a switch, confirm they can't communicate without a router, then add L3 routing.",
+            "steps": [
+              "Physical or GNS3 setup: 2 PCs, 1 switch, 1 router",
+              "On switch: Create VLAN 10, VLAN 20",
+              "Assign PC1 to VLAN 10 (192.168.10.5/24), PC2 to VLAN 20 (192.168.20.5/24)",
+              "Try ping PC2 from PC1 - fails",
+              "Add router interface: VLAN 10 = 192.168.10.1/24, VLAN 20 = 192.168.20.1/24",
+              "Set default gateway on both PCs to their respective router IPs",
+              "Try ping again - succeeds (routed through router)",
+              "Verify: show ip route on router shows both subnets"
+            ]
+          }
+        },
+        {
+          "id": "net_002",
+          "difficulty": "intermediate",
+          "type": "free_response",
+          "question": "You want to set up WireGuard as a VPN server on a Linux box so you can securely access your home lab from anywhere. Walk through the complete setup: key generation, server config, client config, and firewall rules needed.",
+          "modelAnswer": "Server setup (Ubuntu/Debian): 1) apt install wireguard. 2) Generate keys: wg genkey | tee server_private.key | wg pubkey > server_public.key. Do the same for each client. 3) /etc/wireguard/wg0.conf: [Interface] Address=10.10.0.1/24, ListenPort=51820, PrivateKey=(server private). [Peer] PublicKey=(client public), AllowedIPs=10.10.0.2/32. 4) Enable IP forwarding: sysctl -w net.ipv4.ip_forward=1 (persist in /etc/sysctl.conf). 5) Firewall (iptables): Allow UDP 51820 inbound. Add POSTROUTING MASQUERADE rule. 6) Start: wg-quick up wg0, systemctl enable wg-quick@wg0. Client: [Interface] Address=10.10.0.2/24, PrivateKey=(client private). [Peer] PublicKey=(server public), Endpoint=YOUR_IP:51820, AllowedIPs=192.168.1.0/24. Port forward UDP 51820 on your router.",
+          "homelab": {
+            "title": "Build Your Own WireGuard VPN",
+            "description": "Set up a WireGuard server on Linux and connect clients from anywhere.",
+            "steps": [
+              "Server VM: Ubuntu 22.04 with public IP or port forwarding configured",
+              "apt update && apt install wireguard wireguard-tools",
+              "cd /etc/wireguard && umask 077 && wg genkey | tee privatekey | wg pubkey > publickey",
+              "Create wg0.conf: [Interface] Address=10.10.0.1/24, ListenPort=51820, PrivateKey=(cat privatekey)",
+              "Add [Peer] section for each client",
+              "Enable IP forwarding: echo 'net.ipv4.ip_forward=1' >> /etc/sysctl.conf && sysctl -p",
+              "Firewall: ufw allow 51820/udp && ufw enable",
+              "Start service: systemctl start wg-quick@wg0 && systemctl enable wg-quick@wg0",
+              "On client VM: apt install wireguard, generate keys, create matching config",
+              "Connect: wg-quick up wg0 from client",
+              "Test: ping 10.10.0.1 from client, then ping lab network (e.g., 192.168.1.0/24)"
+            ]
+          }
+        },
+        {
+          "id": "net_003",
+          "difficulty": "intermediate",
+          "type": "mcq",
+          "question": "Your office has two data centers in different cities. You want to automatically fail over traffic if the primary DC goes down. Which technology is MOST appropriate?",
+          "options": [
+            "OSPF with dynamic routing to advertise both DCs; failing primary causes BGP to stop advertising its routes",
+            "DNS round-robin using multiple A records - clients will eventually find the secondary DC on retry",
+            "BGP with multiple autonomous systems and AS path prepending to control failover via advertisements",
+            "Static routing with manual failover - more reliable than dynamic protocols"
+          ],
+          "correctAnswer": 2,
+          "explanation": "BGP (Border Gateway Protocol) is the internet's standard for inter-AS routing and failover. AS path prepending makes the secondary DC's routes appear longer, so traffic prefers primary. When primary fails, it stops advertising routes, and BGP converges to secondary within seconds. OSPF is for intra-AS; DNS round-robin is not failover (clients don't check failures). Static routing requires manual changes.",
+          "homelab": {
+            "title": "BGP Failover Simulation with GNS3",
+            "description": "Simulate two data centers with BGP failover.",
+            "steps": [
+              "GNS3 setup: 2 routers (R1, R2) as DCs, BGP router in middle",
+              "R1: AS 65001, advertise 192.168.1.0/24",
+              "R2: AS 65002, advertise 192.168.2.0/24 with AS path prepending (longer path initially)",
+              "BGP router: Accept routes from both, prefer R1 due to shorter AS path",
+              "Simulate traffic from external network - routes through R1",
+              "Shut down R1 interface, watch BGP reconverge",
+              "Traffic now flows through R2",
+              "Reboot R1, watch BGP converge back to R1"
+            ]
+          }
+        },
+        {
+          "id": "net_004",
+          "difficulty": "advanced",
+          "type": "mcq",
+          "question": "You're designing a network for a multi-tenant office building. Tenants need isolated networks with no cross-tenant traffic. Each tenant has their own firewall. What is the primary security issue with simple VLAN separation alone?",
+          "options": [
+            "VLANs don't prevent broadcast storms",
+            "VLANs are limited to /24 subnets",
+            "VLAN hopping attacks can allow an attacker on one VLAN to access another VLAN if the switch is misconfigured (especially with 802.1Q)",
+            "VLANs require Layer 3 routing which adds latency"
+          ],
+          "correctAnswer": 2,
+          "explanation": "VLAN hopping exploits switch misconfiguration. Common attack: an attacker sends 802.1Q-tagged packets on a native VLAN, tricking the switch into forwarding to another VLAN. Prevention: use access ports (not trunk), disable DTP, set native VLAN to unused VLAN, tag all traffic. For true tenant isolation, each tenant needs their own firewall/gateway AND separate physical infrastructure if dealing with high-security tenants.",
+          "homelab": {
+            "title": "VLAN Hopping Attack & Prevention",
+            "description": "Simulate VLAN hopping and practice defensive configurations.",
+            "steps": [
+              "GNS3 or physical switch lab: 3 devices on VLAN 10, 2 on VLAN 20",
+              "Default config: trunk all ports, native VLAN = 1",
+              "From VLAN 10 device: craft 802.1Q packet to VLAN 20 using scapy or tagging tools - traffic hops to VLAN 20",
+              "Now fix the switch: set all ports to access mode (no trunk)",
+              "Change native VLAN to unused VLAN 999",
+              "Explicitly tag all traffic on management interface",
+              "Retry VLAN hop attack - it fails"
+            ]
+          }
+        },
+        {
+          "id": "net_005",
+          "difficulty": "foundational",
+          "type": "mcq",
+          "question": "A user can ping the default gateway but cannot reach any external websites. nslookup returns results. What is most likely the issue?",
+          "options": [
+            "The router is misconfigured - default gateway should always allow external access",
+            "The firewall is blocking outbound traffic on port 80/443, or routing beyond the gateway is broken",
+            "DNS is misconfigured - nslookup results prove this wrong",
+            "The internet ISP connection is down"
+          ],
+          "correctAnswer": 1,
+          "explanation": "User can reach the gateway but not beyond = routing or firewall issue beyond the local gateway. DNS works (nslookup succeeds). Check: 1) default route exists (route print on Windows, ip route on Linux), 2) firewall allows outbound HTTP/HTTPS, 3) ISP connection is up (tracert to 8.8.8.8). Most common: firewall rule blocks outbound traffic, or default route points to wrong interface.",
+          "homelab": {
+            "title": "Troubleshoot Routing & Firewall Blocks",
+            "description": "Simulate broken routing and firewall rule blocks, then fix.",
+            "steps": [
+              "GNS3: 3 routers - LAN, Gateway, ISP",
+              "PC on LAN: can ping gateway but not ISP network",
+              "On gateway: check routing table - missing default route to ISP",
+              "Add: ip route add 0.0.0.0/0 via 10.0.0.2",
+              "Retry ping ISP - succeeds",
+              "Now add firewall rule: block 10.0.0.3 outbound TCP port 80/443",
+              "Ping still works (ICMP), but HTTP/HTTPS fails",
+              "Review firewall rules: identify and remove block"
+            ]
+          }
+        },
+        {
+          "id": "net_006",
+          "difficulty": "intermediate",
+          "type": "free_response",
+          "question": "Design a network for a small office (50 users) that grows to 200 users in 2 years. Include subnetting strategy, VLAN design, redundancy, and failover. Explain your IP addressing scheme.",
+          "modelAnswer": "IP Scheme: Start with 10.0.0.0/16 (65,534 usable IPs - plenty for growth). Subnets: VLAN 10 (Users) = 10.0.10.0/24 (max 254 users), VLAN 20 (Servers) = 10.0.20.0/24, VLAN 30 (IoT/Cameras) = 10.0.30.0/24, VLAN 40 (Guest) = 10.0.40.0/24, VLAN 50 (Management) = 10.0.50.0/24. Redundancy: Dual switches (L3-capable) with HSRP/VRRP for gateway failover. DHCP: Primary on Server1 (10.0.20.10), Backup on Server2 (10.0.20.11) with 70/30 split scopes. Gateway: Virtual IP 10.0.10.1 (HSRP), backed by Switch1 and Switch2. Failover: If primary gateway fails, secondary takes over within 3 seconds via HSRP. Growth path: /24 subnets fit 254 users; add /25 subnets after 200 users if needed. This scales to 500+ easily.",
+          "homelab": {
+            "title": "Multi-VLAN Network Design & Failover",
+            "description": "Build a scalable network with VLAN segregation and HSRP failover.",
+            "steps": [
+              "GNS3: Create 2 Layer 3 switches, 3 access switches, 2 servers, test clients",
+              "Configure VLAN 10 (Users), VLAN 20 (Servers), VLAN 30 (Guest)",
+              "On L3 Switch 1: Create IP 10.0.10.1/24, 10.0.20.1/24, etc.",
+              "Configure HSRP: virtual gateway 10.0.10.1 backed by both L3 switches",
+              "Switch1: ip address 10.0.10.2 255.255.255.0, standby 1 ip 10.0.10.1, standby 1 priority 150 (primary)",
+              "Switch2: ip address 10.0.10.3 255.255.255.0, standby 1 ip 10.0.10.1, standby 1 priority 100 (secondary)",
+              "Set clients' default gateway to 10.0.10.1 (the virtual IP)",
+              "Simulate Switch1 failure - clients' traffic should seamlessly failover to Switch2 via HSRP"
+            ]
+          }
+        },
+        {
+          "id": "net_007",
+          "difficulty": "advanced",
+          "type": "mcq",
+          "question": "Your organization uses SD-WAN to connect branch offices. One branch reports intermittent connectivity to the data center. Traffic engineering shows the path sometimes takes the backup MPLS link instead of preferred Direct-Internet. What could cause this?",
+          "options": [
+            "The SD-WAN controller has a bug that randomly changes paths",
+            "The Direct-Internet link's jitter or packet loss exceeds thresholds, triggering the SLA policy to use the backup MPLS link",
+            "VLAN tagging is misconfigured on the branch switch",
+            "DNS is not resolving DC IPs consistently"
+          ],
+          "correctAnswer": 1,
+          "explanation": "SD-WAN policies dynamically choose paths based on application requirements and link quality. When the preferred path (Direct-Internet) shows degraded performance (jitter, loss, latency), the SD-WAN controller applies traffic steering to reroute via backup MPLS. Fix: check Direct-Internet link health (run iperf, check for packet loss), verify QoS is working, inspect SD-WAN controller logs for SLA violations.",
+          "homelab": {
+            "title": "SD-WAN Path Selection & SLA Policies",
+            "description": "Simulate SD-WAN failover based on link quality metrics.",
+            "steps": [
+              "GNS3 or EVE-NG: Simulate SD-WAN controller, 2 branch sites, data center",
+              "Configure 2 WAN links from branch: Direct-Internet (preferred) and MPLS (backup)",
+              "Set SLA policy: prefer Direct-Internet unless latency > 50ms or loss > 2%",
+              "Use tc (traffic control) on Direct-Internet link to add latency and packet loss",
+              "Monitor: watch SD-WAN metrics - once threshold exceeded, traffic shifts to MPLS",
+              "Remove impairment - traffic shifts back to Direct-Internet",
+              "Review SD-WAN controller logs to see policy enforcement"
+            ]
+          }
+        },
+        {
+          "id": "net_008",
+          "difficulty": "foundational",
+          "type": "mcq",
+          "question": "You're setting up a small office switch. The sales team's VoIP phones need priority over file uploads. How do you implement this using QoS?",
+          "options": [
+            "Set all VoIP ports to 'premium' and file server ports to 'standard' in the switch GUI - this is built-in QoS",
+            "Use 802.1p priority tagging or DSCP marking to classify VoIP traffic as higher priority, then configure the switch to queue based on these markings",
+            "Disable all file uploads during business hours",
+            "VoIP phones automatically get priority - no configuration needed"
+          ],
+          "correctAnswer": 1,
+          "explanation": "QoS requires explicit configuration: 1) Classify traffic (802.1p for Layer 2, DSCP for Layer 3), 2) Mark VoIP packets with high priority (usually CoS 5-6 or DSCP EF), 3) Configure switch queuing to serve high-priority queue first. Without tagging, traffic is treated equally (FIFO). This ensures VoIP packets don't get queued behind large file transfers.",
+          "homelab": {
+            "title": "Implement QoS for VoIP Priority",
+            "description": "Configure QoS to prioritize VoIP over best-effort traffic.",
+            "steps": [
+              "Cisco switch (GNS3): Configure class-maps and policy-maps",
+              "class-map match-any VOIP: match protocol rtp (VoIP uses RTP)",
+              "class-map match-any BULK: match protocol http, https",
+              "policy-map PRIORITIZE: class VOIP priority 256k, class BULK bandwidth 1000k",
+              "Apply to interface: service-policy input PRIORITIZE",
+              "Generate VoIP traffic (simulate with tools), then bulk traffic",
+              "Monitor: show policy-map interface - VOIP class gets served first"
+            ]
+          }
+        }
+      ]
+    },
+    "m365": {
+      "displayName": "Microsoft 365 / Teams",
+      "icon": "☁️",
+      "color": "#00d9ff",
+      "questions": [
+        {
+          "id": "m365_001",
+          "difficulty": "foundational",
+          "type": "mcq",
+          "question": "A user receives an email from their manager asking for a password reset, but the email routing shows it came from an external domain. What should you do?",
+          "options": [
+            "Reset their password immediately - managers have authority",
+            "This is a phishing email - ask the manager via a separate known channel (phone/in-person) to confirm they sent it",
+            "Check if the user's email account is compromised by reviewing login attempts",
+            "Both B and C are appropriate steps"
+          ],
+          "correctAnswer": 3,
+          "explanation": "CEO/manager impersonation is a classic BEC (Business Email Compromise) attack. ALWAYS verify via a separate channel. Additionally, check the account for compromise: review login activity (including IPs), check for forwarding rules (Settings > Forwarding), review sent items for suspicious emails. This is a security incident - treat it as such.",
+          "homelab": {
+            "title": "Simulate & Detect BEC Attack",
+            "description": "Create a test BEC scenario and practice incident response.",
+            "steps": [
+              "Set up test M365 tenant with two users: 'Manager' and 'Employee'",
+              "Use an external email account to impersonate Manager",
+              "Send email asking Employee to click malicious link or verify credentials",
+              "As Employee: identify red flags (sender domain mismatch, urgency pressure)",
+              "Report to admin - check Office 365 logs: Admin > Audit logs",
+              "Search for login from unusual location or forwarding rule creation",
+              "Review Manager's sent items to confirm they didn't send original request",
+              "Practice: reset Employee's password and re-verify account security"
+            ]
+          }
+        },
+        {
+          "id": "m365_002",
+          "difficulty": "intermediate",
+          "type": "mcq",
+          "question": "A user's OneDrive is taking up 1TB of their storage quota, and they can't upload new files. They claim they've deleted old files, but storage still shows full. What is the most likely cause?",
+          "options": [
+            "OneDrive cache on their PC needs clearing - delete C:\\Users\\Username\\AppData\\Local\\Microsoft\\OneDrive",
+            "Deleted files are in the Recycle Bin - deleted files stay in bin for 93 days and still count against quota",
+            "Their license downgraded - they're now sharing someone else's OneDrive",
+            "OneDrive version is outdated - update from Microsoft Store"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Deleted files remain in OneDrive Recycle Bin for 93 days and still consume quota. User must permanently delete from bin to free space. Check: Settings > Storage > View > Recycle Bin. Alternatively, check if files are in version history (previous versions also count toward quota). Clear both Recycle Bin and old versions.",
+          "homelab": {
+            "title": "OneDrive Storage Quota Management",
+            "description": "Manage OneDrive quotas and clean up deleted/versioned files.",
+            "steps": [
+              "Create M365 test account with 1TB quota",
+              "Upload large files to fill quota to 90%",
+              "Delete some files - verify they go to Recycle Bin",
+              "Upload new file - fails (quota full)",
+              "Check available storage: shows full despite deleted files",
+              "Empty Recycle Bin: Settings > Storage > Recycle Bin > Empty",
+              "Now upload same file again - succeeds",
+              "Check file versions: Settings > Version history - see accumulated versions taking space",
+              "Clean old versions: right-click file > Version history > delete old versions"
+            ]
+          }
+        },
+        {
+          "id": "m365_003",
+          "difficulty": "intermediate",
+          "type": "mcq",
+          "question": "Your organization uses Conditional Access policies to require MFA for risky sign-ins. A user's account is flagged as risky, but they're already using MFA. They get blocked. What should you investigate?",
+          "options": [
+            "The MFA they're using is too old - upgrade to Windows Hello",
+            "Azure AD Conditional Access evaluated the sign-in as risky (unusual location, anomalous behavior) - even with MFA, policies might block if risk level exceeds threshold",
+            "The user's license expired - MFA only works for active licenses",
+            "MFA failed silently - reset the user's password"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Conditional Access can be configured to block risky sign-ins even if MFA succeeds. Risk levels are evaluated by Azure AD Identity Protection based on: new location, impossible travel, anomalous token, malware linked, suspicious activity. Even with MFA, a high-risk sign-in might trigger a block policy. Admin must: 1) review risk details in Azure AD > Security > Risky sign-ins, 2) dismiss the risk if legitimate, 3) require user to change password from safe location.",
+          "homelab": {
+            "title": "Manage Risky Sign-Ins & Risk-Based CA Policies",
+            "description": "Set up risk-based Conditional Access and handle risky sign-ins.",
+            "steps": [
+              "Azure portal: Security > Conditional Access > create new policy",
+              "Condition: User risk = High",
+              "Action: Require password change",
+              "Simulate risky sign-in from unusual location using test account",
+              "Azure logs it as risky - user required to change password",
+              "User changes password from trusted location",
+              "Review: Azure AD > Risky sign-ins > dismiss the risk",
+              "User can now sign in normally"
+            ]
+          }
+        },
+        {
+          "id": "m365_004",
+          "difficulty": "foundational",
+          "type": "mcq",
+          "question": "A user's Teams status shows 'Away' even though they're actively using their PC. They have Teams set to auto-update status based on PC activity. What is most likely the issue?",
+          "options": [
+            "Teams app is running in the background, not in focus",
+            "Their activity status is disabled in Teams settings",
+            "Both A and B are possible - Teams only updates status while the app window is in focus; disabling activity updates also prevents status changes"
+          ],
+          "correctAnswer": 2,
+          "explanation": "Teams activity detection requires: 1) Teams app in focus (foreground), 2) Activity status enabled in Settings. If the user switches to another window, Teams goes inactive. Even if PC is in use, if Teams app isn't in focus, status won't update to Active. Alternative: user might have manually set status to 'Away', which overrides activity detection.",
+          "homelab": {
+            "title": "Troubleshoot Teams Activity Status",
+            "description": "Test Teams activity status detection and manual overrides.",
+            "steps": [
+              "Install Teams on Windows 10 VM",
+              "Set status to Auto-Detect in Settings > Privacy > Activity status",
+              "Open Teams, note status shows Active",
+              "Switch to another window (e.g., Notepad) - Teams status changes to Away after 5 minutes",
+              "Switch back to Teams - status returns to Active (may take up to 1 minute)",
+              "Manually set status to Do Not Disturb - status no longer auto-updates",
+              "Verify: Settings > Activity status shows toggle for 'Show my activity status'"
+            ]
+          }
+        },
+        {
+          "id": "m365_005",
+          "difficulty": "advanced",
+          "type": "mcq",
+          "question": "Your organization is investigating a suspected data exfiltration incident. You need to review which users accessed a sensitive SharePoint document and when. Where do you look?",
+          "options": [
+            "SharePoint document properties - shows Last Modified by and view history",
+            "Microsoft Purview Audit Log (Unified Audit Log) - search for document ID, user, and access events",
+            "User's Teams chat history - they might have mentioned accessing the document",
+            "Windows Event Viewer on the user's PC - logs local file access"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Purview Audit Log (formerly Office 365 Audit Log) is the authoritative source for M365 activity: file access, deletion, sharing, downloads. Filter by: object ID (SharePoint file), user, date range, activity (FileAccessed, FileDownloaded, SharingSet). Document properties only show 'Last Modified' user, not all access. This is critical for compliance and incident response.",
+          "homelab": {
+            "title": "Use Purview Audit Log for Incident Investigation",
+            "description": "Practice audit log analysis for access investigation.",
+            "steps": [
+              "M365 admin center: Audit logs (or Purview) > New Search",
+              "Create shared document in SharePoint > record Document ID",
+              "Have test users access document via different methods: browser, OneDrive sync, Teams share",
+              "Search audit logs: filter by Document ID",
+              "Review results: shows each user access, timestamp, action (FileAccessed, FileDownloaded)",
+              "Export CSV: analyze data in Excel, create timeline",
+              "Advanced: filter by 'Shared' events to see who shared document and with whom"
+            ]
+          }
+        },
+        {
+          "id": "m365_006",
+          "difficulty": "intermediate",
+          "type": "free_response",
+          "question": "A VP's email account was compromised 2 days ago. Attackers used it to send phishing emails to the entire company before being detected. Walk through your response: what data do you need to gather, what actions should be taken immediately, and how do you prevent future incidents?",
+          "modelAnswer": "Immediate: 1) Reset VP's password, invalidate all sessions (Azure AD > User > Sessions), enable MFA. 2) Determine breach window: review Azure audit logs for sign-in events (Risky sign-ins), identify first unauthorized access. 3) Check for forwarding rules: Exchange admin center > recipients > mailbox > Forwarding - delete any attacker-created rules. 4) Review sent items: period matching compromise window, delete phishing emails if possible (Recall). 5) Notify affected users: they received phishing from compromised account. 6) Revoke OAuth tokens: if attackers created app registrations. 7) Check for persistence: rule-based deletion rules, suspicious delegates, OOF rules. Prevention: 1) Mandate MFA for all users, especially VPs. 2) Enable Advanced Audit logging. 3) Deploy Defender for Office 365: phishing simulation, email filtering. 4) Set password expiration policies. 5) Implement conditional access: block legacy auth, require managed devices.",
+          "homelab": {
+            "title": "Simulate & Respond to Email Compromise",
+            "description": "Practice incident response for a compromised M365 account.",
+            "steps": [
+              "Create test VP account in M365",
+              "Create forwar rule simulating attacker: Set-Mailbox -Identity VP -ForwardingAddress attacker@external.com",
+              "Send phishing email from VP's account to test user",
+              "As admin: detect compromise via audit logs - search for Forwarding rule creation",
+              "Immediate response: Reset-UserPassword, Revoke-UserSessions, Remove forwarding rule",
+              "Check sent items: identify phishing email date range",
+              "Enable MFA: Set-MsolUser -UserPrincipalName VP -StrongAuthenticationRequirements",
+              "Review audit logs: create report of all actions taken during incident window"
+            ]
+          }
+        },
+        {
+          "id": "m365_007",
+          "difficulty": "intermediate",
+          "type": "mcq",
+          "question": "Your organization wants to prevent users from sharing files outside the company domain via SharePoint. You set up External Sharing controls. However, users are still sharing with external accounts via OneDrive 'Share Link' with no expiration. What is the issue?",
+          "options": [
+            "SharePoint and OneDrive sharing settings are separate - OneDrive sharing must also be restricted",
+            "Users have 'Share Link' permission, which bypasses external sharing restrictions",
+            "External sharing is domain-restricted, but 'Share Link' creates anonymous links that work anyway",
+            "All of the above - separate configuration + special handling needed"
+          ],
+          "correctAnswer": 3,
+          "explanation": "SharePoint and OneDrive external sharing are configured separately in M365 admin center. Additionally, 'Share Link' (anonymous sharing) can be restricted to specific settings: no anonymous links, or limited to specific expiration/permissions. Full control: 1) Org-level in SharePoint admin: Policies > External sharing, 2) Per-site/user in OneDrive settings, 3) Restrict Share Link type (allow only 'People you specify' or 'Specific people' links).",
+          "homelab": {
+            "title": "Lock Down OneDrive & SharePoint External Sharing",
+            "description": "Configure granular external sharing restrictions.",
+            "steps": [
+              "M365 admin center > SharePoint admin > Policies > External sharing",
+              "Set to 'Most restrictive': Only allow existing external users (no new external sharing)",
+              "OneDrive settings: also set to 'Most restrictive'",
+              "Enable: Require password for shared links, set expiration (e.g., 14 days)",
+              "Test: Try to create external share link from OneDrive - blocked if at 'Most restrictive'",
+              "Adjust to 'Anyone' with restrictions: allow anonymous links but require password and set 24-hour expiration",
+              "Test: Anonymous link works but only for 24 hours, requires password"
+            ]
+          }
+        },
+        {
+          "id": "m365_008",
+          "difficulty": "foundational",
+          "type": "mcq",
+          "question": "A user cannot add an on-premises resource to their Teams channel via an app/connector. The error is 'Authentication Failed: Invalid Tenant ID'. What is the likely cause?",
+          "options": [
+            "The on-premises server doesn't have internet access",
+            "The app wasn't registered in Azure AD with the correct tenant ID, or tenant ID in the app config is mismatched",
+            "Teams only works with cloud resources - on-premises apps are not supported",
+            "The user's license doesn't include 'App Connectors'"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Teams apps connecting to on-premises resources require Azure AD app registration with the correct tenant ID. If the app was registered in a different tenant, or the app's config has the wrong tenant ID, authentication fails. Fix: 1) Verify app registration in Azure AD > App registrations, 2) Confirm tenant ID in app settings matches your M365 tenant, 3) Check app permissions are granted (Redirect URIs must match Teams app URL).",
+          "homelab": {
+            "title": "Register On-Premises App with Azure AD for Teams",
+            "description": "Create and register an on-premises app connector for Teams.",
+            "steps": [
+              "Azure portal: App registrations > New registration > name 'Teams-OnPrem-App'",
+              "Get Tenant ID: Azure AD > Properties > Directory ID",
+              "Set Redirect URI: https://yourdomain.com/auth/callback",
+              "Create Client Secret: Certificates & secrets > New client secret",
+              "On-premises app config: add Tenant ID, Client ID, Client Secret",
+              "Teams admin center: Manage apps > Upload custom app",
+              "Test connection: add app to Teams channel > authenticate > should succeed now"
+            ]
+          }
+        }
+      ]
+    },
+    "azure": {
+      "displayName": "Azure / Cloud Infrastructure",
+      "icon": "🚀",
+      "color": "#0080d9",
+      "questions": [
+        {
+          "id": "azure_001",
+          "difficulty": "foundational",
+          "type": "mcq",
+          "question": "You're deploying a VM in Azure and need to choose between managed disks and unmanaged disks. What is the key advantage of managed disks?",
+          "options": [
+            "Unmanaged disks are more secure",
+            "Managed disks are simpler - Azure handles storage account creation, scaling, and redundancy automatically",
+            "Managed disks are cheaper than unmanaged",
+            "Unmanaged disks are only supported for Linux VMs"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Managed disks eliminate the need to manage storage accounts yourself. Azure handles: storage account provisioning, redundancy (LRS/GRS), scaling, snapshots. Unmanaged disks require you to create and manage storage accounts manually. Managed disks are now the default and recommended approach.",
+          "homelab": {
+            "title": "Deploy VM with Managed Disks",
+            "description": "Create an Azure VM with managed disks and configure snapshots.",
+            "steps": [
+              "Azure portal: Create resource > Virtual Machine",
+              "Basic tab: select managed disk automatically (default)",
+              "Disks tab: verify 'Managed disk' is selected, not 'Unmanaged'",
+              "Create VM, wait for deployment",
+              "In VM > Disks: verify disk shows 'Managed disk'",
+              "Create snapshot: Disks > Create Snapshot",
+              "Use snapshot to create new disk > attach to new VM",
+              "Verify: new VM has copy of original VM's data"
+            ]
+          }
+        },
+        {
+          "id": "azure_002",
+          "difficulty": "intermediate",
+          "type": "mcq",
+          "question": "You're designing an Azure network and need to connect an on-premises data center to Azure securely. Which technology is best?",
+          "options": [
+            "Internet-facing RDP endpoints with strong passwords",
+            "Azure VPN Gateway (Site-to-Site VPN) or ExpressRoute for dedicated private connection",
+            "Azure Virtual Network peering",
+            "Allow all traffic in Network Security Groups"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Site-to-Site VPN provides encrypted IPSec tunnel from on-premises to Azure. ExpressRoute is a dedicated private connection (more expensive but higher performance). Both are secure, enterprise-grade solutions. Virtual Network peering is for connecting Azure VNets, not on-premises. RDP endpoints are never secure for production.",
+          "homelab": {
+            "title": "Set Up Site-to-Site VPN to Azure",
+            "description": "Configure a VPN connection from simulated on-premises to Azure.",
+            "steps": [
+              "Azure: Create Virtual Network (10.0.0.0/16) and Gateway Subnet (10.0.255.0/27)",
+              "Create VPN Gateway (Route-based, standard SKU)",
+              "On-premises simulation: GNS3 router with local subnet 192.168.0.0/24",
+              "Create Local Network Gateway in Azure: represent on-premises network",
+              "Create VPN Connection: select VPN gateway and local network gateway",
+              "On GNS3 router: configure IPSec tunnel to Azure public IP",
+              "Test: ping from on-premises network to Azure VM - traffic goes through VPN tunnel"
+            ]
+          }
+        },
+        {
+          "id": "azure_003",
+          "difficulty": "intermediate",
+          "type": "free_response",
+          "question": "Your application needs to scale from 10 to 10,000 concurrent users. Explain how you'd use Azure autoscaling, load balancers, and geo-redundancy to handle this growth.",
+          "modelAnswer": "Architecture: 1) Application hosted on Azure App Service (PaaS) or VM Scale Sets (IaaS). 2) Azure Load Balancer or Application Gateway (Layer 7) distributes traffic across instances. 3) Azure Autoscale policy: CPU > 80% = scale out, CPU < 20% = scale in. Set min 2 instances, max 100. 4) Geo-redundancy: deploy App Service in 2+ regions (e.g., East US, West Europe), use Traffic Manager to route users to nearest region. 5) Database: Azure SQL with read replicas and failover groups. 6) Caching: Azure Cache for Redis to reduce database load. 7) CDN: Azure Front Door for edge caching. Monitoring: Application Insights tracks performance, alerts on errors. Cost: start with Standard tier, scale to Premium as needed. Total cost grows with usage but not linearly due to economies of scale.",
+          "homelab": {
+            "title": "Build Highly Available Multi-Region Azure App",
+            "description": "Deploy app with autoscaling and geo-redundancy.",
+            "steps": [
+              "Create App Service Plan (Standard tier) in East US",
+              "Create App Service in East US, deploy test app",
+              "Create App Service in West Europe region",
+              "Setup Traffic Manager: priority routing to East US, failover to West Europe",
+              "Configure Autoscale: Scale Up at 80% CPU, Scale Down at 20% CPU, min 2 instances, max 10",
+              "Load test using Apache JMeter: simulate 100+ concurrent users",
+              "Monitor: watch App Service scale out to 5-10 instances",
+              "Simulate East US failure: disable App Service, verify Traffic Manager fails over to West Europe",
+              "Review Application Insights metrics: response time, throughput, error rate"
+            ]
+          }
+        },
+        {
+          "id": "azure_004",
+          "difficulty": "foundational",
+          "type": "mcq",
+          "question": "You need to store sensitive data (passwords, API keys) that your Azure App Service will access at runtime. Where should you store these?",
+          "options": [
+            "In environment variables in the App Service configuration",
+            "In the application code (so it's always available)",
+            "Azure Key Vault - secrets are encrypted and accessed securely via managed identity",
+            "In a text file on the VM filesystem"
+          ],
+          "correctAnswer": 2,
+          "explanation": "Azure Key Vault is the secure way to manage secrets, certificates, and keys. App Service accesses Key Vault using Managed Identity (no credentials stored in code). This prevents secrets from being exposed in source control, logs, or configuration. Environment variables are better than code/files, but Key Vault is enterprise best practice.",
+          "homelab": {
+            "title": "Use Azure Key Vault with App Service",
+            "description": "Store secrets in Key Vault and access them from App Service.",
+            "steps": [
+              "Azure portal: Create Key Vault resource",
+              "Create secret: Name='DBPassword', Value='P@ssw0rd123'",
+              "Create App Service, enable Managed Identity: Settings > Identity > System assigned > On",
+              "Grant App Service access to Key Vault: Key Vault > Access Control > Add app service identity",
+              "In App Service code: use Azure SDK to fetch secret from Key Vault",
+              "Deploy app, test it can access secret",
+              "Monitor: Key Vault > Monitoring > see secret access logs"
+            ]
+          }
+        },
+        {
+          "id": "azure_005",
+          "difficulty": "advanced",
+          "type": "mcq",
+          "question": "You're using Azure DevOps to deploy your app. An attacker gains access to a developer's credentials and pushes malicious code to the main branch. How can you prevent this?",
+          "options": [
+            "Disable the developer account",
+            "Use branch policies: require pull request review, enforce code quality gates, enable signed commits",
+            "Move all code to private repositories (already done by default)",
+            "Use multi-factor authentication on the developer account"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Branch policies prevent direct pushes to main: require peer review, enforce build success, check for code coverage, require signed commits. Signed commits use GPG/certificate to verify the committer's identity - this prevents an attacker from impersonating the developer even with stolen credentials. MFA (Option D) is also important but doesn't prevent this specific attack if credentials are compromised.",
+          "homelab": {
+            "title": "Set Up Azure DevOps Branch Protection & Signed Commits",
+            "description": "Configure branch policies and signed commits to prevent malicious pushes.",
+            "steps": [
+              "Azure DevOps: Repositories > Branches",
+              "Select main branch > Branch policies",
+              "Enable: Require a minimum number of reviewers (set to 2)",
+              "Check: Prohibit most recent push by committers",
+              "Check: Enforce work item linking",
+              "Require: Successful build before merge",
+              "Test: try to push directly to main from test branch - blocked",
+              "Create pull request instead: requires 2 approvals to merge",
+              "For signed commits: Enable in repo settings > Require signed commits",
+              "Developers must set up GPG key to sign commits"
+            ]
+          }
+        },
+        {
+          "id": "azure_006",
+          "difficulty": "intermediate",
+          "type": "mcq",
+          "question": "Your Azure SQL Database is hitting performance limits during peak hours. Query execution times doubled in the past month. What should you check first?",
+          "options": [
+            "Immediately upgrade to a higher service tier",
+            "Review Query Performance Insights to identify slow queries, check DTU/vCore usage, and look for missing indexes",
+            "Restart the database - this clears cache and might improve performance",
+            "Disable all non-critical queries"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Query Performance Insights shows which queries consume the most resources. DTU usage shows if you're hitting capacity limits. Check for: missing indexes, N+1 queries, table scans on large tables. Only upgrade if actual bottleneck is insufficient compute/memory. Restarting only helps if there's a memory leak, which is rare.",
+          "homelab": {
+            "title": "Optimize Azure SQL Performance",
+            "description": "Identify and fix slow queries using Query Performance Insights.",
+            "steps": [
+              "Azure portal: SQL Database > Query Performance Insight",
+              "Identify top resource-consuming queries",
+              "Click on a slow query: see execution plan, suggest missing indexes",
+              "Review Table Sizes: if query scans 1M+ rows, likely needs index",
+              "Create index on frequently filtered columns: CREATE INDEX idx_status ON Orders(Status) WHERE Status = 'Pending'",
+              "Re-run query: execution time should drop significantly",
+              "Monitor DTU usage: if consistently above 80%, consider scaling up service tier"
+            ]
+          }
+        },
+        {
+          "id": "azure_007",
+          "difficulty": "intermediate",
+          "type": "free_response",
+          "question": "You're migrating a legacy on-premises SQL Server database to Azure SQL with 5TB of data. Walk through your migration strategy, including downtime considerations and validation steps.",
+          "modelAnswer": "Pre-migration: 1) Use Data Migration Assistant (DMA) to assess compatibility, identify schema/code differences. 2) Create target Azure SQL Database with appropriate service tier (estimate based on current workload). 3) Backup on-premises SQL database. 4) Main migration: 3 options - a) DMS (Azure Database Migration Service) for minimal downtime (continuous sync + cutover), b) Bulk copy (BCP/BACPAC) for faster load (downtime during cutover), c) Manual script migration for control. 5) DMS approach: Set up replication pipeline, continuously sync transactions, perform test failover, schedule maintenance window (2-4 hours), execute final sync and cutover. 6) Validation: Compare row counts (SELECT COUNT(*) on all tables), spot-check data integrity, run critical queries/reports, test application connectivity. 7) Rollback plan if issues found: keep on-premises DB online for N days post-cutover. 8) Cost: DMS charges based on size and time, Azure SQL charges by DTU usage.",
+          "homelab": {
+            "title": "SQL Server Migration to Azure SQL",
+            "description": "Practice migrating SQL database to Azure using DMA and DMS.",
+            "steps": [
+              "On-premises: Set up SQL Server 2019 instance with sample database (50GB simulated)",
+              "Azure: Create SQL Database (Standard S3 tier)",
+              "Download Data Migration Assistant: Run compatibility assessment",
+              "DMA identifies any blocking issues (usually minor schema differences)",
+              "Create backup of on-premises database: BACKUP DATABASE to .bak file",
+              "Use DMS: Create migration project, configure source/target",
+              "DMS starts continuous replication, syncs data",
+              "Perform test failover: verify application can connect to Azure SQL",
+              "Schedule cutover window, execute final sync",
+              "Validate: COUNT(*) on key tables match, run sample queries",
+              "Monitor: query performance in Query Performance Insight"
+            ]
+          }
+        }
+      ]
+    },
+    "secops": {
+      "displayName": "Security Operations",
+      "icon": "🛡️",
+      "color": "#ff3c6e",
+      "questions": [
+        {
+          "id": "sec_001",
+          "difficulty": "foundational",
+          "type": "mcq",
+          "question": "Your EDR flags this process chain: outlook.exe → powershell.exe → mshta.exe → net.exe 'user /add'. What is this attack chain most likely?",
+          "options": [
+            "A legitimate admin script; MITRE: T1053 Scheduled Task",
+            "Phishing email with malicious attachment executing multi-stage payload; MITRE techniques: T1566.001, T1059.001, T1218.005, T1136.001",
+            "A macro virus from a downloaded Office file",
+            "Both B and C are correct"
+          ],
+          "correctAnswer": 3,
+          "explanation": "This is a full kill chain: phishing (T1566/T1204) → malicious Office doc → macro spawns PowerShell (T1059.001) → PowerShell runs mshta.exe with HTA script (T1218.005 - LOLBin) → net.exe creates local admin account (T1136.001). Mshta is significant - it's a signed Windows binary that bypasses some policies. Response: isolate immediately, check if net user /add succeeded, check for other persistence (scheduled tasks, registry run keys).",
+          "homelab": {
+            "title": "Process Chain Analysis in EDR",
+            "description": "Simulate a malicious process chain and observe how EDR captures the kill chain.",
+            "steps": [
+              "Lab environment: Windows 10 VM with Windows Defender or Defender for Endpoint",
+              "Create innocent test: Create PowerShell script that spawns Notepad (similar chain structure)",
+              "Observe in Event Viewer: Security log captures process creation (Event 1)",
+              "View parent-child relationships: wmic process list brief /format:csv",
+              "Advanced: Enable Sysmon for detailed process telemetry",
+              "Create mshta.exe process (non-malicious): mshta.exe C:\\test.hta",
+              "Review telemetry showing mshta spawned by powershell",
+              "Study MITRE ATT&CK mapping: map real processes to T-codes"
+            ]
+          }
+        },
+        {
+          "id": "sec_002",
+          "difficulty": "advanced",
+          "type": "free_response",
+          "question": "During threat hunting, you find an unfamiliar process 'svchost32.exe' running from C:\\Users\\Public\\svchost32.exe with network connections to 45.77.x.x:443. What is the technique and your immediate steps?",
+          "modelAnswer": "Masquerading (T1036) - isolate the host immediately via EDR, kill the process BEFORE taking memory dump, take a memory dump (malware decrypts itself in RAM), hash the binary (SHA256) and check VirusTotal, identify persistence mechanism (autoruns, scheduled tasks, registry Run keys). Check C2 IP in threat intel. Search for same hash on all endpoints. This is active compromise - isolate first, investigate second. Don't let it phone home or spread.",
+          "homelab": {
+            "title": "Malware Analysis Lab - Process Masquerading",
+            "description": "Study how malware masquerades as legitimate processes and practice detection.",
+            "steps": [
+              "Isolated lab VM: Windows 10 with no network access initially",
+              "Download eicar.com test file (safe antivirus test sample)",
+              "Rename to svchost32.exe in Users\\Public",
+              "Launch with limited permissions (non-admin)",
+              "Observe in Event Viewer: process creation event shows fake svchost path",
+              "Use Get-FileHash to compute SHA256: Get-FileHash svchost32.exe",
+              "Check VirusTotal (online - requires uploading hash or file hash submission)",
+              "Use Procmon from Sysinternals to see file/registry access by the process",
+              "Compare legitimate svchost.exe (C:\\Windows\\System32) vs masqueraded version"
+            ]
+          }
+        },
+        {
+          "id": "sec_003",
+          "difficulty": "intermediate",
+          "type": "mcq",
+          "question": "An attacker performs a Kerberoasting attack, extracting and cracking service account password hashes. Why is this a risk, and how do you defend against it?",
+          "options": [
+            "Kerberoasting only affects domain users, not service accounts",
+            "Service account password hashes can be cracked offline if weak, giving attacker lateral movement and persistence; defenses: use strong passwords (30+ chars), enable MFA on sensitive accounts, use managed service accounts (MSA)",
+            "Kerberoasting is just a reconnaissance attack with no real impact",
+            "The only defense is to disable Kerberos - use NTLM instead"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Kerberoasting exploits the fact that SPNs (Service Principal Names) request TGS tickets that can be extracted and cracked offline. If the service account has a weak password, attackers gain credentials to move laterally. Defenses: 1) Enforce strong passwords on service accounts (30+ characters, frequent rotation), 2) Use Group Managed Service Accounts (gMSA) - Azure AD rotates password automatically, 3) Monitor for TGS requests (Event 4769), 4) Segregate service account permissions.",
+          "homelab": {
+            "title": "Simulate & Defend Against Kerberoasting",
+            "description": "Extract TGS tickets and practice cracking/defense strategies.",
+            "steps": [
+              "Lab DC: Create service account 'SqlService' with weak password 'Password123'",
+              "Register SPN: setspn -a HTTP/SqlServer.lab.local SqlService",
+              "From attacker VM: Use Rubeus or Mimikatz to request TGS: Rubeus kerberoast",
+              "Extract ticket, save to .kirbi file",
+              "Attempt to crack offline: hashcat on .kirbi file",
+              "As admin: Check for this attack in Event Viewer > Security > Event 4769 (TGS requested)",
+              "Defense: Create Group Managed Service Account (gMSA) instead",
+              "Set strong password: Add-KdsRootKey, New-ADServiceAccount SqlService -Name SqlService",
+              "Re-run kerberoast - gMSA password automatically rotated, can't be cracked as easily"
+            ]
+          }
+        },
+        {
+          "id": "sec_004",
+          "difficulty": "intermediate",
+          "type": "mcq",
+          "question": "Your organization's credentials have appeared in a dark web leak. What is your immediate action?",
+          "options": [
+            "Monitor closely to see if they're actually being used",
+            "Assume breach: reset all affected credentials immediately, enable MFA, monitor for unauthorized access",
+            "Deny breach publicly - it's likely false",
+            "Wait for the attacker to contact you"
+          ],
+          "correctAnswer": 1,
+          "explanation": "If credentials appear in a breach database, assume they're compromised. Immediate actions: 1) Reset all affected accounts (sync AD to M365, Git, VPN, etc.), 2) Enable MFA, 3) Check logs for unauthorized access using these credentials (failed login attempts, unusual locations), 4) Notify affected users, 5) Monitor for further suspicious activity. Time is critical - attackers move fast.",
+          "homelab": {
+            "title": "Simulate Breach Response & Credential Reset",
+            "description": "Practice rapid response to compromised credentials.",
+            "steps": [
+              "Simulate breach: assume user password 'user@domain.com:password123' leaked",
+              "Check login attempts: Azure AD > Risky sign-ins > look for failed/unusual attempts",
+              "Create incident ticket documenting discovery time",
+              "Reset affected user password: Reset-UserPassword -UserPrincipalName user@domain.com",
+              "Force sign-out of all sessions: Revoke-UserSessions -UserPrincipalName user@domain.com",
+              "Enable MFA: Set-MsolUser -UserPrincipalName user@domain.com -StrongAuthenticationRequirements",
+              "Review audit logs for suspicious activity using compromised credential",
+              "Send notification to user with new password and MFA setup instructions"
+            ]
+          }
+        },
+        {
+          "id": "sec_005",
+          "difficulty": "advanced",
+          "type": "free_response",
+          "question": "Your company wants to implement a Zero Trust architecture. Explain the principles of Zero Trust, how it differs from traditional perimeter security, and what technologies you'd implement.",
+          "modelAnswer": "Zero Trust: 'Never trust, always verify' - no implicit trust based on location/network. Traditional: trust everything inside firewall, anything outside is blocked. Zero Trust: verify EVERY access request. Principles: 1) Verify identity (strong MFA), 2) Verify device (MDM, health checks), 3) Verify resource (least privilege), 4) Micro-segmentation (don't trust lateral movement). Technologies: 1) Conditional Access (Azure, Okta) - block if risk detected, 2) EDR (detect lateral movement), 3) Network segmentation (VLANs, firewalls), 4) Device compliance (MDM - only healthy devices access resources), 5) Privileged Access Management (PAM - vault for admin credentials), 6) Monitoring/logging (SIEM). Example flow: User → MFA → Device health check → Conditional Access policy → Access to resource → Session monitoring. Cost: higher initial investment (tools, training) but reduces breach impact significantly.",
+          "homelab": {
+            "title": "Design & Implement Zero Trust Lab",
+            "description": "Build a Zero Trust environment with conditional access and micro-segmentation.",
+            "steps": [
+              "Azure AD: Set up Conditional Access policies (MFA required, device compliant)",
+              "MDM (Intune): Enroll test devices, mark as compliant only if Windows Defender enabled",
+              "Create test resources: File share, app, database",
+              "Test 1: Non-compliant device tries to access resource - blocked",
+              "Test 2: Compliant device + MFA passes - access granted",
+              "Network micro-segmentation: Create VLANs for Workstations (10.1.0.0/24), Servers (10.2.0.0/24), IoT (10.3.0.0/24)",
+              "Firewall rules: Workstation → Server allowed, but Workstation ↔ Workstation BLOCKED (micro-segmentation)",
+              "Monitoring: Set up SIEM to log all access attempts, even successful ones",
+              "Incident: Simulate compromised workstation - even if it's on corp network, it can't reach servers"
+            ]
+          }
+        },
+        {
+          "id": "sec_006",
+          "difficulty": "intermediate",
+          "type": "mcq",
+          "question": "Your organization's security policy requires encryption of data at rest and in transit. However, performance is critical. How do you balance security and performance?",
+          "options": [
+            "Encryption always has huge overhead - disable it to maximize performance",
+            "Use hardware acceleration (AES-NI), choose efficient algorithms (AES-256), encrypt only sensitive data, optimize code",
+            "Encrypt only in transit, not at rest - this gives 80% of security with no performance impact",
+            "Use weak encryption (40-bit) for performance"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Modern encryption is efficient: AES-NI hardware acceleration brings overhead to < 5%. Strategy: 1) Encrypt sensitive data at rest (PII, secrets), not everything, 2) Use TLS 1.3 for in-transit (faster than 1.2), 3) Enable hardware acceleration, 4) Optimize code to avoid re-encryption. If performance is still critical, use caching (encrypt data once, cache decrypted version with TTL).",
+          "homelab": {
+            "title": "Performance Testing: Encryption Overhead",
+            "description": "Benchmark encryption performance and optimize.",
+            "steps": [
+              "Test machine: Windows 10/11 with AES-NI CPU (most modern CPUs have this)",
+              "Baseline: Encrypt 1GB file with AES-256 using PowerShell/Windows built-in",
+              "Measure time: With software encryption ~30 seconds",
+              "Enable hardware acceleration: Most crypto libraries auto-detect AES-NI",
+              "Re-measure: With AES-NI ~2-3 seconds (10x faster)",
+              "Network test: TLS 1.3 vs 1.2 on HTTPS connection",
+              "TLS 1.3 faster due to 1-RTT handshake vs 1.2's 2-RTT",
+              "Caching test: encrypt sensitive data once, cache result, measure throughput increase"
+            ]
+          }
+        }
+      ]
+    },
+    "scripting": {
+      "displayName": "PowerShell / Scripting",
+      "icon": "⚙️",
+      "color": "#00d9ff",
+      "questions": [
+        {
+          "id": "script_001",
+          "difficulty": "foundational",
+          "type": "mcq",
+          "question": "You write a PowerShell script to bulk disable users from a CSV file. The script fails silently on some users and doesn't report errors. What should you add to catch and report failures?",
+          "options": [
+            "Use -ErrorAction SilentlyContinue to suppress errors",
+            "Wrap commands in Try-Catch blocks, use Write-Error to report, and continue processing remaining users",
+            "Add -Verbose flag to see what's happening",
+            "Use -ErrorAction Stop to stop on first error"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Try-Catch handles errors without stopping the script. Loop through each user, wrap Disable-ADUser in Try-Catch, log errors to file or output. This way, if user 5 fails, users 6-100 still process. Write-Error logs details (reason: user doesn't exist, already disabled, etc.).",
+          "homelab": {
+            "title": "Error Handling in Bulk Operations",
+            "description": "Write a script to bulk disable users with comprehensive error handling.",
+            "steps": [
+              "Create CSV: users.csv with columns: SamAccountName, Reason",
+              "Write script: import CSV, loop through each user",
+              "Wrap Disable-ADUser in Try-Catch:",
+              "  Try { Disable-ADUser -Identity $user -Confirm:$false }",
+              "  Catch { Write-Error \"Failed to disable $user : $_\" }",
+              "Log results: successful disables and errors to output file",
+              "Run script: Test with mix of valid/invalid users",
+              "Review output: shows which users succeeded, which failed and why"
+            ]
+          }
+        },
+        {
+          "id": "script_002",
+          "difficulty": "intermediate",
+          "type": "free_response",
+          "question": "Write a PowerShell script that monitors a directory for new files, copies them to a backup location, and renames them with a timestamp. The script should run as a scheduled task and log all actions.",
+          "modelAnswer": "Script outline: 1) Set variables: $sourceDir, $backupDir, $logFile. 2) Check if source dir exists, create if needed. 3) Get all files modified in last hour: Get-ChildItem $sourceDir -Filter *.* | Where {$_.LastWriteTime -gt (Get-Date).AddHours(-1)}. 4) For each file: generate timestamped name (e.g., filename_20240422_143022.ext), copy to backup dir. 5) Log each action: Add-Content $logFile -Value \"$(Get-Date) - Copied $($file.Name) to $backupDir\". 6) Error handling: Catch copy failures, log errors, don't stop script. 7) Scheduled task: Create via Task Scheduler to run every hour, with account that has file permissions. 8) Output: log shows all copy attempts, successes, and failures.",
+          "homelab": {
+            "title": "Build Directory Monitor & Backup Script",
+            "description": "Create a production-ready monitoring and backup solution.",
+            "steps": [
+              "Create test directories: C:\\SourceFiles, C:\\BackupFiles, logs folder",
+              "Write script (Monitor-Files.ps1) with:",
+              "  - Get new files from source directory",
+              "  - Rename with timestamp: $timestamp = Get-Date -Format 'yyyyMMdd_HHmmss'",
+              "  - Copy to backup: Copy-Item $file -Destination \"$backupDir\\$($file.BaseName)_$timestamp$($file.Extension)\"",
+              "  - Logging: each action timestamped in log file",
+              "  - Error handling: try-catch around copy operation",
+              "Test locally: run script, create test files, verify backup copies with timestamps",
+              "Create scheduled task: powershell.exe -File C:\\Scripts\\Monitor-Files.ps1",
+              "Set to run hourly, log output to file",
+              "Verify: scheduled task logs show successful executions"
+            ]
+          }
+        },
+        {
+          "id": "script_003",
+          "difficulty": "intermediate",
+          "type": "mcq",
+          "question": "You need to loop through 10,000 users and perform an action on each. Using a simple foreach loop causes the script to run very slowly. What optimization technique should you use?",
+          "options": [
+            "Switch to Python - PowerShell is too slow for large datasets",
+            "Use -Parallel parameter in foreach loop to process multiple users simultaneously",
+            "Use Write-Progress to show progress faster",
+            "Nothing - 10,000 users is fast in PowerShell"
+          ],
+          "correctAnswer": 1,
+          "explanation": "PowerShell 7+ supports -Parallel on foreach loops, which uses multiple threads. Example: foreach -Parallel ($user in $users) { ... }. This dramatically speeds up I/O-bound operations (like AD queries). However, be careful: threads can exceed resource limits, so use -ThrottleLimit to limit concurrent threads (default 5). For PS 5.1 or slower operations, use Invoke-Parallel module or .NET threading.",
+          "homelab": {
+            "title": "Optimize Script Performance with Parallel Processing",
+            "description": "Compare sequential vs parallel processing for bulk operations.",
+            "steps": [
+              "Create 1000 test objects (simulating users)",
+              "Script 1: Sequential loop - measure time (5-10 minutes likely)",
+              "  foreach ($item in $items) { Get-ADUser $item }",
+              "Script 2: Parallel loop - measure time (1-2 minutes)",
+              "  foreach -Parallel ($item in $items) { Get-ADUser $item }",
+              "Add throttle limit to prevent resource exhaustion:",
+              "  foreach -Parallel -ThrottleLimit 10 ($item in $items) { ... }",
+              "Compare execution times - parallel is 5-10x faster",
+              "Monitor Task Manager: parallel uses multiple threads"
+            ]
+          }
+        },
+        {
+          "id": "script_004",
+          "difficulty": "advanced",
+          "type": "mcq",
+          "question": "Your script creates a large number of AD users in a loop. Performance drops significantly after creating 500+ users. What is the likely cause and how do you fix it?",
+          "options": [
+            "AD database is full - archive old users first",
+            "AD replication is slow - you need a second DC",
+            "Insufficient throttling/batching - you're overwhelming the DC with requests; use batching or add delays between requests",
+            "PowerShell has a hardcoded 500-user limit"
+          ],
+          "correctAnswer": 2,
+          "explanation": "Creating many AD objects rapidly can overwhelm the DC. Fix: 1) Add Start-Sleep between creations (e.g., -MilliSeconds 100), 2) Batch operations (create 50 users, wait, create 50 more), 3) Use Invoke-Command with -HideComputerName to batch at DC level, 4) Monitor DC performance (CPU, disk I/O). The 500-user threshold is often a performance cliff, not a limit.",
+          "homelab": {
+            "title": "Batch Processing for Bulk AD Operations",
+            "description": "Optimize bulk user creation with batching and throttling.",
+            "steps": [
+              "Script 1: Create users rapidly (no throttling)",
+              "  for ($i=1; $i -le 1000; $i++) { New-ADUser -Name \"User$i\" }",
+              "Monitor DC: CPU spikes, memory usage high after ~500 users",
+              "Script 2: Add batching with delay",
+              "  for ($i=1; $i -le 1000; $i++) { New-ADUser -Name \"User$i\"; Start-Sleep -Milliseconds 50 }",
+              "Execution time increases but DC stays healthy",
+              "Script 3: Batch at DC level",
+              "  Invoke-Command -ComputerName DC01 -ScriptBlock { foreach ($user in $userList) { New-ADUser ... } }",
+              "Compare: Script 3 is fastest because DC handles all creations locally"
+            ]
+          }
+        },
+        {
+          "id": "script_005",
+          "difficulty": "foundational",
+          "type": "mcq",
+          "question": "You want to secure a PowerShell script that handles passwords. You hardcoded the admin password in the script file as plain text. What's the security issue and the fix?",
+          "options": [
+            "No issue - only admins can read the script",
+            "Plain text passwords can be found in source control, logs, backups - use secure credential storage (Get-Credential, Azure Key Vault, or pass as parameter)",
+            "Passwords in scripts are fine as long as the file is in C:\\Windows",
+            "Switch to batch files - PowerShell is insecure"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Never hardcode passwords in scripts. Risks: source control history, backup exposure, process memory dumps, log files. Fix: 1) Use Get-Credential to prompt user for password at runtime, 2) Store in Key Vault (Azure) or Credential Manager (Windows), 3) Pass as parameter with SecureString, 4) Use service accounts with managed credentials.",
+          "homelab": {
+            "title": "Secure Password Handling in Scripts",
+            "description": "Refactor script to securely handle credentials.",
+            "steps": [
+              "Bad script: $password = 'P@ssw0rd123'; $cred = New-Object -TypeName pscredential -ArgumentList 'admin', ($password | ConvertTo-SecureString -AsPlainText -Force)",
+              "Good script option 1: $cred = Get-Credential (prompts user)",
+              "Good script option 2: Store in Windows Credential Manager",
+              "  cmdkey /add:vault /user:admin /pass:P@ssw0rd123",
+              "  $cred = Get-StoredCredential -Target vault",
+              "Good script option 3: Use Azure Key Vault (for cloud scenarios)",
+              "  $secret = Get-AzKeyVaultSecret -VaultName myVault -Name password",
+              "Test: run script, verify no plain-text passwords in process memory"
+            ]
+          }
+        }
+      ]
+    },
+    "emailsecurity": {
+      "displayName": "Email Security / Exchange",
+      "icon": "📧",
+      "color": "#ff6b00",
+      "questions": [
+        {
+          "id": "email_001",
+          "difficulty": "foundational",
+          "type": "mcq",
+          "question": "Your Exchange server receives an email from 'ceo@company.com' asking an employee to wire $100,000 to an external account. The email appears legitimate. What is this attack and what should you do?",
+          "options": [
+            "This is a legitimate CEO request - process it",
+            "Business Email Compromise (BEC) / CEO Fraud - verify via phone with CEO using a known number, never call the email sender",
+            "Phishing - delete the email",
+            "Your mail server has been hacked - shut it down"
+          ],
+          "correctAnswer": 1,
+          "explanation": "BEC is one of the costliest attacks. Email appears to come from trusted sender (spoofed) or account is compromised. NEVER reply to the email or call the number in the signature. Instead: 1) Call the CEO directly using known phone number, 2) Check email headers for spoofing (From vs Return-Path), 3) Look for urgent/pressure language, 4) Report to security team, 5) Check if CEO's account was compromised (review sent items, forwarding rules).",
+          "homelab": {
+            "title": "Detect & Respond to BEC Attack",
+            "description": "Identify BEC red flags and practice incident response.",
+            "steps": [
+              "Create test email: appear to come from CEO@company.com (external account spoofing)",
+              "Content: urgent wire transfer request with pressure",
+              "Receive as employee - identify red flags (urgency, unusual request, external sender)",
+              "As admin: Check email headers - analyze From, Return-Path, SPF/DKIM/DMARC",
+              "If CEO's account compromised: check for forwarding rules, suspicious logins",
+              "In Exchange: Transport rules to block external emails spoofing internal addresses",
+              "Result: email blocked before reaching inbox"
+            ]
+          }
+        },
+        {
+          "id": "email_002",
+          "difficulty": "intermediate",
+          "type": "mcq",
+          "question": "You want to prevent users from forwarding emails outside the company domain via Outlook rules. However, users are bypassing this by forwarding to a personal email, then forwarding externally. How do you prevent this?",
+          "options": [
+            "Disable mail forwarding entirely - no exceptions",
+            "Allow only specific forwarding rules at the transport level, audit forwarding rules, and block at the mailbox level",
+            "Users can't bypass this - it's not possible",
+            "Monitor user mailboxes manually"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Multi-layered approach: 1) Transport Rule in Exchange: block forwarding to external domains, 2) Mailbox rule audit: New-InboxRule can be restricted via policy, 3) Conditional Access: block file downloads from risky apps, 4) DLP (Data Loss Prevention): flag/block emails with sensitive data going external, 5) Audit forwarding: review Get-MailboxAutoReplyConfiguration and forwarding settings regularly.",
+          "homelab": {
+            "title": "Prevent Email Forwarding Abuse",
+            "description": "Configure transport rules and policies to prevent unauthorized forwarding.",
+            "steps": [
+              "Exchange admin center: Mail flow > Rules",
+              "Create rule: 'Block External Forwarding'",
+              "Condition: Message property > Forward to > External recipient",
+              "Action: Reject the message with notification",
+              "Test: Create test mailbox, try to set up forwarding rule to personal email - blocked",
+              "Audit existing rules: Get-InboxRule -Mailbox * | Where {$_.ForwardTo -like '*@external.com'}",
+              "Review mailbox forwarding: Get-Mailbox -ResultSize Unlimited | Get-MailboxAutoReplyConfiguration",
+              "Alert on new forwarding: audit logs trigger alert when forwarding rule created"
+            ]
+          }
+        },
+        {
+          "id": "email_003",
+          "difficulty": "intermediate",
+          "type": "free_response",
+          "question": "Your organization experiences a ransomware attack via email. An employee clicked a malicious link that downloaded ransomware, encrypting hundreds of files on the file server. Walk through incident response: containment, investigation, and recovery.",
+          "modelAnswer": "Incident Response: 1) CONTAINMENT (immediate): Isolate infected machine + file server from network. Disconnect RDP/remote access. 2) Investigation: Check email logs (Unified Audit Log) - identify which employee, when, link details. Review EDR logs for process chain (outlook.exe → browser → malware.exe). Check file server for encryption timestamp - determine attack scope. 3) Ransom? No. Check backups. 4) Recovery: Restore file server from backup (pre-encryption), verify backup integrity before restoring. 5) Remediation: Reset affected user's password, scan machine with Malwarebytes, update endpoint protection. 6) Organization-wide: Disable macro execution (GPO), require ASLR/DEP, deploy EDR agent to all machines, email user education. 7) Root cause: Weak email filtering allowed malicious link. Deploy Defender for Office 365 with Advanced Threat Protection (ATP). 8) Testing: restore backup to test machine first, verify data integrity before production restore.",
+          "homelab": {
+            "title": "Ransomware Incident Response Lab",
+            "description": "Simulate ransomware attack, investigate, and practice recovery.",
+            "steps": [
+              "Lab network: file server, workstation, EDR agent installed",
+              "Simulate attack: Download eicar test file (safe sample), simulate ransomware process chain",
+              "CONTAINMENT: Manually isolate workstation, check file server replication",
+              "INVESTIGATION: Review Event Viewer for suspicious process creation",
+              "Identify: Which user, which file, exact timestamp",
+              "Create timeline: Track attack progression through logs",
+              "RECOVERY: Restore file server from backup snapshot (pre-attack)",
+              "Verify: Check file integrity post-restore",
+              "REMEDIATION: Update EDR signatures, deploy email filter rules",
+              "Post-incident: Create runbook documenting this exact scenario"
+            ]
+          }
+        },
+        {
+          "id": "email_004",
+          "difficulty": "advanced",
+          "type": "mcq",
+          "question": "Your organization needs to comply with GDPR. An employee deletes a client's email from their mailbox. Regulators ask to see the email - it's gone from Outlook and Deleted Items. How can you recover it, and what is your retention strategy?",
+          "options": [
+            "You can't recover deleted emails - privacy requires permanent deletion",
+            "Use in-place hold / litigation hold to preserve email, then use eDiscovery to search and recover",
+            "Restore from backup tape - retention strategy should align with regulatory requirements",
+            "Both B and C are correct"
+          ],
+          "correctAnswer": 3,
+          "explanation": "Legal hold / in-place hold preserves emails even after deletion, critical for GDPR (right to access) and litigation. eDiscovery can search held mailboxes to recover deleted emails. Retention policy should be: 1) Establish regulatory requirements (GDPR = up to 3 years for contracts), 2) Set mailbox retention (Exchange retention policy), 3) Use legal hold when needed, 4) Backup for disaster recovery (not compliance). This balances privacy (deletion when retention expires) with compliance (access when required).",
+          "homelab": {
+            "title": "Implement Email Retention & eDiscovery",
+            "description": "Set up retention policies and practice eDiscovery for compliance.",
+            "steps": [
+              "Exchange admin center: Retention policies > Create policy",
+              "Set retention: 3 years for business emails, 1 year for personal",
+              "Create legal hold: Security & Compliance > eDiscovery > Create case",
+              "Add mailbox to hold: all emails preserved indefinitely",
+              "Delete email from user mailbox - confirm it's gone from Outlook",
+              "Use eDiscovery Search: search for keywords, date range, sender",
+              "Results show 'deleted' email is still recoverable",
+              "Export results to PST for review",
+              "Release hold when not needed - respects retention policy"
+            ]
+          }
+        }
+      ]
+    },
+    "architecture": {
+      "displayName": "IT Architecture & Strategy",
+      "icon": "🏗️",
+      "color": "#c084fc",
+      "questions": [
+        {
+          "id": "arch_001",
+          "difficulty": "intermediate",
+          "type": "mcq",
+          "question": "Your company is deciding between on-premises infrastructure and cloud (SaaS/IaaS). What are the key trade-offs you should evaluate?",
+          "options": [
+            "Cloud is always cheaper",
+            "Evaluate: capital expenditure vs operational expenditure, control vs managed services, compliance requirements, scalability needs, vendor lock-in, security responsibility",
+            "On-premises is more secure - never use cloud",
+            "The choice doesn't matter - they're identical"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Trade-offs: CapEx (on-prem: buy hardware upfront) vs OpEx (cloud: pay-as-you-go). Control (on-prem: full control, more work) vs managed (cloud: less management, less control). Compliance (some orgs require on-prem due to data residency). Scalability (cloud scales instantly, on-prem needs planning). Vendor lock-in (cloud services are harder to migrate out of). Security responsibility (cloud: shared responsibility, on-prem: your responsibility). Each organization's needs differ.",
+          "homelab": {
+            "title": "Compare On-Prem vs Cloud Architecture",
+            "description": "Build both on-prem and cloud setups, compare cost/complexity.",
+            "steps": [
+              "On-prem: Set up server, backup, redundancy, cooling (estimate costs)",
+              "Cloud: Set up equivalent on Azure App Service, SQL Database, Backup Vault",
+              "Compare 3-year costs: on-prem (hardware + electricity + support) vs cloud (subscription)",
+              "Compare management: on-prem (patches, updates, monitoring) vs cloud (Azure handles most)",
+              "Scenario: traffic triples - on-prem needs new hardware (2 weeks), cloud scales in minutes",
+              "Scenario: move to new location - on-prem needs new site, cloud just sign new region"
+            ]
+          }
+        },
+        {
+          "id": "arch_002",
+          "difficulty": "advanced",
+          "type": "free_response",
+          "question": "Design an IT architecture for a growing startup (currently 50 employees, planning to 1000+ in 5 years). Consider infrastructure, security, user management, disaster recovery, and budget constraints.",
+          "modelAnswer": "Year 1-2 (50-150 employees): Cloud-first approach - minimal on-prem. Infrastructure: Microsoft 365 (teams, email, docs), Azure (if custom app needed), small local NAS for file backup. User Management: Azure AD (directory, SSO), Conditional Access. Security: MFA on all accounts, basic EDR/antivirus, email filtering. Budget: ~$200/employee/year. DR: geo-redundant backups. Year 3-4 (150-500 employees): Add complexity - hybrid. Infrastructure: keep cloud + add hybrid identity sync, on-prem Exchange if email compliance needed. Security: advance to Zero Trust, implement PAM (privileged access). Budget: ~$300-400/employee/year. Year 5+ (500-1000+): Enterprise. Infrastructure: multi-region Azure, on-prem datacenter for compliance, VPN/ExpressRoute for integration. Security: SIEM, threat intelligence, advanced analytics. Budget: ~$500+/employee/year. Cost growth is sub-linear due to economies of scale. Key: start simple, add automation as you grow. Avoid over-engineering early (technical debt vs business velocity tradeoff).",
+          "homelab": {
+            "title": "Architect Scalable Startup Infrastructure",
+            "description": "Design phased growth from 50 to 1000 employees.",
+            "steps": [
+              "Phase 1: Set up M365 tenant, basic Azure AD, Teams, 365 apps",
+              "Phase 1 security: MFA, basic Intune MDM",
+              "Phase 1 budget: estimate per-employee costs",
+              "Phase 2 (200 employees): Add hybrid identity (on-prem AD sync to Azure AD)",
+              "Phase 2 security: Conditional Access policies, advanced threat protection",
+              "Phase 3 (500 employees): On-prem infrastructure - file server, Exchange hybrid",
+              "Phase 3 security: PAM vault for admin accounts, EDR on all endpoints",
+              "Phase 4 (1000+ employees): Multi-region architecture, SIEM/SOC",
+              "Document: cost per phase, technical decisions, rationale"
+            ]
+          }
+        },
+        {
+          "id": "arch_003",
+          "difficulty": "intermediate",
+          "type": "mcq",
+          "question": "A critical business system goes down, and your disaster recovery plan hasn't been tested in 2 years. What is the primary risk?",
+          "options": [
+            "You have backups - recovery is guaranteed to work",
+            "Untested DR plans often fail when needed - RTO/RPO targets may not be met, data may be corrupt, recovery procedures may have errors",
+            "DR testing is nice but not critical",
+            "You should never document DR plans - it's a security liability"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Untested disaster recovery is worse than no DR - it gives false confidence. Common failures: 1) Backup corrupt, 2) Recovery takes longer than RTO target, 3) Restored data is stale (exceeds RPO), 4) Documentation is outdated, 5) Key personnel have left. Best practice: test DR quarterly, document results, update runbooks annually.",
+          "homelab": {
+            "title": "Implement & Test Disaster Recovery",
+            "description": "Create DR plan, test failover, and document procedures.",
+            "steps": [
+              "Backup setup: daily incremental + weekly full backup to separate location",
+              "DR Plan document: RTO (recovery time = 4 hours), RPO (data loss = 1 hour)",
+              "Test 1: Restore to test VM - measure actual time vs RTO target",
+              "If actual > RTO: identify bottleneck (network speed, VM provisioning, etc.)",
+              "Test 2: Failover critical app - verify it works on restored system",
+              "Test 3: Data integrity - spot-check key data is consistent",
+              "Document: actual times, issues encountered, resolutions",
+              "Quarterly retesting: ensure procedures stay current"
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
