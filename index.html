@@ -3,247 +3,151 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SKILLS AUDIT v2.1 - IT & Cybersecurity Assessment</title>
+<title>SKILLS AUDIT v2.2 - IT & Cybersecurity Assessment</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap');
 
 :root {
---bg: #08090d;
---surface: #0e0f16;
---surface2: #14151e;
---surface3: #1a1b26;
---border: #232438;
---border2: #2e3050;
---accent: #00e5ff;
---accent2: #ff3c6e;
---accent3: #b8ff57;
---accent4: #ffaa00;
---accent5: #c084fc;
---text: #e8e8f2;
---text2: #a0a0c0;
---muted: #5a5a78;
+  --bg: #08090d;
+  --surface: #0e0f16;
+  --surface2: #14151e;
+  --surface3: #1a1b26;
+  --border: #232438;
+  --border2: #2e3050;
+  --accent: #00e5ff;
+  --accent2: #ff3c6e;
+  --accent3: #b8ff57;
+  --accent4: #ffaa00;
+  --accent5: #c084fc;
+  --text: #e8e8f2;
+  --text2: #a0a0c0;
+  --muted: #5a5a78;
 }
 
-/* ─── LIGHT MODE ─── */
 body.light-mode {
---bg: #f5f5f7;
---surface: #ffffff;
---surface2: #f0f0f3;
---surface3: #e5e5e8;
---border: #d0d0d5;
---border2: #c0c0c8;
---accent: #0080a0;
---accent2: #c41e5e;
---accent3: #5fa000;
---accent4: #b87000;
---accent5: #8040c0;
---text: #1a1a1f;
---text2: #5a5a6a;
---muted: #8a8a9a;
+  --bg: #f5f5f7;
+  --surface: #ffffff;
+  --surface2: #f0f0f3;
+  --surface3: #e5e5e8;
+  --border: #d0d0d5;
+  --border2: #c0c0c8;
+  --accent: #0080a0;
+  --accent2: #c41e5e;
+  --accent3: #5fa000;
+  --accent4: #b87000;
+  --accent5: #8040c0;
+  --text: #1a1a1f;
+  --text2: #5a5a6a;
+  --muted: #8a8a9a;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-background: var(--bg);
-color: var(--text);
-font-family: 'DM Sans', sans-serif;
-min-height: 100vh;
-overflow-x: hidden;
-transition: background-color 0.3s ease, color 0.3s ease;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 body::before {
-content: '';
-position: fixed; inset: 0;
-background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,229,255,0.008) 2px, rgba(0,229,255,0.008) 4px);
-pointer-events: none; z-index: 999;
+  content: '';
+  position: fixed; inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,229,255,0.008) 2px, rgba(0,229,255,0.008) 4px);
+  pointer-events: none; z-index: 999;
 }
 
 body.light-mode::before {
-background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,128,160,0.003) 2px, rgba(0,128,160,0.003) 4px);
-}
-
-body::after {
-content: '';
-position: fixed; inset: 0;
-background-image:
-linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
-linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
-background-size: 44px 44px;
-pointer-events: none; z-index: 0;
-}
-
-body.light-mode::after {
-background-image:
-linear-gradient(rgba(0,128,160,0.02) 1px, transparent 1px),
-linear-gradient(90deg, rgba(0,128,160,0.02) 1px, transparent 1px);
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,128,160,0.003) 2px, rgba(0,128,160,0.003) 4px);
 }
 
 .wrap { position: relative; z-index: 1; max-width: 920px; margin: 0 auto; padding: 36px 22px 100px; }
 
 header {
-display: flex;
-align-items: flex-end;
-justify-content: space-between;
-gap: 16px;
-flex-wrap: wrap;
-padding-bottom: 28px;
-margin-bottom: 40px;
-border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding-bottom: 28px;
+  margin-bottom: 40px;
+  border-bottom: 1px solid var(--border);
 }
 
-.logo-block .logo {
-font-family: 'Bebas Neue', sans-serif;
-font-size: 54px;
-letter-spacing: 4px;
-line-height: 1;
-background: linear-gradient(135deg, var(--accent) 0%, var(--accent3) 55%, var(--accent2) 100%);
--webkit-background-clip: text;
--webkit-text-fill-color: transparent;
-background-clip: text;
-}
+.logo { font-family: 'Bebas Neue', sans-serif; font-size: 54px; letter-spacing: 4px; line-height: 1; background: linear-gradient(135deg, var(--accent) 0%, var(--accent3) 55%, var(--accent2) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.version { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 4px; color: var(--muted); margin-top: 2px; text-transform: uppercase; }
 
-.logo-block .version {
-font-family: 'Space Mono', monospace;
-font-size: 9px;
-letter-spacing: 4px;
-color: var(--muted);
-margin-top: 2px;
-text-transform: uppercase;
-}
-
-.header-right {
-text-align: right;
-display: flex;
-flex-direction: column;
-gap: 8px;
-align-items: flex-end;
-}
+.header-right { text-align: right; display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
 
 .theme-toggle {
-background: var(--surface);
-border: 1px solid var(--border);
-padding: 8px 14px;
-cursor: pointer;
-font-size: 11px;
-font-family: 'Space Mono', monospace;
-color: var(--text2);
-border-radius: 4px;
-transition: all 0.2s;
-letter-spacing: 1px;
-text-transform: uppercase;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 8px 14px;
+  cursor: pointer;
+  font-size: 11px;
+  font-family: 'Space Mono', monospace;
+  color: var(--text2);
+  border-radius: 4px;
+  transition: all 0.2s;
+  letter-spacing: 1px;
+  text-transform: uppercase;
 }
 
-.theme-toggle:hover {
-border-color: var(--accent);
-color: var(--accent);
-background: var(--surface2);
-}
+.theme-toggle:hover { border-color: var(--accent); color: var(--accent); background: var(--surface2); }
 
-.live-pill {
-display: inline-flex;
-align-items: center;
-gap: 7px;
-font-family: 'Space Mono', monospace;
-font-size: 10px;
-letter-spacing: 2px;
-color: var(--accent3);
-background: rgba(184,255,87,0.08);
-border: 1px solid rgba(184,255,87,0.2);
-padding: 5px 12px;
-}
+.live-pill { display: inline-flex; align-items: center; gap: 7px; font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--accent3); background: rgba(184,255,87,0.08); border: 1px solid rgba(184,255,87,0.2); padding: 5px 12px; }
 
-.live-dot {
-width: 6px; height: 6px;
-background: var(--accent3);
-border-radius: 50%;
-animation: pulse 1.4s ease-in-out infinite;
-}
+.live-dot { width: 6px; height: 6px; background: var(--accent3); border-radius: 50%; animation: pulse 1.4s ease-in-out infinite; }
 
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.25} }
 
-#q-counter {
-font-family: 'Space Mono', monospace;
-font-size: 11px;
-color: var(--muted);
-}
+#q-counter { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted); }
 
-.sec-label {
-font-family: 'Space Mono', monospace;
-font-size: 9px;
-letter-spacing: 4px;
-color: var(--accent);
-text-transform: uppercase;
-margin-bottom: 10px;
-}
+.sec-label { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 4px; color: var(--accent); text-transform: uppercase; margin-bottom: 10px; }
 
-.scr-title {
-font-family: 'Bebas Neue', sans-serif;
-font-size: 38px;
-letter-spacing: 2px;
-margin-bottom: 10px;
-line-height: 1.1;
-}
+.scr-title { font-family: 'Bebas Neue', sans-serif; font-size: 38px; letter-spacing: 2px; margin-bottom: 10px; line-height: 1.1; }
 
-.scr-desc {
-font-size: 14px;
-color: var(--text2);
-line-height: 1.75;
-margin-bottom: 36px;
-max-width: 660px;
-}
+.scr-desc { font-size: 14px; color: var(--text2); line-height: 1.75; margin-bottom: 36px; max-width: 660px; }
 
-.domain-grid {
-display: grid;
-grid-template-columns: repeat(auto-fill, minmax(245px, 1fr));
-gap: 10px;
-margin-bottom: 30px;
-}
+.domain-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(245px, 1fr)); gap: 10px; margin-bottom: 30px; }
 
 .dcard {
-border: 1px solid var(--border);
-background: var(--surface);
-padding: 20px;
-cursor: pointer;
-transition: all .18s ease;
-position: relative;
-overflow: hidden;
-user-select: none;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 20px;
+  cursor: pointer;
+  transition: all .18s ease;
+  position: relative;
+  overflow: hidden;
+  user-select: none;
 }
 
 .dcard::after {
-content: '';
-position: absolute;
-inset: 0;
-background: linear-gradient(135deg, transparent 50%, rgba(0,229,255,0.04));
-opacity: 0;
-transition: opacity .2s;
-}
-
-body.light-mode .dcard::after {
-background: linear-gradient(135deg, transparent 50%, rgba(0,128,160,0.04));
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent 50%, rgba(0,229,255,0.04));
+  opacity: 0;
+  transition: opacity .2s;
 }
 
 .dcard:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,229,255,0.08); }
 .dcard:hover::after { opacity: 1; }
 
-body.light-mode .dcard:hover { box-shadow: 0 8px 32px rgba(0,128,160,0.08); }
-
 .dcard.sel { border-color: var(--accent); background: rgba(0,229,255,0.05); }
-body.light-mode .dcard.sel { background: rgba(0,128,160,0.05); }
-
 .dcard.sel .dchk { opacity: 1; transform: scale(1); }
 
 .dchk {
-position: absolute; top: 12px; right: 12px;
-width: 20px; height: 20px;
-background: var(--accent);
-border-radius: 50%;
-display: flex; align-items: center; justify-content: center;
-font-size: 11px; color: #000; font-weight: 700;
-opacity: 0; transform: scale(0.5);
-transition: all .2s;
+  position: absolute; top: 12px; right: 12px;
+  width: 20px; height: 20px;
+  background: var(--accent);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; color: #000; font-weight: 700;
+  opacity: 0; transform: scale(0.5);
+  transition: all .2s;
 }
 
 .d-icon { font-size: 24px; margin-bottom: 10px; }
@@ -252,19 +156,17 @@ transition: all .2s;
 .d-count { margin-top: 10px; font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 2px; color: var(--accent); opacity: .6; }
 
 .btn {
-font-family: 'Space Mono', monospace;
-font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
-padding: 13px 30px;
-border: none; cursor: pointer;
-transition: all .18s;
-display: inline-flex; align-items: center; gap: 9px;
+  font-family: 'Space Mono', monospace;
+  font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+  padding: 13px 30px;
+  border: none; cursor: pointer;
+  transition: all .18s;
+  display: inline-flex; align-items: center; gap: 9px;
 }
 
 .btn-p { background: var(--accent); color: #000; font-weight: 700; }
 .btn-p:hover { background: #33eeff; box-shadow: 0 0 24px rgba(0,229,255,.35); transform: translateY(-1px); }
 .btn-p:disabled { opacity: .3; cursor: not-allowed; transform: none; box-shadow: none; }
-
-body.light-mode .btn-p:hover { background: #0099cc; box-shadow: 0 0 24px rgba(0,128,160,.35); }
 
 .btn-g { background: transparent; color: var(--text2); border: 1px solid var(--border2); }
 .btn-g:hover { border-color: var(--text2); color: var(--text); }
@@ -292,29 +194,29 @@ body.light-mode .btn-p:hover { background: #0099cc; box-shadow: 0 0 24px rgba(0,
 .q-text { font-size: 17px; line-height: 1.7; font-weight: 500; margin-bottom: 28px; color: var(--text); }
 
 .q-code {
-font-family: 'Space Mono', monospace;
-background: var(--surface2);
-border: 1px solid var(--border2);
-border-left: 3px solid var(--accent);
-padding: 16px 20px;
-font-size: 12px; line-height: 1.8;
-margin-bottom: 26px;
-white-space: pre-wrap;
-color: var(--accent3);
-display: none;
-overflow-x: auto;
+  font-family: 'Space Mono', monospace;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-left: 3px solid var(--accent);
+  padding: 16px 20px;
+  font-size: 12px; line-height: 1.8;
+  margin-bottom: 26px;
+  white-space: pre-wrap;
+  color: var(--accent3);
+  display: none;
+  overflow-x: auto;
 }
 
 .ans-area { display: flex; flex-direction: column; gap: 8px; margin-bottom: 22px; }
 
 .aopt {
-border: 1px solid var(--border);
-background: var(--surface);
-padding: 14px 18px;
-cursor: pointer;
-transition: all .13s;
-display: flex; align-items: flex-start; gap: 13px;
-text-align: left; width: 100%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 14px 18px;
+  cursor: pointer;
+  transition: all .13s;
+  display: flex; align-items: flex-start; gap: 13px;
+  text-align: left; width: 100%;
 }
 
 .aopt:hover:not(.disabled) { border-color: var(--accent); background: rgba(0,229,255,.04); }
@@ -328,14 +230,14 @@ text-align: left; width: 100%;
 
 .open-wrap { margin-bottom: 22px; display: none; }
 .open-wrap textarea {
-width: 100%; min-height: 120px;
-background: var(--surface2);
-border: 1px solid var(--border2);
-color: var(--text);
-font-family: 'DM Sans', sans-serif;
-font-size: 14px; line-height: 1.65;
-padding: 15px; resize: vertical; outline: none;
-transition: border-color .2s;
+  width: 100%; min-height: 120px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; line-height: 1.65;
+  padding: 15px; resize: vertical; outline: none;
+  transition: border-color .2s;
 }
 .open-wrap textarea:focus { border-color: var(--accent); }
 .open-wrap textarea::placeholder { color: var(--muted); }
@@ -349,6 +251,22 @@ transition: border-color .2s;
 .fb-lbl { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 2.5px; text-transform: uppercase; margin-bottom: 10px; }
 #fb-text { font-size: 13px; line-height: 1.75; color: var(--text); white-space: pre-line; }
 .score-run { font-family: 'Space Mono', monospace; font-size: 9px; color: var(--muted); margin-top: 12px; }
+
+.post-question-section {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 4px;
+}
+
+.post-title { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--accent); text-transform: uppercase; margin-bottom: 10px; }
+
+.post-content { font-size: 13px; line-height: 1.8; color: var(--text2); margin-bottom: 15px; }
+
+.lab-steps { font-size: 12px; color: var(--text); }
+.lab-step { padding: 8px 0; border-bottom: 1px solid var(--border); }
+.lab-step:last-child { border-bottom: none; }
 
 .q-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
 
@@ -391,6 +309,8 @@ transition: border-color .2s;
 .rev-body .ua { background: var(--surface3); border-left: 2px solid var(--accent4); padding: 10px 14px; margin-bottom: 14px; font-size: 13px; color: var(--text); }
 
 @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+
+.loading { text-align: center; padding: 40px; font-family: 'Space Mono', monospace; color: var(--accent); }
 </style>
 
 </head>
@@ -398,9 +318,9 @@ transition: border-color .2s;
 <div class="wrap">
 
   <header>
-    <div class="logo-block">
+    <div>
       <div class="logo">SKILLS AUDIT</div>
-      <div class="version">IT & CYBERSECURITY · ADAPTIVE ASSESSMENT · V2.1</div>
+      <div class="version">IT & CYBERSECURITY · ADAPTIVE ASSESSMENT · V2.2</div>
     </div>
     <div class="header-right">
       <button class="theme-toggle" onclick="toggleTheme()">☀️ LIGHT MODE</button>
@@ -412,18 +332,9 @@ transition: border-color .2s;
   <div id="dscreen">
     <div class="sec-label">Step 01 - Configure</div>
     <div class="scr-title">SELECT YOUR DOMAINS</div>
-    <div class="scr-desc">Pick up to 6 domains. 8-12 questions each - foundational through advanced. MCQ with realistic distractors + open-ended scenarios. No definitions. Real-world problems only. Includes home lab build scenarios.</div>
+    <div class="scr-desc">Pick your focus areas. Questions randomized every session from an expanded bank. Free response questions include model answers. Each domain includes home lab scenarios to build functional skills.</div>
 
-    <div class="domain-grid" id="dgrid">
-      <div class="dcard" data-d="helpdesk"><div class="dchk">✓</div><div class="d-icon">🖥️</div><div class="d-name">Help Desk / SysAdmin</div><div class="d-desc">Windows, Active Directory, Group Policy, DNS, DHCP, troubleshooting, home lab scenarios</div><div class="d-count">12 QUESTIONS</div></div>
-      <div class="dcard" data-d="networking"><div class="dchk">✓</div><div class="d-icon">🌐</div><div class="d-name">Network Engineering</div><div class="d-desc">Routing, switching, VLANs, BGP/OSPF, firewall ACLs, UDM Pro, WireGuard, packet analysis</div><div class="d-count">12 QUESTIONS</div></div>
-      <div class="dcard" data-d="m365"><div class="dchk">✓</div><div class="d-icon">📧</div><div class="d-name">M365 / Exchange / Entra</div><div class="d-desc">Exchange Online, Teams, SharePoint, mail flow, licensing, identity, Conditional Access</div><div class="d-count">12 QUESTIONS</div></div>
-      <div class="dcard" data-d="azure"><div class="dchk">✓</div><div class="d-icon">☁️</div><div class="d-name">Azure Cloud / Entra ID</div><div class="d-desc">IAM, PIM, Conditional Access, Defender for Cloud, Key Vault, RBAC, hybrid identity</div><div class="d-count">12 QUESTIONS</div></div>
-      <div class="dcard" data-d="secops"><div class="dchk">✓</div><div class="d-icon">🛡️</div><div class="d-name">Security Operations</div><div class="d-desc">EDR, SIEM, IR, threat hunting, phishing, MITRE ATT&CK, log analysis</div><div class="d-count">12 QUESTIONS</div></div>
-      <div class="dcard" data-d="scripting"><div class="dchk">✓</div><div class="d-icon">💻</div><div class="d-name">Scripting / Automation</div><div class="d-desc">PowerShell, Python, Bash, Graph API, automation pipelines, real code scenarios</div><div class="d-count">10 QUESTIONS</div></div>
-      <div class="dcard" data-d="emailsec"><div class="dchk">✓</div><div class="d-icon">📨</div><div class="d-name">Email Security</div><div class="d-desc">SPF, DKIM, DMARC, anti-phishing, header analysis, mail flow rules, spoofing scenarios</div><div class="d-count">10 QUESTIONS</div></div>
-      <div class="dcard" data-d="architecture"><div class="dchk">✓</div><div class="d-icon">🏗️</div><div class="d-name">Security Architecture</div><div class="d-desc">Zero Trust, IAM design, NIST CSF, CIS Controls, microsegmentation, GRC, risk decisions</div><div class="d-count">10 QUESTIONS</div></div>
-    </div>
+    <div class="domain-grid" id="dgrid"></div>
 
     <div class="tag-strip" id="sel-tags"></div>
     <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
@@ -443,14 +354,22 @@ transition: border-color .2s;
     <pre class="q-code" id="q-code"></pre>
     <div class="ans-area" id="ans-area"></div>
     <div class="open-wrap" id="open-wrap">
-      <div class="open-hint">// OPEN RESPONSE - be specific. Model answer revealed after submit.</div>
-      <textarea id="open-ans" placeholder="Write what you actually know. Vague answers get called out in the review."></textarea>
+      <div class="open-hint">// FREE RESPONSE - Be specific. Your answer will be compared to the model response below after submission.</div>
+      <textarea id="open-ans" placeholder="Write your answer. Be detailed and specific."></textarea>
     </div>
     <div id="fb-box">
       <div class="fb-lbl" id="fb-lbl"></div>
       <div id="fb-text"></div>
       <div class="score-run" id="score-run"></div>
     </div>
+
+    <!-- POST-QUESTION CONTENT -->
+    <div id="post-question" style="display:none;">
+      <div class="post-question-section" id="explanation-section"></div>
+      <div class="post-question-section" id="homelab-section"></div>
+      <div class="post-question-section" id="resources-section"></div>
+    </div>
+
     <div class="q-actions">
       <button class="btn btn-p" id="sub-btn" onclick="submitAnswer()">SUBMIT ANSWER</button>
       <button class="btn btn-g" id="nxt-btn" style="display:none" onclick="nextQ()">NEXT →</button>
@@ -503,7 +422,46 @@ transition: border-color .2s;
 </div><!-- /wrap -->
 
 <script>
-// THEME TOGGLE - SAVES TO LOCALSTORAGE
+let BANK = null;
+let DMETA = null;
+
+// LOAD QUESTIONS FROM JSON
+async function loadQuestions() {
+  try {
+    const response = await fetch('questions.json');
+    const data = await response.json();
+    
+    BANK = {};
+    DMETA = {};
+    
+    Object.entries(data.questionBanks).forEach(([key, domain]) => {
+      BANK[key] = domain.questions;
+      DMETA[key] = {
+        label: domain.displayName,
+        icon: domain.icon,
+        color: domain.color
+      };
+    });
+    
+    renderDomainCards();
+  } catch (err) {
+    console.error('Error loading questions:', err);
+    document.getElementById('dgrid').innerHTML = '<div class="loading">Error loading questions. Check that questions.json is in the same folder.</div>';
+  }
+}
+
+function renderDomainCards() {
+  const grid = document.getElementById('dgrid');
+  grid.innerHTML = Object.entries(DMETA).map(([key, meta]) => {
+    const qCount = (BANK[key] || []).length;
+    return `<div class="dcard" data-d="${key}"><div class="dchk">✓</div><div class="d-icon">${meta.icon}</div><div class="d-name">${meta.label}</div><div class="d-desc">${meta.label}</div><div class="d-count">${qCount} QUESTIONS</div></div>`;
+  }).join('');
+  
+  document.querySelectorAll('.dcard').forEach(c => {
+    c.addEventListener('click', () => toggleDomain(c.dataset.d));
+  });
+}
+
 function toggleTheme() {
   document.body.classList.toggle('light-mode');
   const isDark = !document.body.classList.contains('light-mode');
@@ -511,171 +469,28 @@ function toggleTheme() {
   document.querySelector('.theme-toggle').textContent = isDark ? '☀️ LIGHT MODE' : '🌙 DARK MODE';
 }
 
-// LOAD THEME PREFERENCE
 window.addEventListener('load', () => {
   const savedTheme = localStorage.getItem('theme-mode');
   if (savedTheme === 'light') {
     document.body.classList.add('light-mode');
     document.querySelector('.theme-toggle').textContent = '🌙 DARK MODE';
   }
+  loadQuestions();
 });
-
-// ═══════════════════════════════════════════════════════════════════════════
-// QUESTION BANK (EXPANDED)
-// ═══════════════════════════════════════════════════════════════════════════
-
-const BANK = {
-
-helpdesk: [
-  {difficulty:'foundational', type:'mcq', question:"A user's PC is showing IP address 169.254.88.34. They can't reach anything on the network. What is happening and what do you do first?", options:["The IP is in a reserved range for site-local traffic - route it through the VPN gateway", "The machine got an APIPA address, meaning it failed to get a DHCP lease - check if the DHCP server is reachable and run ipconfig /release then /renew", "The subnet mask is wrong - change it from /16 to /24 manually", "The network adapter needs to be re-registered in DNS - run ipconfig /registerdns"], answer:'B', explanation:"169.254.x.x is an APIPA (Automatic Private IP Addressing) address - Windows assigns this automatically when DHCP fails. Causes: DHCP server down, scope exhausted, network connectivity issue between the client and DHCP server (wrong VLAN, blocked port 67/68). Steps: ping the DHCP server, check DHCP console for scope exhaustion, verify the switch port, run ipconfig /release && ipconfig /renew. If it persists, check the Windows DHCP client service is running."},
-  {difficulty:'foundational', type:'mcq', question:"A user gets 'Access Denied' when trying to open a folder on a file server. You verify their AD account is active and in the correct department group. What do you check next?", options:["Reset their password - Access Denied always indicates a Kerberos token issue", "Check the share permissions AND the NTFS permissions - both must allow access, and the effective permission is the most restrictive intersection", "Add them directly to the local Administrators group on the file server", "Check if the file server's domain trust is intact using nltest /sc_verify"], answer:'B', explanation:"Windows file access has two permission layers: Share Permissions (control network access to the share) and NTFS Permissions (control the actual file/folder). The effective permission is the most restrictive combination of both. Common scenario: NTFS allows the group, but Share permissions are set to 'Everyone: Read' - user can read but not write. Always check both."},
-  {difficulty:'intermediate', type:'mcq', question:"You need to force-apply a GPO to a set of machines immediately without waiting for the default 90-minute refresh interval. What command do you run on the target machines?", options:["gpupdate on each machine manually; there's no remote option", "gpupdate /force on each machine; remotely use Invoke-GPUpdate -Computer from the GPMC module or psexec", "net group 'Policy' /add on each machine", "Restart the 'Group Policy Client' service remotely"], answer:'B', explanation:"gpupdate /force re-applies all policies regardless of whether they've changed. Remotely: use Invoke-GPUpdate -Computer via GPMC PowerShell module, or Invoke-Command -ComputerName (list) -ScriptBlock { gpupdate /force } if WinRM is enabled. The /force flag is critical - without it, gpupdate skips unchanged policies."},
-  {difficulty:'intermediate', type:'open', question:"HOME LAB SCENARIO: You're setting up a Windows Server 2022 domain controller at home. Walk through the exact steps to promote a server to DC, create an OU structure, and join a Windows 11 client to the domain. What DNS configuration is critical and why?", options:null, answer:null, explanation:"Steps: 1) Install AD DS role via Server Manager. 2) Promote to DC: Install-ADDSForest -DomainName 'lab.local'. 3) The DC automatically becomes DNS for the domain - CRITICAL: DNS hosts SRV records (_ldap._tcp, _kerberos._tcp) that clients use to find the DC. 4) Create OUs: New-ADOrganizationalUnit -Name 'Workstations'. 5) On Windows 11 client: set DNS server to the DC's IP (NOT 8.8.8.8 - #1 mistake). 6) Join domain: System > Domain - enter lab.local. DNS must point to DC because domain join requires SRV record resolution. If DNS points to your router, the client can't find the DC and join fails."},
-  {difficulty:'intermediate', type:'mcq', question:"You notice that after running a GPO to deploy a software package via MSI, the software installs on some machines but not others. GPRESULT /H shows the GPO is applying to all machines. What is the most likely cause?", options:["The MSI file path is case-sensitive and fails on some machines", "Software installation GPOs only apply at computer startup or user logon - machines that were already logged in when the GPO applied haven't restarted yet", "The MSI is corrupt on half the machines due to a SYSVOL replication issue", "Software deployment via GPO requires the local administrator account to be enabled"], answer:'B', explanation:"GPO software installation runs at startup (Computer Configuration) or logon (User Configuration). If machines were already running when the GPO was linked, they won't install until next boot/logon. GPRESULT showing the GPO applies just means the machine received the policy - not that the installer ran."},
-  {difficulty:'advanced', type:'mcq', question:"A user reports that their mapped drives disappeared after logging into a new PC. Their AD account is correct and GPO shows drive mapping applied. The drives are mapped in gpresult /r but not visible. What is the most likely cause?", options:["UAC elevation is hiding the drives - mapped drives made under a standard user token are invisible when run as admin (token split)", "The drive letters conflict with locally mapped DVDs or USB drives", "The GP drive mapping is set to 'Replace' instead of 'Create'", "The Workstation service is not running, blocking SMB drive mapping"], answer:'A', explanation:"This is a classic UAC elevation / linked connection issue. When a user runs a program 'as administrator,' Windows creates a separate elevated token. Mapped drives created under the standard user token are not visible to the elevated token. Fix: either map drives using the elevated context, or enable EnableLinkedConnections in HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System."},
-  {difficulty:'advanced', type:'open', question:"HOME LAB SCENARIO: You want to replicate an enterprise environment with two domain controllers for redundancy. Explain how AD replication works between two DCs, how to verify replication health, and what FSMO roles are and which DC should hold them in a small lab.", options:null, answer:null, explanation:"AD replication: changes replicate via KCC (Knowledge Consistency Checker) which builds replication topology. Intrasite replication runs within 15 seconds. Intersite uses scheduled replication. Verify health: repadmin /replsummary, repadmin /showrepl, dcdiag /test:replications. FSMO roles: 5 total - Schema Master, Domain Naming Master (1 per forest), PDC Emulator, RID Master, Infrastructure Master (3 per domain). In a 2-DC lab: put all 5 on DC1 (primary), transfer with Move-ADDirectoryServerOperationMasterRole if needed. PDC Emulator is most critical - handles password changes, time sync, account lockouts."},
-  {difficulty:'foundational', type:'mcq', question:"A user calls saying they can't log into their domain-joined laptop. They can ping the domain controller, but Get-ADUser fails to find their account. What should you check first?", options:["Their password expired - reset it immediately", "The user's account is likely disabled, locked, or in the wrong OU - check AD Users and Computers", "The DNS suffix on their laptop is wrong", "The Kerberos Key Distribution Center isn't running on the DC"], answer:'B', explanation:"If Get-ADUser can't find the account, it either doesn't exist or is in a different forest/domain. First: search AD Users and Computers to verify the account exists, is enabled, and hasn't been accidentally moved. Check account properties: enabled, not locked out, no expiration date set."},
-  {difficulty:'intermediate', type:'mcq', question:"You're deploying Windows 11 to a fleet of laptops that will join the domain. You create a provisioning package with WiFi credentials and domain join configuration. When users receive the laptops, WiFi connects but domain join fails silently. What's the most likely issue?", options:["The provisioning package is corrupted - rebuild it", "The laptops are joining the wrong domain because DNS is pointing to the ISP's servers instead of your company's DNS", "Domain join via provisioning packages only works on PCs already connected to the corporate network", "The computer account quota in AD has been exceeded"], answer:'B', explanation:"Domain join requires DNS resolution of the domain controller. If the laptop's DNS settings don't point to your company's DNS servers (which host your domain's SRV records), the domain join will fail silently because it can't resolve the domain name. Ensure DNS is configured before the domain join step in provisioning."},
-  {difficulty:'advanced', type:'mcq', question:"A Group Policy Object needs to be applied only to computers running Windows 11 with BitLocker enabled. You create the GPO but need to filter which computers receive it. Which approach gives you the most precise control?", options:["Use Security Group Filtering to create a group of BitLocker-enabled computers", "Use WMI Filters in the GPO to target computers where OS contains 'Windows 11' AND BitLocker status is enabled", "Create separate OUs for Windows 11 vs. Windows 10 computers", "Use Item-Level Targeting in the GPO settings themselves"], answer:'B', explanation:"WMI Filters are the most precise: they query WMI on the client to determine if conditions are met before applying the GPO. You can filter by OS version and BitLocker status simultaneously. The query checks WIN32_OperatingSystem.Caption and the BitLocker WMI class."},
-  {difficulty:'intermediate', type:'mcq', question:"A Windows Server 2022 with multiple hard drives is running an important application. One drive is failing (S.M.A.R.T. errors visible). You need to replace it without downtime. What's your approach?", options:["Shut down the server, replace the drive, restart", "If Storage Spaces is configured with Mirror or Parity, remove the failing drive from the pool, replace the physical drive, and re-add it", "Use disk imaging software to clone the data while running", "Remove the drive immediately and hot-swap it without alerting applications"], answer:'B', explanation:"Storage Spaces with Mirror or Parity provides RAID-like redundancy and allows hot replacement. Remove-PhysicalDisk removes the failing drive (data stays available). Replace the physical drive, then Add-PhysicalDisk to re-integrate it - Windows re-synchronizes automatically."},
-  {difficulty:'foundational', type:'mcq', question:"During domain join, a client receives error '0x80070005 - Access is denied.' The account exists in AD and has sufficient permissions. What is the most likely cause?", options:["The computer account hasn't been pre-created in AD", "The client is trying to join as a local user instead of a domain user with computer join rights", "The client is on a different VLAN than the domain controller", "The domain functional level is too low for this Windows version"], answer:'B', explanation:"This error typically means the user performing the domain join doesn't have permissions to create a computer account. Use credentials with 'Create Computer Objects' rights, or pre-create the computer account in AD and join as a standard user. Verify the account being used for join has proper permissions in AD."}
-],
-
-networking: [
-  {difficulty:'foundational', type:'mcq', question:"You're troubleshooting why two devices on the same switch can't communicate. Device A is 192.168.10.5/24 and Device B is 192.168.20.5/24. What is the problem?", options:["The switch needs a trunk port configured between the two ports", "They're in different subnets - without a router or Layer 3 switch, they cannot communicate directly", "The subnet masks are wrong - change both to /16", "ARP cache needs clearing on both devices"], answer:'B', explanation:"Devices communicate directly only if they're in the same subnet. 192.168.10.x/24 and 192.168.20.x/24 are different /24 networks. Device A will try to ARP for a router (its default gateway) to reach Device B - if no L3 device handles inter-subnet routing, the traffic goes nowhere."},
-  {difficulty:'foundational', type:'mcq', question:"HOME LAB SCENARIO: You have a UniFi Dream Machine Pro. You want to create a guest WiFi network that cannot reach your main LAN (IoT isolation). What is the correct approach?", options:["Create a new SSID and set its IP range to a different subnet - the UDM will automatically block cross-VLAN traffic", "Create a new VLAN, assign it to a new network, create the SSID on that VLAN, and add a firewall rule blocking traffic from the guest VLAN to the main LAN", "Enable guest portal on the existing SSID", "Set the WiFi to 'Client Isolation' mode"], answer:'B', explanation:"Client isolation only blocks client-to-client traffic on the same SSID - it does NOT prevent access to the main LAN. Create a new VLAN (e.g., VLAN 20, 192.168.20.0/24), create an SSID on that VLAN, and add a firewall rule blocking traffic from guest VLAN to main LAN. Allow guest VLAN to reach the internet."},
-  {difficulty:'intermediate', type:'mcq', question:"You configure a site-to-site VPN between two branch offices. The tunnel comes up (IKE phase 1 and 2 complete), but traffic between subnets doesn't flow. What is the most likely issue?", options:["The pre-shared keys don't match", "The interesting traffic selectors (proxy IDs / crypto ACLs) don't match on both sides", "NAT traversal (NAT-T) is not enabled", "The VPN uses AES-128 but the remote site requires AES-256"], answer:'B', explanation:"If Phase 1 and Phase 2 complete successfully, the tunnel is up - the issue is what traffic is being sent through it. IPsec site-to-site VPNs use traffic selectors that define source and destination subnets permitted through the tunnel. If they don't match exactly on both sides, traffic is dropped."},
-  {difficulty:'intermediate', type:'open', question:"HOME LAB SCENARIO: You want to practice BGP in your home lab using GNS3 or EVE-NG with Cisco IOSv images. Explain: what BGP is, the difference between iBGP and eBGP, and design a simple 3-router lab topology to practice BGP route advertisement.", options:null, answer:null, explanation:"BGP (Border Gateway Protocol) is the internet's routing protocol - it routes between Autonomous Systems (ASes). Unlike OSPF/EIGRP (IGP), BGP is a path-vector protocol. iBGP: BGP between routers in the SAME AS. Requires full mesh or route reflectors. eBGP: BGP between different ASes - how ISPs and enterprises peer on the internet. Lab topology: R1 (AS 100) - R2 (AS 200) - R3 (AS 300). R1-R2 eBGP peer, R2-R3 eBGP peer. R1 advertises 10.1.0.0/24, R3 advertises 10.3.0.0/24. Verify with 'show ip bgp' and 'show ip route bgp'. Practice: add route-maps to manipulate AS-path prepending or local preference."},
-  {difficulty:'intermediate', type:'mcq', question:"A Wireshark capture shows a client sending SYN packets to a server but only receiving RST-ACK responses. The firewall shows the rule is allowing the traffic. What is most likely happening?", options:["The firewall rule is wrong - RST-ACK means the firewall rejected it", "The server is actively refusing the connection - nothing is listening on that port", "The client's TCP stack is misconfigured", "The server's ARP table is stale"], answer:'B', explanation:"RST-ACK (TCP Reset) from the destination server means the server actively rejected the connection. Most common reasons: 1) Nothing is listening on that port. 2) A host-based firewall on the server is sending RST. 3) The application rejects connections from that source IP. Confirm: on the server, run netstat -an | findstr LISTEN to see what's listening."},
-  {difficulty:'advanced', type:'mcq', question:"You're asked to implement Quality of Service (QoS) to prioritize VoIP traffic on a congested WAN link. Which combination of QoS mechanisms is correct for VoIP?", options:["Use Best Effort queuing with DSCP marking CS0", "Mark VoIP with DSCP EF (Expedited Forwarding / 46), place in a priority queue with strict scheduling, and police non-priority traffic", "Use WFQ (Weighted Fair Queuing) with equal weights", "Enable RSVP on all interfaces - it's the only standard way to guarantee VoIP quality"], answer:'B', explanation:"VoIP requires low latency (<150ms), low jitter (<30ms), and low packet loss (<1%). Correct QoS stack: 1) Mark VoIP RTP traffic with DSCP EF (46). 2) Use LLQ (Low Latency Queuing) for EF traffic - serviced first, always. 3) Police the priority queue to prevent starvation. 4) Mark SIP signaling as CS3 or AF31. WFQ helps fairness but doesn't provide strict prioritization."},
-  {difficulty:'advanced', type:'open', question:"HOME LAB SCENARIO: You want to set up WireGuard as a VPN server on a Linux box so you can securely access your home lab from anywhere. Walk through the complete setup: key generation, server config, client config, and firewall rules needed.", options:null, answer:null, explanation:"Server setup (Ubuntu/Debian): 1) apt install wireguard. 2) Generate keys: wg genkey | tee server_private.key | wg pubkey > server_public.key. Do the same for each client. 3) /etc/wireguard/wg0.conf: [Interface] Address=10.10.0.1/24, ListenPort=51820, PrivateKey=(server private). [Peer] PublicKey=(client public), AllowedIPs=10.10.0.2/32. 4) Enable IP forwarding: sysctl -w net.ipv4.ip_forward=1 (persist in /etc/sysctl.conf). 5) Firewall (iptables): Allow UDP 51820 inbound. Add POSTROUTING MASQUERADE rule. 6) Start: wg-quick up wg0, systemctl enable wg-quick@wg0. Client: [Interface] Address=10.10.0.2/24, PrivateKey=(client private). [Peer] PublicKey=(server public), Endpoint=YOUR_IP:51820, AllowedIPs=192.168.1.0/24. Port forward UDP 51820 on your router."},
-  {difficulty:'foundational', type:'mcq', question:"A network switch has 48 ports. Currently, 10 ports are configured with VLANs 10, 20, 30. You want to add a new VLAN 40 to 5 additional ports. What command or configuration step is needed?", options:["Create VLAN 40 at the switch level, then assign those 5 ports to VLAN 40", "Manually add VLAN 40 to each port's configuration", "Assign IP addresses to the 5 new ports - this automatically creates VLAN 40", "Use the switch's GUI to drag ports into a VLAN"], answer:'A', explanation:"VLANs are created globally on a switch (e.g., 'vlan 40' in global config), then ports are assigned to them. Create the VLAN first, then set each port to that VLAN with 'interface range' commands. For end devices: access mode (one VLAN). For uplinks: trunk mode (carries multiple VLANs tagged)."},
-  {difficulty:'intermediate', type:'mcq', question:"You're configuring a WireGuard client on your laptop to access your home lab. You set AllowedIPs to 192.168.1.0/24 (your lab network only), but traffic to 8.8.8.8 (DNS) is also being routed through the VPN. Why?", options:["DNS queries don't respect AllowedIPs - they're always tunneled", "You likely also set AllowedIPs to include 0.0.0.0/0 or the system is routing all traffic through the VPN", "The WireGuard client has cached routes - restart the service", "DNS resolution is failing because of WireGuard's design - use a SOCKS proxy instead"], answer:'B', explanation:"AllowedIPs strictly controls what traffic enters the tunnel. If AllowedIPs = 192.168.1.0/24, only traffic destined for that range goes through the VPN. 8.8.8.8 shouldn't enter the tunnel unless: 1) AllowedIPs includes 0.0.0.0/0. 2) System routing rules override AllowedIPs. Verify the WireGuard config file."},
-  {difficulty:'intermediate', type:'mcq', question:"Your WireGuard VPN has been running for weeks. Clients suddenly can't connect and see 'Unable to parse key.' The server configuration hasn't changed. What's the most likely cause?", options:["The WireGuard interface crashed - restart systemctl wg-quick@wg0", "The client's private key was corrupted or regenerated accidentally", "The server needs to restart its WireGuard daemon after X days", "A firewall rule has blocked UDP 51820 inbound"], answer:'C', explanation:"This is unusual, but some systems may regenerate keys or have key storage issues. Most likely: 1) Client key was regenerated or corrupted. 2) Firewall blocked the port (but error would be different - timeout, not parse error). 3) Client configuration file was overwritten. Check the client's private key matches what the server has. Regenerate client keys and config if needed."},
-  {difficulty:'advanced', type:'mcq', question:"You're building a network for a small office with one internet connection. You want to create separate VLANs for employees (VLAN 10), guests (VLAN 20), and IoT devices (VLAN 30). Devices on VLAN 20 and 30 should NOT communicate with each other, but all can reach the internet. How do you configure this?", options:["Create the VLANs, set each VLAN's IP range, and let the router handle inter-VLAN routing by default", "Create the VLANs with separate IP ranges, then add firewall rules on the router that: allow VLAN 10/20/30 to reach WAN, but block VLAN 20 ↔ VLAN 30 traffic", "Use Access Control Lists (ACLs) on the switch ports - VLANs don't prevent inter-VLAN communication without ACLs", "Put a physical firewall between VLAN 20 and VLAN 30 - switching alone can't enforce this policy"], answer:'B', explanation:"By default, a router will route between all VLANs if it has interfaces for each. To prevent communication between specific VLANs while allowing others: 1) Create VLANs with separate IP ranges (10.1.0.0/24, 10.2.0.0/24, 10.3.0.0/24). 2) On the router/L3 switch, add firewall rules: allow VLAN 10→WAN, allow VLAN 20→WAN, allow VLAN 30→WAN, DENY VLAN 20↔VLAN 30. Default-allow inter-VLAN, then add specific blocks."}
-],
-
-m365: [
-  {difficulty:'foundational', type:'mcq', question:"A user reports they can't access their mailbox in Outlook or OWA. Other users are fine. Their account is enabled in AD and synced to Entra. What do you check first?", options:["Check if the Exchange Online license is assigned", "Reset their password", "Check if the user is in the correct AD OU", "Run a mailbox repair request"], answer:'A', explanation:"In M365, the Exchange Online license must be assigned for mailbox access. If the license was removed or expired, the mailbox becomes inaccessible within 30 days and is soft-deleted after 30 more. Check Entra ID > User > Licenses. Also verify: the mailbox exists (Get-Mailbox), litigation hold isn't causing issues, and the account isn't blocked."},
-  {difficulty:'foundational', type:'mcq', question:"You need to give a help desk technician the ability to reset passwords for standard users but NOT for admin accounts. What is the correct way to set this up?", options:["Add the technician to Domain Admins with restrictions", "Create a custom admin role in Entra ID with 'Reset Password' permission scoped to non-admin users, using administrative units if needed", "Give the technician 'Password Administrator' built-in role", "Use Exchange Admin Center to delegate password reset permissions"], answer:'B', explanation:"Built-in roles like 'Password Administrator' cannot reset passwords for users with admin roles - by design. For standard non-admin users, 'Password Administrator' or 'Helpdesk Administrator' roles work. Use Administrative Units to limit scope to specific departments if needed. Never give Domain Admins - least privilege always."},
-  {difficulty:'intermediate', type:'mcq', question:"A mail flow rule is configured to add a disclaimer to all outbound emails. Users report some external emails are missing the disclaimer. What is the most likely reason?", options:["The rule doesn't apply to emails from mobile devices", "A higher-priority rule is redirecting/stopping message processing before the disclaimer rule runs, or the rule has conditions that exclude certain messages", "Disclaimers don't apply to encrypted messages", "The rule only processes messages through the on-premises connector"], answer:'B', explanation:"Transport rules are processed in priority order and 'Stop processing more rules' stops subsequent rules. If a higher-priority rule fires first, the disclaimer rule never runs. Also check: the rule's conditions - if it excludes specific senders, domains, or headers, some messages won't match."},
-  {difficulty:'intermediate', type:'open', question:"A client asks you to configure shared mailboxes for three team inboxes (support@, billing@, info@). Walk through the complete setup: creation, delegation, Outlook configuration, and the gotcha around shared mailbox licensing.", options:null, answer:null, explanation:"Create: New-Mailbox -Shared -Name 'Support' -DisplayName 'Support Team' -Alias support. Or via EAC. Delegation: Add-MailboxPermission -Identity support@domain.com -User 'john@domain.com' -AccessRights FullAccess -AutoMapping $true. Add Send As: Add-RecipientPermission -Identity support@domain.com -Trustee john@domain.com -AccessRights SendAs. Outlook: users with FullAccess will see it automatically (AutoMapping). Or manually: File > Add Account. Licensing gotcha: shared mailboxes under 50GB don't require a license. OVER 50GB require an Exchange Online Plan 1 license. Also: shared mailboxes should have 'Block sign-in' enabled on the account."},
-  {difficulty:'intermediate', type:'mcq', question:"You need to search for and delete a phishing email from all user mailboxes across the tenant. The email has subject 'Urgent: Verify Your Account'. What is the correct Microsoft tool and command approach?", options:["Use Exchange Admin Center > Message Trace to find and delete", "Use Content Search in Purview Compliance portal to search, then use New-ComplianceSearchAction -Purge to delete", "Use Get-MessageTrace in Exchange Online PowerShell", "Use Defender for Office 365's Threat Explorer"], answer:'B', explanation:"Message Trace only tracks routing metadata - it can't search content or delete. Correct tool: Purview (Compliance portal) > Content Search. Search by subject across all mailboxes. To delete: New-ComplianceSearchAction -SearchName 'PhishingSearch' -Purge -PurgeType SoftDelete or HardDelete. You need 'Search And Purge' role. This also removes from Litigation Hold mailboxes unless you specifically hard-delete."},
-  {difficulty:'advanced', type:'mcq', question:"You're migrating a client from on-premises Exchange 2016 to Exchange Online using a hybrid configuration. During cutover, users start receiving NDRs from internal senders saying '550 5.1.1 user unknown.' External senders can reach the mailboxes fine. What is the cause?", options:["The MX record hasn't been updated", "The on-premises Exchange server still has the user's mailbox listed as authoritative and is trying to deliver locally instead of routing to EXO", "The Exchange Online certificate is expired", "The hybrid connector requires TLS and the on-premises server can't verify the certificate"], answer:'B', explanation:"In a hybrid, internal senders route through on-premises Exchange. If a mailbox has been migrated to EXO but on-premises still sees it as local (or routing isn't set to route migrated mailboxes to EXO via the hybrid send connector), on-premises Exchange tries to deliver locally, fails, and generates an NDR. Fix: Hybrid Configuration Wizard ran correctly, hybrid send connector is active, migrated user's RemoteRoutingAddress is set correctly. Run Get-RemoteMailbox to verify."},
-  {difficulty:'advanced', type:'mcq', question:"A user's Exchange Online mailbox shows 'Outlook is in Reduced Functionality Mode.' The user is licensed, the account is active, and MFA passes. What is the most likely cause?", options:["The user's mailbox wasn't created in the correct region", "The user's mailbox format (PST/OST) is corrupted", "The user is trying to use an unsupported version of Outlook, or the Outlook/Windows client has cached credentials that are stale and need refreshing", "The mailbox has exceeded 100GB capacity limit"], answer:'C', explanation:"Reduced Functionality Mode typically means Outlook can't authenticate to the mailbox properly. Most common fixes: 1) Update Outlook to the latest version. 2) Clear cached credentials and re-authenticate (File > Account Settings > Account > Repair). 3) Try Outlook in Safe Mode. 4) Check Windows Update - OS security patches sometimes clear stale auth tokens. Not usually a mailbox capacity or format issue."},
-  {difficulty:'intermediate', type:'mcq', question:"You've configured Microsoft Defender for Office 365 Plan 1 with Safe Links and Safe Attachments enabled. A user reports they can't open an attachment sent by their manager. The email passes all security checks, and DKIM/DKIM show pass. What's the most likely reason for the delivery block?", options:["The attachment is from an untrusted domain - you need to whitelist the sender", "Defender for Office 365 is still analyzing the attachment - it may take 10-15 seconds to deliver", "The attachment file type matches a block list in the organization-wide settings", "The manager's mailbox was temporarily compromised - no emails from that account are being delivered"], answer:'C', explanation:"Defender for Office 365 scans attachments and may block certain file types (e.g., .exe, .bat, .vbs). Check the block list in EAC > Threat Management > Policy > Safe Attachments. If the attachment is a blocked type, it won't deliver. Users need to request a specific allow, or you can add the file type to allowed list (not recommended for security-sensitive types)."},
-  {difficulty:'foundational', type:'mcq', question:"A user created a personal distribution group in Outlook (no admin involvement). They added 50 people to it. Can this personal DL be queried via Get-DistributionGroup in Exchange Online PowerShell?", options:["Yes, all DLs are visible to admins via PowerShell regardless of who created them", "No, personal DLs created by users are stored locally and not visible to Exchange Online", "Maybe - it depends on the group type (static vs. dynamic)", "Only if the group was created with an administrative license"], answer:'B', explanation:"Personal distribution groups created in Outlook are stored locally in the user's mailbox (not in Exchange Online directory). They're not queryable via Get-DistributionGroup or visible to admins. To centralize group management, create distribution groups in the admin center or via PowerShell - these are stored in Entra ID and visible to all admins."},
-  {difficulty:'intermediate', type:'mcq', question:"You want to create a mail-enabled security group in M365 that automatically includes all users in the Finance department from your Entra ID. What approach is correct?", options:["Create a Dynamic Distribution Group with rule: ('-Department' -eq 'Finance')", "Create a standard Distribution Group and manually add Finance users", "Create a Dynamic Security Group with rule: ('Department' -eq 'Finance') and enable mail", "Dynamic groups don't support security group + mail hybrid - choose one or the other"], answer:'C', explanation:"Dynamic Security Groups (also called Dynamic Groups) support mail-enabled groups in Entra ID. Use rule: ('Department' -eq 'Finance'). This automatically adds/removes users based on their Entra ID department attribute. The group can be used for both security (RBAC) and mail purposes. Dynamic Distribution Groups are mail-only and deprecated in favor of Dynamic Security Groups."}
-],
-
-azure: [
-  {difficulty:'foundational', type:'mcq', question:"What is the difference between Azure RBAC and Entra ID roles, and why does it matter for least privilege?", options:["They're the same thing - Entra ID roles are just the newer name for Azure RBAC", "Azure RBAC controls access to Azure resources. Entra ID roles control access to Entra/M365 directory objects. They're separate systems and both must be configured", "Entra ID roles are for cloud-only accounts; Azure RBAC is for hybrid accounts", "Azure RBAC is free; Entra ID roles require P2 licensing"], answer:'B', explanation:"Critical distinction: Azure RBAC (Owner, Contributor, Reader) scopes to Azure resources - subscriptions, resource groups, specific resources. Entra ID roles (Global Admin, User Admin, Security Reader) control directory operations. For least privilege: a helpdesk tech might need 'User Administrator' but zero Azure RBAC. A developer might need 'Contributor' on a resource group but no Entra roles."},
-  {difficulty:'intermediate', type:'open', question:"HOME LAB SCENARIO: You want to set up a free Azure lab environment to practice IAM, PIM, and Conditional Access. Describe how to get started, what free services cover IAM, and design a basic lab: create users, assign roles, set up a CA policy, and test it.", options:null, answer:null, explanation:"Getting started: Azure free tier ($200 credit + 12 months) or Microsoft 365 Developer Program (free E5 tenant + Entra P2). Lab design: 1) Create test users: New-MgUser. Create groups: 'Lab-Admins', 'Lab-Users'. 2) Assign roles: Entra ID > Roles, assign 'Global Reader' to test user. 3) PIM: Enable for 'Security Reader' role. Make a user eligible, activate - note MFA prompt and justification. 4) CA Policy: Create policy requiring MFA for Azure portal access (app: Microsoft Azure Management). Test: log in as test user, verify MFA. 5) Sign-in logs: review CA policies that fired. This covers AZ-500 and SC-300 skills."},
-  {difficulty:'intermediate', type:'mcq', question:"You need to store database connection strings and API keys for an Azure web app. Where should these be stored and how should the app access them without hardcoding credentials?", options:["Store in app service Application Settings - encrypted at rest", "Store in Azure Key Vault. Use Managed Identity assigned to the App Service to access Key Vault", "Store in a private GitHub repo in config file", "Store in encrypted Azure Storage blob with storage account key in app settings"], answer:'B', explanation:"Correct pattern: 1) Enable System-Assigned Managed Identity on the App Service. 2) Store secrets in Azure Key Vault. 3) Grant the Managed Identity 'Key Vault Secrets User' RBAC on the Key Vault. 4) In code, use Azure SDK: secretClient.GetSecret('connectionString') - SDK automatically uses Managed Identity token. No passwords, keys, or connection strings in code, config, or app settings. This is the Azure-native zero-credential pattern for AZ-500."},
-  {difficulty:'advanced', type:'mcq', question:"Defender for Cloud shows a 'High' severity alert: 'Suspicious outbound connection to a Tor exit node' from a VM running your web application. Walk through your initial response. What does this most likely indicate?", options:["A developer is testing the application from Tor - whitelist the IP", "The VM is likely compromised - an attacker gained code execution, installed malware, or is using the VM for C2", "The web application has a feature that anonymizes user traffic through Tor", "Azure flagged a false positive - web servers sometimes make outbound connections to CDN nodes that share IP ranges with Tor"], answer:'B', explanation:"A web application server making outbound connections to Tor exit nodes is a major red flag. Legitimate web servers don't need to connect to Tor. Most likely: exploited vulnerability (SQLi, RCE), supply chain compromise, or stolen deployment credentials. Response: 1) Isolate the VM (NSG block all outbound or disconnect VNET). 2) Take a disk snapshot BEFORE remediation (preserve forensic evidence). 3) Check: running processes, established connections (netstat), recent file modifications, web server logs. 4) Don't reboot or delete - preserve evidence. 5) Notify CISO."},
-  {difficulty:'intermediate', type:'mcq', question:"You have an app registration in Entra ID with a client secret that expires in 30 days. You generate a new secret and update your application's config file. The old secret still works until expiration. What security issue does this introduce?", options:["Nothing - both secrets are valid until the old one expires", "The old secret could be leaked and used by attackers to access your resources until it expires - you should immediately remove the old secret", "The app registration can only use one secret at a time - the new secret supersedes the old one automatically", "You need to rotate both secrets simultaneously or they conflict"], answer:'B', explanation:"Both secrets are valid until the old one expires. If the old secret is leaked (by a developer, in code, via git history), an attacker can use it for 30 days. Best practice: after updating your app to use the new secret and verifying it works, immediately delete the old secret. Don't wait for expiration. Also rotate secrets more frequently (every 3-6 months, ideally every month)."},
-  {difficulty:'advanced', type:'open', question:"Design an Azure landing zone for a small MSP client migrating 3 on-premises servers to Azure. Include: subscription structure, resource group design, network topology (hub-spoke or flat), identity (hybrid or cloud-only), key security controls, and cost management approach.", options:null, answer:null, explanation:"Subscription structure: single subscription fine for small client. Resource groups by environment (RG-Production, RG-Staging, RG-Management) and function (RG-Networking, RG-Security). Network: Hub-spoke even at small scale - hub VNET with Azure Firewall/NVA, spoke VNETs for workloads, peered. Hub contains: Bastion (no public RDP/SSH), Azure Firewall, VPN Gateway (site-to-site). Identity: Hybrid if on-prem AD exists - Azure AD Connect with Password Hash Sync + Seamless SSO. Cloud-only if greenfield. Enable Entra P1. Security controls: Defender for Cloud (free minimum, P2 full coverage), Entra CA requiring MFA + compliant devices, NSGs on all subnets (least-privilege), Azure Bastion for VM access (no public IPs), Key Vault for secrets, Azure Monitor + Log Analytics. Cost: Azure Cost Management + Budgets with alerts (80%/100%). Right-size VMs (B-series for dev). Auto-shutdown non-prod. Reserved instances after 30-60 days usage data."},
-  {difficulty:'intermediate', type:'mcq', question:"You're configuring App Registration permissions for a PowerShell script that manages user licenses in M365. The script needs Microsoft Graph 'User.ReadWrite.All' permission. Should you use delegated or application permissions?", options:["Delegated - you're acting on behalf of a user", "Application - the script runs unattended and needs direct Graph permissions", "Either works - choose based on your preference", "Neither - Graph API doesn't support user license management, use Exchange Online instead"], answer:'B', explanation:"Delegated permissions = user context (a user must authenticate). Application permissions = app context (the app runs unattended with its own identity). For an unattended script managing licenses on a schedule: use Application permissions with a certificate or client secret. The script uses the app's identity to call Graph, not a user's identity. This is the standard pattern for automation."},
-  {difficulty:'foundational', type:'mcq', question:"Your Entra ID tenant is syncing with on-premises AD via Azure AD Connect. A user's phone number was updated in on-premises AD, but it's not reflecting in Entra ID after 2 hours. The sync interval is set to 30 minutes. What is the most likely reason?", options:["The phone number attribute isn't selected for sync in Azure AD Connect", "Azure AD Connect is in staging mode - disabled sync", "Active Directory is experiencing replication latency between domain controllers", "All of the above are possible - check each one"], answer:'D', explanation:"Multiple causes: 1) The attribute isn't selected for sync - check Sync Rules Editor. 2) Azure AD Connect is in staging mode (diagnostic mode - sync runs but doesn't write to cloud). 3) On-prem AD replication latency - DC hasn't replicated the change yet. 4) Export error in AAD Connect due to conflict (duplicate value). Check all: Sync Rules, staging mode setting, on-prem AD replication, error logs in AAD Connect."},
-  {difficulty:'intermediate', type:'mcq', question:"You've enabled Azure AD Privileged Identity Management (PIM) and made a role 'eligible' instead of 'active' for a user. The user says they can't access Azure resources. What do they need to do?", options:["Contact you - you need to activate the role for them", "Activate the role themselves - navigate to Entra ID > Roles > My Roles > Activate role", "Wait 24 hours - PIM requires a waiting period before activation", "Switch to an incognito browser window - PIM roles don't work in normal browsing mode"], answer:'B', explanation:"PIM 'eligible' means the user is eligible to activate the role, but must activate it themselves (with MFA and justification). Users go to Entra ID > Roles and Admins > My Roles > Activate role to do this. The activation is time-limited (default 8 hours). This is the just-in-time (JIT) privilege escalation pattern - roles are activated only when needed, not always active."}
-],
-
-secops: [
-  {difficulty:'foundational', type:'mcq', question:"Your EDR flags this process chain: outlook.exe → powershell.exe → mshta.exe → net.exe 'user /add'. What is this attack chain most likely, and what is the name of the MITRE ATT&CK technique for the initial step?", options:["A legitimate admin script; MITRE: T1053 Scheduled Task", "Phishing email with malicious attachment executing multi-stage payload; initial delivery is T1566.001, PowerShell is T1059.001, mshta.exe abuse is T1218.005, net user /add is T1136.001", "A macro virus from a downloaded Office file", "Both B and C are correct"], answer:'D', explanation:"This is a full kill chain: phishing (T1566/T1204) → malicious Office doc → macro spawns PowerShell (T1059.001) → PowerShell runs mshta.exe with HTA script (T1218.005 - LOLBin) → net.exe creates local admin account (T1136.001). Mshta is significant - it's a signed Windows binary that bypasses some policies. Response: isolate immediately, check if net user /add succeeded, check for other persistence (scheduled tasks, registry run keys)."},
-  {difficulty:'intermediate', type:'open', question:"HOME LAB SCENARIO: You want to build a home SIEM lab using free tools. Design a lab with Wazuh (free SIEM/XDR), deploy agents on Windows and Linux VMs, and create a detection rule for PowerShell execution with encoded commands (-EncodedCommand flag). Describe the setup and the rule logic.", options:null, answer:null, explanation:"Lab setup: 1) Deploy Wazuh Manager on Ubuntu VM. 2) Deploy Wazuh agents on Windows 10/11 and Linux VMs. 3) Enable Sysmon on Windows for detailed process logs. 4) Configure Windows agent to collect Sysmon EventID 1 (process creation). Detection rule in /var/ossec/etc/rules/local_rules.xml: <rule id='100001' level='12'><if_group>windows</if_group><field name='win.eventdata.commandLine' type='pcre2'>(?i)powershell.*-e(nc|ncode|ncoded|ncodedcommand)</field><description>PowerShell EncodedCommand execution detected</description><mitre><id>T1059.001</id></mitre></rule>. Test: run powershell -EncodedCommand (base64) on Windows agent. Verify alert fires in Wazuh dashboard. This logic is identical to enterprise SIEMs."},
-  {difficulty:'advanced', type:'mcq', question:"During threat hunting, you find an unfamiliar process 'svchost32.exe' running from C:\\Users\\Public\\svchost32.exe with network connections to 45.77.x.x:443. What is the technique and your immediate steps?", options:["Likely a Windows update process - whitelist and move on", "Masquerading (T1036) - isolate the host, kill the process, take a memory dump BEFORE killing, hash the binary and check VirusTotal, identify persistence mechanism", "Run a virus scan - could be a legitimate vendor tool", "Block the IP at the firewall - that contains the threat"], answer:'B', explanation:"Classic masquerading - naming malware after legitimate system processes. Legitimate svchost.exe runs ONLY from C:\\Windows\\System32\\. Running from Users\\Public is a red flag (world-writable, no admin required). Response: 1) Isolate via EDR. 2) Take memory dump (malware decrypts itself in RAM). 3) Hash binary, check VirusTotal. 4) Kill process. 5) Find persistence (autoruns, scheduled tasks, registry). 6) Check C2 IP in threat intel. 7) Search for same hash on all endpoints."},
-  {difficulty:'intermediate', type:'mcq', question:"You're reviewing SIEM alerts and see: 200 authentication failures across 50 different user accounts from a single IP in 10 minutes, then the attacks stop completely. No accounts were compromised. What attack is this, and why might the attacker have stopped?", options:["Credential stuffing - attacker exhausted their credential list", "Password spray - attacker stopped because an account lockout alert fired, or they hit the threshold without triggering lockouts", "Brute force - attacker ran out of common passwords", "Reconnaissance scan - this is port scanning, not authentication attempts"], answer:'B', explanation:"4 failures per account across 50 accounts = password spray - testing few passwords against many accounts to avoid lockouts. The abrupt stop is telltale: attackers monitor for alerting and pause before triggering lockouts (default threshold is often 5 attempts). Detection: alert when single IP authenticates against >10 unique accounts within 5 minutes. Follow-up: check if ANY of those 50 accounts were subsequently accessed from unusual IPs/locations within hours (they may have valid credentials)."},
-  {difficulty:'advanced', type:'mcq', question:"A Defender for Endpoint alert fires: 'Credential dumping via LSASS memory access.' The source process is legitimately signed 'AV_Scanner.exe' from your endpoint protection vendor. What are the two possible explanations and how do you determine which is correct?", options:["It's always a false positive when a signed vendor binary triggers the alert", "Either the AV vendor's binary legitimately reads LSASS for detection, OR the binary's signature was hijacked or vendor was supply-chain compromised. Check: binary's certificate chain, hash vs. vendor's known-good hash, contact vendor, check if alert fires on ALL endpoints", "The LSASS protection is too aggressive - disable Credential Guard", "Submit as false positive and whitelist the process"], answer:'B', explanation:"Some AV/EDR products legitimately access LSASS (but it's also how supply chain attacks work - SolarWinds, 3CX). Verify: 1) Check digital signature - who is signer, certificate valid? 2) Hash the binary (SHA256), compare to vendor's published hash. 3) Is alert firing on ALL endpoints (legitimate behavior) or just few (targeted compromise)? 4) Contact vendor directly. 5) Look for other anomalous behavior (network connections, file drops). When in doubt: isolate, escalate, investigate - never immediately whitelist."},
-  {difficulty:'advanced', type:'open', question:"You receive a call at 2am: ransomware is actively encrypting files on a file server. It's been running for 7 minutes. Walk through your complete incident response, including immediate containment, evidence preservation, recovery steps, and post-incident actions.", options:null, answer:null, explanation:"Immediate (first 5 minutes): 1) Isolate the file server - disable network interface or quarantine via EDR. Don't shut down - you lose volatile memory. 2) Identify other potentially affected systems - check EDR for similar processes. 3) Notify CISO/management immediately. Evidence preservation: 4) Take RAM dump of infected server (WinPmem or EDR). 5) Take VM disk snapshot BEFORE any remediation. 6) Preserve event logs (export Security, System, Application logs). Containment: 7) Identify ransomware family - look at file extension, ransom note, check ID Ransomware. 8) Trace EDR process tree back to initial execution (phishing? RDP? exploit?). 9) Reset any credentials that may have been used to spread. Recovery: 10) Restore from last known-good backup - verify backup integrity first. 11) Patch the attack vector before restoring. Post-incident: 12) Determine if data was exfiltrated before encryption (check firewall logs for large outbound transfers). 13) Full report: timeline, TTPs (MITRE mapping), root cause, remediation, policy changes. 14) Notify law enforcement if required (FBI IC3). 15) Assess notification obligations (HIPAA, state breach laws)."},
-  {difficulty:'foundational', type:'mcq', question:"A user clicks a link in a phishing email. The link opens a webpage that looks like an Outlook login prompt. What social engineering technique is this?", options:["Phishing", "Spear-phishing", "Watering hole attack", "All of the above - it depends on whether the email was targeted"], answer:'A', explanation:"This is classic phishing - a fake login page (credential harvesting). Spear-phishing is targeted phishing (researched, personalized). Watering hole is a compromised legitimate website. The combination of phishing email + credential harvesting page is the most common technique."},
-  {difficulty:'intermediate', type:'mcq', question:"You've implemented endpoint isolation for a suspected compromised machine via your EDR - the device can no longer communicate with the network. The user is upset because they can't access file shares or email. What should you do before lifting isolation?", options:["Immediately lift isolation - business productivity is critical", "Collect forensic artifacts from the isolated machine while it's in this state, then lift isolation after you've gathered evidence", "Lift isolation only if the EDR threat score has decreased", "Leave it isolated for 24 hours to ensure the threat is gone"], answer:'B', explanation:"While isolated, collect forensic artifacts: event logs, process listings, network connections (netstat), active sessions, recent files, registry hives, etc. This captures the forensic snapshot of the compromise before the attacker can cover their tracks or the machine is brought back online. After collection, you can lift isolation if preliminary analysis suggests it's safe, or rebuild the machine. Don't delay evidence collection for productivity."}
-],
-
-scripting: [
-  {difficulty:'foundational', type:'mcq', question:"What is wrong with this PowerShell script, and what does it actually output?", code:`$users = Get-ADUser -Filter * -Properties Department
-$users | Where-Object { $_.Department -eq "IT" }
-foreach ($user in $users) {
-    Write-Output $user.Name
-}`, options:["Nothing is wrong - it outputs IT department users' names", "The Where-Object filter result is never stored or used - the foreach still iterates over ALL users", "Get-ADUser -Filter * will timeout on large directories", "Both B and C"], answer:'D', explanation:"Two issues: 1) Where-Object result is piped to console and not assigned to a variable, so foreach runs over original $users (all users). Fix: $itUsers = $users | Where-Object { ... }. 2) Get-ADUser -Filter * fetches every user - slow and memory-intensive on large domains. Better: Get-ADUser -Filter {Department -eq 'IT'} - AD processes filter server-side."},
-  {difficulty:'intermediate', type:'open', question:"Write a PowerShell script that queries all AD computers, checks if each one is reachable via ping, and for reachable machines checks if a specific Windows service ('wuauserv') is running. Output a CSV with columns: ComputerName, Online, ServiceStatus, LastChecked.", options:null, answer:null, explanation:`$results = @()
-$computers = Get-ADComputer -Filter * | Select-Object -ExpandProperty Name
-foreach ($computer in $computers) {
-    $online = Test-Connection -ComputerName $computer -Count 1 -Quiet -ErrorAction SilentlyContinue
-    $svcStatus = 'N/A'
-    if ($online) {
-        try {
-            $svc = Get-Service -ComputerName $computer -Name wuauserv -ErrorAction Stop
-            $svcStatus = $svc.Status
-        } catch {
-            $svcStatus = 'Error: ' + $_.Exception.Message
-        }
-    }
-    $results += [PSCustomObject]@{
-        ComputerName  = $computer
-        Online        = $online
-        ServiceStatus = $svcStatus
-        LastChecked   = (Get-Date -Format 'yyyy-MM-dd HH:mm:ss')
-    }
-}
-$results | Export-Csv -Path 'C:\\Reports\\ServiceCheck.csv' -NoTypeInformation
-
-Key points: -ErrorAction SilentlyContinue on Test-Connection prevents DNS errors from crashing loop. Try/catch on Get-Service catches RPC failures or offline machines. [PSCustomObject] is cleaner than hash tables for CSV export. For large environments, use Invoke-Command for parallel execution.`},
-  {difficulty:'advanced', type:'mcq', question:"You're automating user offboarding via PowerShell. The script must: disable AD account, revoke M365 sessions, remove group memberships, hide from GAL, move to Disabled OU, and set out-of-office message. What is a critical security ordering issue in this process?", options:["Out-of-office must be set first so contacts know before access is removed", "Revoking M365 sessions should happen BEFORE or simultaneously with AD disable - if you disable AD and wait for sync, the user still has active cloud sessions for up to 30 minutes", "Group membership removal must happen before account disable", "The OU move should happen first to prevent GPOs from the old OU applying"], answer:'B', explanation:"Critical security gap: Azure AD Connect syncs on-prem AD changes to Entra on a schedule (default 30 minutes). If you disable on-prem AD and rely on sync, the user still has valid Entra sessions for up to 30 minutes. Fix: immediately call Revoke-MgUserSignInSession -UserId $upn (Microsoft Graph) to invalidate all active tokens right away. Also reset cloud password. Correct order: 1) Revoke M365 sessions. 2) Reset password. 3) Disable AD account. 4) Remove groups. 5) Hide from GAL. 6) Move OU. 7) Set OOO. 8) Document."},
-  {difficulty:'intermediate', type:'mcq', question:"You're writing a PowerShell script that connects to Exchange Online and lists all mailboxes. You use Connect-ExchangeOnline -UserPrincipalName admin@company.com. For automation (unattended script run by a scheduler), should you use this approach or use a service principal?", options:["Use -UserPrincipalName - it's the standard way to connect", "Use a service principal with certificate authentication - user-based auth won't work when no user is logged in", "Either works - choose based on preference", "Neither - Exchange Online doesn't support PowerShell automation"], answer:'B', explanation:"User-based auth (MFA, interactive) requires a user to authenticate. For unattended scripts: use a service principal (app registration) with certificate auth. Connect-ExchangeOnline -AppId <appid> -CertificateThumbprint <thumbprint> -Organization <tenant>.onmicrosoft.com. The script runs as the app's identity, not a user's identity. This is the standard pattern for scheduled automation."},
-  {difficulty:'intermediate', type:'mcq', question:"You're writing a script that retrieves secrets from Azure Key Vault. You use Get-AzKeyVaultSecret -VaultName 'myKeyVault' -Name 'sql-password'. The script runs successfully on your machine but fails when run by a scheduled task (running as SYSTEM account). What is the most likely reason?", options:["The SYSTEM account doesn't have permissions to Key Vault", "The script is using interactive auth (Connect-AzAccount) which doesn't work for SYSTEM", "Both A and B - the SYSTEM account needs explicit RBAC on Key Vault, and the script needs service principal or managed identity auth", "The script is missing an error handler for the Key Vault connection"], answer:'C', explanation:"Two issues: 1) SYSTEM account isn't a user - it can't do interactive Azure auth. 2) Even if it could, SYSTEM would need explicit RBAC permission on the Key Vault. Solution: run the scheduled task as a service account that has RBAC permissions, or better: use Managed Identity on the VM/runbook that's running the script - the platform automatically handles auth without credentials. Managed Identity is the Azure-native pattern for automation."},
-  {difficulty:'advanced', type:'open', question:"You need to build an automated reporting script that pulls the last 30 days of Entra ID sign-in logs, identifies accounts with sign-ins from more than 3 countries, and emails a formatted HTML report to your security team. Describe the full approach using Microsoft Graph and PowerShell.", options:null, answer:null, explanation:"Approach: 1) Auth: Register an app in Entra ID with AuditLog.Read.All and Mail.Send permissions. Use certificate auth. Connect-MgGraph -ClientId $appId -TenantId $tenantId -CertificateThumbprint $thumb. 2) Pull sign-in logs: $startDate = (Get-Date).AddDays(-30).ToString('yyyy-MM-ddTHH:mm:ssZ'). $signIns = Get-MgAuditLogSignIn -Filter \"createdDateTime ge $startDate\" -All. Note: requires Entra P1/P2. 3) Group by user and extract unique countries: $grouped = $signIns | Group-Object userPrincipalName | Where-Object { ($_.Group | Select-Object -ExpandProperty location | Select-Object -ExpandProperty countryOrRegion | Sort-Object -Unique).Count -gt 3 }. 4) Build HTML report: use Here-String with CSS styling, table rows per user showing UPN, countries, last sign-in. 5) Send via Graph: $message = @{ subject='Sign-In Anomaly Report'; body=@{contentType='HTML';content=$htmlBody}; toRecipients=@(@{emailAddress=@{address='security@company.com'}}) }. New-MgUserSendMail -UserId 'sender@company.com' -Message $message. Schedule via Task Scheduler or Azure Automation runbook."},
-  {difficulty:'foundational', type:'mcq', question:"You're writing a Python script that calls a REST API with an API key. Where should you store the API key so it's secure and not hardcoded in the script?", options:["In a string variable at the top of the script", "In an environment variable that you set before running the script", "In a configuration file in the same directory as the script", "Hardcoded is fine - Python is interpreted so it's not visible"], answer:'B', explanation:"Store sensitive credentials in environment variables that are set before runtime (e.g., export API_KEY='xxx' in bash). Or better: use a secrets management tool (AWS Secrets Manager, Azure Key Vault). Never hardcode in scripts or config files - these can be accidentally committed to git. Environment variables are visible to the process but not stored in source code."},
-  {difficulty:'intermediate', type:'mcq', question:"You have a PowerShell script that runs Get-ADUser -Filter * to fetch all users. On a domain with 50,000 users, this takes 2 minutes and consumes high memory. How do you optimize this?", options:["Add -ResultSetSize 5000 to limit results per query", "Use Get-ADUser -Filter {name -like '*'} -SearchScope Subtree - it's faster than wildcard filtering", "Use Get-ADUser -Filter * | Select-Object -First 1000 - return only the first 1000 instead of all", "The query is already optimized - AD queries are inherently slow for large directories"], answer:'A', explanation:"Active Directory returns results in pages (default 256 per page). For large queries, set -ResultSetSize higher (e.g., 5000) to reduce the number of round-trips. Also use -Server to target a specific DC (closer to your location for faster response). If you're filtering, use -Filter {attribute -eq 'value'} - AD processes the filter server-side, not client-side. Avoid returning all attributes with -Properties * - specify only what you need."}
-],
-
-emailsec: [
-  {difficulty:'foundational', type:'mcq', question:"A client asks you to explain SPF, DKIM, and DMARC in plain terms and what happens if only SPF is configured but not DKIM or DMARC.", options:["SPF and DKIM are the same thing - DMARC is the enforcement layer", "SPF: verifies sending mail server's IP is authorized. DKIM: cryptographically signs email content. DMARC: tells receivers what to do when SPF/DKIM fail, and requires alignment. Without DKIM or DMARC, SPF passes mean nothing to most receivers - spoofed emails can still deliver", "SPF is for inbound mail, DKIM is for outbound, DMARC combines both", "Without DMARC, emails are rejected automatically"], answer:'B', explanation:"SPF: publishes list of authorized sending IPs in DNS TXT record. Verifies the envelope-from (Return-Path) domain matches. DKIM: sending server cryptographically signs the email; receivers verify with public key in DNS. Signs specific headers and body (hash). DMARC: builds on both - requires at least one to pass AND align with Header From domain. The policy (p=none/quarantine/reject) tells receivers what to do on failure. Without DMARC: even with SPF passing, a spoofed email can deliver to many receivers. DMARC p=reject is the only way to prevent domain spoofing."},
-  {difficulty:'foundational', type:'mcq', question:"You're checking a client's SPF record and it reads: v=spf1 include:spf.protection.outlook.com include:sendgrid.net include:mailchimp.com include:zendesk.com include:salesforce.com ip4:203.0.113.10 include:smtp.thirdparty.net ~all. What is the problem?", options:["The ~all should be -all for proper rejection", "The SPF record exceeds the 10 DNS lookup limit - each 'include:' counts as a lookup, causing 'PermError' which may cause emails to fail", "ip4 addresses are not supported in SPF", "The record is too long and will be truncated by DNS"], answer:'B', explanation:"RFC 7208 limits SPF to 10 DNS lookups (include, a, mx, ptr, redirect mechanisms). This record has 6 includes + possibly more from recursive lookups within each include. When limit exceeded, SPF returns PermError - receivers may treat this as SPF failure, meaning legitimate emails could be rejected or spam-scored. Fix: use SPF flattening tools (mxtoolbox, dmarcly) to replace include statements with actual IP ranges. Or use DNS-based SPF management service. Multiple TXT records for SPF are NOT supported - only one SPF TXT record per domain."},
-  {difficulty:'intermediate', type:'open', question:"A client says their DMARC report shows 30% of emails sent from their domain are failing DMARC. They have p=none (monitoring only). Walk through how to read a DMARC RUA report, identify the sources of failure, and the process for moving to p=reject safely.", options:null, answer:null, explanation:"Reading RUA reports: DMARC aggregate reports are XML files emailed to the rua= address. Use a free parser (dmarcian.com, mxtoolbox, google postmaster tools) to visualize. Key fields: source_ip (sending IP), count (volume), policy_evaluated (pass/fail), spf/dkim results and alignment. Process: 1) Identify all IPs sending as your domain - some may be unauthorized (spoofing), some may be legitimate services not yet configured. 2) For each failing source IP: identify the service (reverse DNS lookup, check with your teams). 3) For each legitimate source: add to SPF AND configure DKIM signing (contact vendor for custom domain auth setup). 4) For unknown/unauthorized sources: investigate - active spoofing campaign? 5) Move policy gradually: p=none → p=quarantine (10% of mail quarantined on failure) → p=quarantine (100%) → p=reject only after legitimate email sources are all passing. Use 'pct=' tag to gradually increase enforcement percentage. Timeline: minimum 2-4 weeks at each stage monitoring RUA reports."},
-  {difficulty:'intermediate', type:'mcq', question:"You receive a suspicious email. The From: header shows ceo@yourcompany.com. You pull the raw headers. What specific headers do you examine to determine if it's spoofed, and what would spoofing indicators look like?", options:["Check the 'Reply-To' header - if it differs from From:, the email is spoofed", "Check Return-Path, Received chain (actual sending IPs), Authentication-Results (SPF/DKIM/DMARC results), and DKIM-Signature domain. Spoofing indicators: SPF fail or mismatch, no DKIM or DKIM signed by different domain, DMARC fail, Received showing IPs not from your company", "Check if the email has an X-Mailer header - spoofed emails use unusual mail clients", "Message-ID domain must match From: domain - any mismatch is definitive proof of spoofing"], answer:'B', explanation:"Header analysis checklist: 1) Return-Path: should match or align with From: domain. Spoofed: ceo@yourcompany.com From but Return-Path: attacker@maliciousdomain.com. 2) Received: headers (read bottom to top). Bottom Received shows where it actually originated. IP should belong to your company's infrastructure. 3) Authentication-Results: shows SPF, DKIM, DMARC results. 'spf=fail' or 'dmarc=fail' are clear indicators. 4) DKIM-Signature d= tag: the domain that signed. If not yourcompany.com, DKIM alignment fails. Reply-To differing is a phishing indicator but not definitive. Message-ID domain mismatch is weak."},
-  {difficulty:'advanced', type:'mcq', question:"A security researcher reports that emails claiming to be from ceo@yourcompany.com are being delivered to external recipients despite you having DMARC p=reject configured. How is this possible?", options:["It's impossible - p=reject means all spoofed emails are dropped by all receivers", "Multiple scenarios: the receiving mail server doesn't check DMARC, the attacker is using a lookalike domain (c-eo@company.com), emails are forwarded through a legitimate third-party bypassing DMARC, or a subdomain without DMARC configured is being spoofed", "The DMARC policy only applies to direct MX - not all external providers check it", "The researcher is confused - p=reject emails go to spam, not to the inbox, so delivery is technically occurring"], answer:'B', explanation:"DMARC p=reject is not universally enforced: 1) Some older mail systems don't implement DMARC - small minority. 2) Lookalike domains: DMARC protects yourcompany.com but not c0mpany.com or yourcompany.co. 3) Email forwarding: when a recipient's mail server forwards email, the forwarding server often breaks SPF (new sending IP) and may not re-sign DKIM. Many DMARC implementations whitelist known forwarding services. 4) Subdomain spoofing: DMARC policy covers the exact domain. A subdomain like mail.yourcompany.com might not have its own DMARC/SPF record. Add 'sp=reject' to your DMARC record to inherit policy for subdomains, or publish DMARC on each subdomain."},
-  {difficulty:'advanced', type:'open', question:"HOME LAB SCENARIO: Set up a complete email security testing environment. Describe how to: run your own mail server with Postfix, configure SPF/DKIM/DMARC for a test domain, use tools to test your config, and simulate a phishing email to understand what headers look like.", options:null, answer:null, explanation:"Lab setup: 1) Register a cheap test domain (Namecheap ~$1/year). 2) Spin up Ubuntu VPS or VM. Install Postfix: apt install postfix. Configure as internet site with your domain. Install OpenDKIM: apt install opendkim opendkim-tools. 3) DNS setup (at your registrar): MX record → your server IP. SPF TXT: 'v=spf1 ip4:YOUR_SERVER_IP -all'. DKIM: generate keys with opendkim-genkey, publish public key as TXT record 'mail._domainkey'. DMARC: '_dmarc TXT: v=DMARC1; p=quarantine; rua=mailto:dmarc@yourdomain.com'. 4) Testing tools: mxtoolbox.com (check MX, SPF, DKIM, DMARC). mail-tester.com (send email, get score). Google Postmaster Tools (if sending to Gmail). dmarcian.com (DMARC report analyzer). 5) Phishing simulation: use GoPhish (open source) - configure an email template mimicking a real login page, send to your own test accounts, examine raw headers. You'll see exactly how SPF/DKIM headers look when legitimate vs. spoofed (send from different server without the keys)."},
-  {difficulty:'intermediate', type:'mcq', question:"You have configured DMARC with p=reject but still see some emails from your legitimate sending services being rejected by Gmail. Your SPF and DKIM both pass for those services. What is the most likely reason?", options:["Gmail doesn't fully support DMARC - use p=quarantine instead", "Your sending service is using your domain in the From: header but signing the DKIM with a different domain", "Gmail is filtering incorrectly - contact Google support", "The DMARC policy is correct, but Gmail has additional content filtering that rejects emails from new IPs"], answer:'B', explanation:"SPF and DKIM can pass individually, but DMARC requires alignment - at least one of them must align with the Header From domain. Common issue: a sending service (e.g., Mailchimp) uses your domain in the From: header (passes SPF/DKIM), but DKIM is signed with their domain (d= tag is mailchimp.com). This fails DMARC alignment. Fix: ask the service to sign with your domain using custom domain authentication (CNAME-based DKIM setup). Or have them change the From: domain to theirs."},
-  {difficulty:'intermediate', type:'mcq', question:"A user accidentally sent an email to an external recipient that contained sensitive company data (passwords in a file attachment). What are your immediate steps?", options:["Retrieve the email using Exchange Online's search and delete feature to remove it from their mailbox", "Verify if the external recipient has opened/downloaded the attachment via email tracking, request they delete it, and assess data breach risk", "Change all the passwords in the file immediately", "Assume the data has been compromised and notify all affected parties immediately"], answer:'B', explanation:"Immediate steps: 1) Use Exchange Online Content Search (Purview) to identify and soft-delete the email from recipient's mailbox - this doesn't guarantee deletion if they downloaded the attachment. 2) Contact the external recipient directly and request they delete the email and any downloaded files. 3) Use email tracking (read receipts, link tracking) to see if they opened the attachment. 4) Assess risk: if passwords were in plaintext in the attachment, assume compromised and rotate them. 5) Document the incident and notify appropriate parties (legal, CISO). Not all recipients' mail systems support purge - focus on risk mitigation and credential rotation."}
-],
-
-architecture: [
-  {difficulty:'foundational', type:'mcq', question:"A client with 50 employees asks whether to implement VPN or Zero Trust Network Access (ZTNA) for remote work. What is the fundamental architectural difference and which is appropriate for a cloud-first M365 business?", options:["VPN and ZTNA do the same thing - ZTNA is just a newer marketing term for VPN", "VPN grants network-level access (user is 'inside' after connecting). ZTNA grants application-level access (user accesses specific apps, never gets network-level access). For cloud-first M365 business with no on-prem servers, use Conditional Access + ZTNA principles (Entra CA + compliant device) - VPN adds complexity with no benefit", "ZTNA requires dedicated hardware appliances and is too expensive for 50 employees", "VPN is required for M365 compliance - Microsoft recommends all M365 traffic go through a corporate VPN"], answer:'B', explanation:"VPN = network-level trust. Once authenticated, the user gets network access based on routing (lateral movement risk). ZTNA = application-level trust. Each application access is independently authenticated and authorized. For pure cloud/M365 business: there's no corporate network to VPN into. Right approach: Conditional Access (verify identity, verify device compliance, check risk level) → grant access to specific M365 apps. No VPN needed. VPN is appropriate for on-premises resources (legacy apps, file servers, domain controllers). Microsoft explicitly recommends bypassing VPN for M365 traffic (split tunneling or no VPN)."},
-  {difficulty:'intermediate', type:'mcq', question:"You're doing a NIST CSF gap assessment for a healthcare client. They have: EDR on all endpoints, no asset inventory, backups tested quarterly, no formal IR plan, HIPAA risk assessment done 3 years ago, and staff phishing training once per year. Rank their top 3 gaps in priority order.", options:["1) No IR plan 2) Infrequent phishing training 3) Outdated risk assessment", "1) No asset inventory (Identify function is the foundation) 2) No IR plan (Respond function - critical when incidents occur) 3) Outdated risk assessment (3 years violates HIPAA regular review requirement)", "1) Quarterly backup testing (should be monthly) 2) No asset inventory 3) No IR plan", "1) Phishing training frequency 2) Risk assessment age 3) No IR plan"], answer:'B', explanation:"NIST CSF function priority: Identify (know what you have) → Protect → Detect → Respond → Recover. Without asset inventory, every other function is degraded - you can't patch unknown systems, can't monitor unknown devices, can't respond to incidents on unknown assets. IR plan: when (not if) an incident occurs, the absence of a plan costs hours/days of chaos, dramatically increasing damage/recovery cost. HIPAA specifically requires a written IR plan (45 CFR 164.308(a)(6)). Risk assessment: HIPAA requires periodic reassessment - 3 years without significant change review is a compliance gap."},
-  {difficulty:'intermediate', type:'open', question:"Design a security architecture for a new MSP client: 75-person professional services firm, handling legal documents (sensitive but not regulated like HIPAA), all M365, 15 remote employees, no IT staff. Budget conscious. What are your tier 1 (must-have), tier 2 (should-have), and tier 3 (nice-to-have) recommendations?", options:null, answer:null, explanation:"Tier 1 (must-have, day 1): MFA for all users (Entra - included in M365 Basic+). Conditional Access: block legacy auth, require MFA from unmanaged devices. Email security: DMARC p=quarantine minimum, Defender for Office 365 Plan 1 (~$2/user/month). Backups: Veeam or Backupify for M365 (native doesn't cover accidental deletion). Endpoint: Microsoft Defender (built-in) enabled, or Bitdefender/SentinelOne for better EDR. Tier 2 (quarter 1): Intune device management (enforce device compliance, BitLocker). Entra ID P1 (full CA features, SSPR). Purview DLP (prevent sensitive documents emailing externally). Privileged accounts: separate admin accounts for any IT work. Security awareness training. IR runbook (even simple one-pager). Tier 3 (year 1): Microsoft 365 Business Premium (bundles Intune + Defender + P1 + Purview - often cheapest for SMB). Annual external penetration test. Cyber insurance. Entra ID P2 for risk-based CA and PIM if they have admin accounts."},
-  {difficulty:'intermediate', type:'mcq', question:"What is the difference between authentication and authorization, and give a real example of a security failure caused by confusing the two?", options:["Authentication and authorization are the same concept - verifying a user's identity grants them appropriate access automatically", "Authentication: verifying who you are (identity - username/password/MFA). Authorization: verifying what you're allowed to do (access control - RBAC, ACLs). Failure example: an app validates the JWT token (authentication passes) but never checks if the user's role permits the requested action - an authenticated regular user accesses admin endpoints (Broken Access Control, OWASP #1)", "Authentication is for humans, authorization is for service accounts and APIs", "Authorization happens first (is this request valid?) and authentication second (who is making it?)"], answer:'B', explanation:"Authentication = 'are you who you say you are?' Authorization = 'are you allowed to do this?' Both must be implemented correctly. Real failure: IDOR (Insecure Direct Object Reference) - user is authenticated but the app doesn't verify they're authorized to access resource /api/users/1234. User changes ID to /api/users/5678 and accesses another user's data. Another failure: privilege escalation via role manipulation - normal user modifies a JWT token's 'role' claim to 'admin' and the app trusts the token's claims without server-side role verification. The distinction matters: authentication = IdP/MFA/SSO layer. Authorization = RBAC/ABAC/policy enforcement, MUST be enforced server-side on every request, never client-side only."},
-  {difficulty:'advanced', type:'open', question:"A client has been breached and you're brought in as a consultant. Their current security posture: flat network, no MFA, shared admin credentials, no logging, no EDR, Exchange on-premises, Windows Server 2012 R2. They want to 'prevent this from happening again.' Design a 90-day remediation roadmap, prioritized by risk reduction per dollar spent.", options:null, answer:null, explanation:"Week 1-2 (Stop the bleeding - highest risk reduction): 1) Emergency MFA deployment for all users (Duo free or Entra free tier for basic MFA). 2) Rotate ALL credentials - assume everything is compromised. Unique passwords, admin accounts. 3) Identify and disable unused/orphaned accounts. 4) Segment or restrict RDP - if Exchange is on-prem and internet-facing on port 443 only, ensure RDP is firewalled to VPN-only access. Enable Windows Defender. Month 1 (Visibility): 5) Enable Windows Event logging (Security log, PowerShell logging). Deploy Wazuh free SIEM or Windows Event Forwarding. 6) Deploy free EDR - Defender for Endpoint or Wazuh agent. Visibility is prerequisite. Month 2 (Architecture fixes): 7) Network segmentation - at minimum, separate servers from workstations with firewall rule. 8) Patch - Windows Server 2012 R2 is EOL (Oct 2023). Plan migration or pay for Extended Security Updates. 9) Separate admin accounts - no shared credentials. Month 3 (Maturity): 10) IR plan (basic). 11) Backup verification - test restore, offsite/offline (3-2-1 rule). 12) Security awareness training. 13) Begin Exchange Online migration - on-prem Exchange is highest ongoing attack surface. Cost priority: free tools first (Defender, Wazuh, MFA free tiers), then high-ROI paid (EDR, email security)."},
-  {difficulty:'advanced', type:'mcq', question:"You're implementing CIS Controls v8 for a mid-size client. They ask which Implementation Group (IG1, IG2, IG3) they should target and what the first 5 controls are. What do you tell them, and what makes IG1 'cyber hygiene'?", options:["CIS Controls don't have implementation groups - all 18 controls apply equally", "IG1 is the minimum baseline for all organizations (essential cyber hygiene - safeguards that address most common attacks). IG2 adds controls for organizations with more resources/risk. IG3 is for mature programs. First 5 controls: 1) Inventory of Enterprise Assets, 2) Inventory of Software Assets, 3) Data Protection, 4) Secure Configuration, 5) Account Management", "IG1 is for small businesses only - mid-size companies should target IG3", "The first 5 CIS controls are: Firewall, Antivirus, Patching, MFA, Backup"], answer:'B', explanation:"CIS Controls v8 has 18 controls organized into 3 Implementation Groups: IG1 (56 safeguards): essential cyber hygiene - what every organization should do regardless of size. Addresses the most prevalent attacks. IG2 (74 additional safeguards): for organizations with dedicated IT/security staff handling more sensitive data. IG3 (23 additional safeguards): for mature security programs facing sophisticated threats. First 5 controls: 1) Inventory and Control of Enterprise Assets (hardware), 2) Inventory and Control of Software Assets, 3) Data Protection, 4) Secure Configuration of Enterprise Assets and Software, 5) Account Management. The pattern: Inventory first (you can't secure what you don't know about), then protect. For mid-size client: achieve full IG1 first, then work toward IG2."}
-]
-
-}; // end BANK
-
-const DMETA = {
-  helpdesk:     { label:'HELP DESK / SYSADMIN',      icon:'🖥️', color:'#00e5ff' },
-  networking:   { label:'NETWORK ENGINEERING',        icon:'🌐', color:'#b8ff57' },
-  m365:         { label:'M365 / EXCHANGE / ENTRA',    icon:'📧', color:'#ffaa00' },
-  azure:        { label:'AZURE CLOUD / ENTRA ID',     icon:'☁️', color:'#c084fc' },
-  secops:       { label:'SECURITY OPERATIONS',        icon:'🛡️', color:'#ff3c6e' },
-  scripting:    { label:'SCRIPTING / AUTOMATION',     icon:'💻', color:'#00e5ff' },
-  emailsec:     { label:'EMAIL SECURITY',             icon:'📨', color:'#b8ff57' },
-  architecture: { label:'SECURITY ARCHITECTURE',      icon:'🏗️', color:'#ffaa00' }
-};
 
 let selD = [], questions = [], curQ = 0, scores = {}, answers = [];
 
-document.querySelectorAll('.dcard').forEach(c => {
-  c.addEventListener('click', () => {
-    const d = c.dataset.d;
-    if (selD.includes(d)) {
-      selD = selD.filter(x => x !== d);
-      c.classList.remove('sel');
-    } else if (selD.length < 6) {
-      selD.push(d);
-      c.classList.add('sel');
-    }
-    renderSelUI();
-  });
-});
+function toggleDomain(d) {
+  const card = document.querySelector(`[data-d="${d}"]`);
+  if (selD.includes(d)) {
+    selD = selD.filter(x => x !== d);
+    card.classList.remove('sel');
+  } else if (selD.length < 6) {
+    selD.push(d);
+    card.classList.add('sel');
+  }
+  renderSelUI();
+}
 
 function renderSelUI() {
   document.getElementById('sel-tags').innerHTML =
@@ -683,6 +498,20 @@ function renderSelUI() {
   document.getElementById('start-btn').disabled = selD.length === 0;
   document.getElementById('sel-count').textContent =
     `${selD.length} domain${selD.length !== 1 ? 's' : ''} selected (max 6)`;
+}
+
+function shuffleArray(arr) {
+  return arr.sort(() => Math.random() - 0.5);
+}
+
+function shuffleAnswers(options, correctIdx) {
+  const paired = options.map((opt, idx) => ({ opt, idx }));
+  shuffleArray(paired);
+  const newCorrectIdx = paired.findIndex(p => p.idx === correctIdx);
+  return {
+    options: paired.map(p => p.opt),
+    correctAnswer: newCorrectIdx
+  };
 }
 
 function startAssessment() {
@@ -693,7 +522,15 @@ function startAssessment() {
 
   selD.forEach(d => {
     const pool = [...BANK[d]].sort(() => Math.random() - 0.5);
-    pool.forEach(q => questions.push({ ...q, domain: d }));
+    pool.forEach(q => {
+      let questionCopy = { ...q, domain: d };
+      if (q.type === 'mcq' && q.options) {
+        const shuffled = shuffleAnswers(q.options, q.correctAnswer);
+        questionCopy.options = shuffled.options;
+        questionCopy.correctAnswer = shuffled.correctAnswer;
+      }
+      questions.push(questionCopy);
+    });
   });
 
   questions.sort(() => Math.random() - 0.5);
@@ -722,19 +559,14 @@ function renderQ() {
   tagEl.style.color = meta.color || 'var(--accent)';
   tagEl.style.borderColor = (meta.color || 'var(--accent)') + '44';
 
-  const diffEl = document.getElementById('q-diff');
-  diffEl.textContent = 'DIFFICULTY: ' + (q.difficulty || '-').toUpperCase();
-  diffEl.className = 'q-diff diff-' + (q.difficulty || 'foundational');
+  document.getElementById('q-diff').textContent = 'DIFFICULTY: ' + (q.difficulty || '-').toUpperCase();
 
   document.getElementById('q-text').textContent = q.question;
   document.getElementById('fb-box').style.display = 'none';
+  document.getElementById('post-question').style.display = 'none';
   document.getElementById('sub-btn').style.display = 'inline-flex';
   document.getElementById('sub-btn').disabled = false;
   document.getElementById('nxt-btn').style.display = 'none';
-
-  const ce = document.getElementById('q-code');
-  if (q.code) { ce.style.display = 'block'; ce.textContent = q.code; }
-  else ce.style.display = 'none';
 
   const aa = document.getElementById('ans-area');
   const ow = document.getElementById('open-wrap');
@@ -769,54 +601,78 @@ function submitAnswer() {
     if (!sel) { document.getElementById('sub-btn').disabled = false; return; }
 
     const ci = parseInt(sel.dataset.i);
-    const cl = String.fromCharCode(65 + ci);
-    const al = (q.answer || '').trim().toUpperCase().charAt(0);
-    const ok = cl === al;
+    const ok = ci === q.correctAnswer;
 
     document.querySelectorAll('.aopt').forEach((o, i) => {
       o.classList.add('disabled');
-      const l = String.fromCharCode(65 + i);
-      if (l === al) o.classList.add('correct');
+      if (i === q.correctAnswer) o.classList.add('correct');
       else if (i === ci && !ok) o.classList.add('wrong');
     });
 
     if (ok) scores[q.domain].earned++;
-    answers.push({ domain: q.domain, correct: ok, question: q.question, explanation: q.explanation });
-    showFB(ok, q.explanation, ok ? '✓ CORRECT' : '✗ INCORRECT', ok ? 'pos' : 'neg');
+    answers.push({ domain: q.domain, correct: ok, question: q.question, explanation: q.explanation, homelab: q.homelab });
+    showFB(ok, q.explanation, ok ? '✓ CORRECT' : '✗ INCORRECT', ok ? 'pos' : 'neg', q);
 
   } else {
     const ua = document.getElementById('open-ans').value.trim();
     if (!ua) { document.getElementById('sub-btn').disabled = false; return; }
     scores[q.domain].earned += 0.5;
-    answers.push({ domain: q.domain, correct: true, question: q.question, userAnswer: ua, explanation: q.explanation });
-    showFB(true,
-      '📋 MODEL ANSWER - compare honestly with what you wrote:\n\n' + q.explanation,
-      '📝 OPEN RESPONSE',
-      'neutral'
-    );
+    answers.push({ domain: q.domain, correct: true, question: q.question, userAnswer: ua, modelAnswer: q.modelAnswer, explanation: q.explanation, homelab: q.homelab });
+    showFB(true, '📋 MODEL ANSWER:\n\n' + q.modelAnswer, '📝 COMPARE YOUR ANSWER', 'neutral', q);
   }
 }
 
-function showFB(ok, text, label, type) {
+function showFB(ok, text, label, type, q) {
   const box = document.getElementById('fb-box');
   box.style.display = 'block';
   box.className = type === 'neg' ? 'neg' : type === 'neutral' ? 'neutral' : '';
 
-  const lbl = document.getElementById('fb-lbl');
-  lbl.textContent = label;
-  lbl.style.color = type === 'neg' ? 'var(--accent2)' : type === 'neutral' ? 'var(--accent)' : 'var(--accent3)';
-
-  document.getElementById('fb-text').textContent = text || '';
+  document.getElementById('fb-lbl').textContent = label;
+  document.getElementById('fb-text').textContent = text;
 
   const ta = answers.length;
   const tc = answers.reduce((s, a) => s + (a.correct ? 1 : 0), 0);
   document.getElementById('score-run').textContent = `Running tally: ${tc} / ${ta}`;
   document.getElementById('q-counter').textContent = `${ta} / ${questions.length} answered`;
 
+  // Show post-question content
+  renderPostQuestion(q);
+
   document.getElementById('sub-btn').style.display = 'none';
   document.getElementById('nxt-btn').style.display = 'inline-flex';
-  document.getElementById('nxt-btn').textContent =
-    curQ < questions.length - 1 ? 'NEXT QUESTION →' : 'SEE MY RESULTS →';
+  document.getElementById('nxt-btn').textContent = curQ < questions.length - 1 ? 'NEXT QUESTION →' : 'SEE MY RESULTS →';
+}
+
+function renderPostQuestion(q) {
+  const postDiv = document.getElementById('post-question');
+  postDiv.style.display = 'block';
+
+  // Explanation
+  document.getElementById('explanation-section').innerHTML = `
+    <div class="post-title">📚 DEEPER EXPLANATION</div>
+    <div class="post-content">${q.explanation}</div>
+  `;
+
+  // Home Lab
+  if (q.homelab) {
+    const stepsHTML = q.homelab.steps.map(step => `<div class="lab-step">• ${step}</div>`).join('');
+    document.getElementById('homelab-section').innerHTML = `
+      <div class="post-title">🏗️ HOME LAB SCENARIO</div>
+      <div class="post-content"><strong>${q.homelab.title}</strong></div>
+      <div class="post-content">${q.homelab.description}</div>
+      <div class="lab-steps">${stepsHTML}</div>
+    `;
+  }
+
+  // Resources/Next Steps
+  document.getElementById('resources-section').innerHTML = `
+    <div class="post-title">🎯 NEXT STEPS</div>
+    <div class="post-content">
+      • Build the home lab scenario above for hands-on practice<br>
+      • Review the explanation if you got this wrong<br>
+      • Search the domain's weak areas in the final review
+    </div>
+  `;
 }
 
 function nextQ() {
@@ -835,37 +691,25 @@ function showResults() {
 
   const circ = 395.8;
   setTimeout(() => {
-    document.getElementById('ring-fill').style.strokeDashoffset =
-      circ - (pct / 100) * circ;
+    document.getElementById('ring-fill').style.strokeDashoffset = circ - (pct / 100) * circ;
   }, 150);
 
   document.getElementById('gpct').textContent = pct + '%';
   const tier = pct >= 90 ? 'ELITE' : pct >= 78 ? 'STRONG' : pct >= 62 ? 'DEVELOPING' : pct >= 45 ? 'FOUNDATIONAL' : 'NEEDS WORK';
   document.getElementById('gtier').textContent = tier;
-  document.getElementById('rtitle').textContent =
-    pct >= 78 ? 'STRONG PERFORMANCE' : pct >= 55 ? 'PASSING - GAPS IDENTIFIED' : 'SIGNIFICANT GAPS FOUND';
-  document.getElementById('rsub').textContent =
-    `${Math.round(earned * 2) / 2} / ${possible} pts · ${Object.keys(scores).length} domain${Object.keys(scores).length !== 1 ? 's' : ''}`;
+  document.getElementById('rtitle').textContent = pct >= 78 ? 'STRONG PERFORMANCE' : pct >= 55 ? 'PASSING - GAPS IDENTIFIED' : 'SIGNIFICANT GAPS FOUND';
+  document.getElementById('rsub').textContent = `${Math.round(earned * 2) / 2} / ${possible} pts`;
 
   const bkEl = document.getElementById('bk-wrap');
-  const domArr = Object.entries(scores)
-    .map(([d, s]) => ({ d, p: Math.round((s.earned / s.total) * 100), earned: s.earned, total: s.total }))
-    .sort((a, b) => b.p - a.p);
+  const domArr = Object.entries(scores).map(([d, s]) => ({ d, p: Math.round((s.earned / s.total) * 100), earned: s.earned, total: s.total })).sort((a, b) => b.p - a.p);
 
   bkEl.innerHTML = domArr.map(({ d, p, earned, total }) => {
     const col = p >= 80 ? 'var(--accent3)' : p >= 57 ? 'var(--accent)' : 'var(--accent2)';
-    return `<div class="bk-row">
-      <div class="bk-icon">${DMETA[d]?.icon || '-'}</div>
-      <div class="bk-name">${DMETA[d]?.label || d}</div>
-      <div class="bk-bar-wrap"><div class="bk-bar" style="width:0%;background:${col}" data-t="${p}"></div></div>
-      <div class="bk-score">${earned}/${total} · ${p}%</div>
-    </div>`;
+    return `<div class="bk-row"><div class="bk-icon">${DMETA[d]?.icon || '-'}</div><div class="bk-name">${DMETA[d]?.label || d}</div><div class="bk-bar-wrap"><div class="bk-bar" style="width:0%;background:${col}" data-t="${p}"></div></div><div class="bk-score">${earned}/${total} · ${p}%</div></div>`;
   }).join('');
 
   setTimeout(() => {
-    document.querySelectorAll('.bk-bar').forEach(b => {
-      b.style.width = b.dataset.t + '%';
-    });
+    document.querySelectorAll('.bk-bar').forEach(b => { b.style.width = b.dataset.t + '%'; });
   }, 200);
 
   document.getElementById('verdict-text').textContent = buildVerdict(pct, domArr);
@@ -882,6 +726,7 @@ function showResults() {
       </div>
       <div class="rev-body" id="rev-${i}">
         ${a.userAnswer ? `<div class="ua"><b>Your answer:</b> ${a.userAnswer}</div>` : ''}
+        ${a.modelAnswer ? `<div class="ua"><b>Model answer:</b> ${a.modelAnswer}</div>` : ''}
         <b>Explanation:</b> ${a.explanation}
       </div>
     </div>`).join('');
@@ -898,16 +743,15 @@ function buildVerdict(pct, domArr) {
   const bestLabel = DMETA[best?.d]?.label || 'your best domain';
   const worstLabel = DMETA[worst?.d]?.label || 'your weakest domain';
 
-  if (pct >= 88) return `Elite-tier performance. You're operating at a level that goes well beyond your current role - your ${bestLabel} results show genuine depth, not just familiarity. The next move isn't more studying, it's more doing: take on architecture ownership, lead IR calls, get the Sec+ and AZ-500 behind you. The gap between where you are and where you want to be is visibility and certs, not skill. Start building toward that.`;
-  if (pct >= 72) return `Strong practitioner-level knowledge with real depth in ${bestLabel}. The advanced questions likely caught you on edge cases and second-order thinking - that's where the gap between a good tech and a security engineer lives. ${worstLabel} needs focused lab time, not just reading. You're on the right track: the Sec+ is well within reach and you should be pushing for AZ-500 six months after. Don't slow down.`;
-  if (pct >= 55) return `Solid foundations across the board but depth drops off sharply on advanced scenarios. ${bestLabel} is clearly where you've put your time. ${worstLabel} exposed the biggest gaps - these are the exact areas that will be tested harder on the Sec+ and every interview. Spend the next 30 days building in your home lab specifically on the domains that scored below 60%. Knowledge without application doesn't transfer to real incidents.`;
-  if (pct >= 38) return `Foundational knowledge is present but significant gaps exist in applying it under real conditions. Recognizing a concept and working through a live scenario are different skills - this assessment tested the latter. Focus on ${worstLabel} first, but don't try to cover everything at once. Pick one domain, build the lab scenario for it, break it, fix it. One domain at a time, done properly, beats surface-level coverage of everything.`;
-  return `The gaps identified here are significant but fixable - this isn't a talent issue, it's a reps issue. Every one of these scenarios represents something you can build and test in your home lab this week. Don't re-read documentation. Build the thing. Break the thing. Fix the thing. Come back to this assessment in 30 days after putting lab hours into your weakest domains. The difference between where you are and where you want to be is measured in hours of hands-on time, not pages of notes.`;
+  if (pct >= 88) return `Elite-tier performance. You're operating at a level that goes well beyond your current role. Strength in ${bestLabel} shows genuine depth. Next: focus on ${worstLabel} and take advanced certifications (AZ-500, CEH).`;
+  if (pct >= 72) return `Strong practitioner-level knowledge with real depth in ${bestLabel}. ${worstLabel} needs focused lab time. You're on track for Sec+ and should push toward AZ-500 six months after. Don't slow down.`;
+  if (pct >= 55) return `Solid foundations but gaps exist in advanced scenarios. ${bestLabel} is where you've invested time. ${worstLabel} exposed the biggest gaps. Spend 30 days building home lab scenarios specifically on domains scoring below 60%.`;
+  if (pct >= 38) return `Foundational knowledge present but apply it under real conditions differs. Focus on ${worstLabel} first. Pick one domain, build, break, fix it. One domain at a time, done properly.`;
+  return `Significant gaps but fixable - this is reps, not talent. Every scenario here is buildable in your home lab this week. Build. Break. Fix. Retake in 30 days.`;
 }
 
 function restart() {
-  document.getElementById('rscreen').style.display = 'none';
-  questions = []; curQ = 0; scores = {}; answers = [];
+  curQ = 0; scores = {}; answers = []; questions = [];
   startAssessment();
 }
 
