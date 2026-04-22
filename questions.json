@@ -1289,6 +1289,540 @@
           }
         }
       ]
+    },
+    "azure": {
+      "displayName": "Azure / Cloud Infrastructure",
+      "icon": "🚀",
+      "color": "#0080d9",
+      "questions": [
+        {
+          "id": "azure_001",
+          "difficulty": "foundational",
+          "type": "mcq",
+          "question": "You're deploying a VM in Azure and need to choose between managed disks and unmanaged disks. What is the key advantage of managed disks?",
+          "options": [
+            "Unmanaged disks are more secure",
+            "Managed disks are simpler - Azure handles storage account creation, scaling, and redundancy automatically",
+            "Managed disks are cheaper than unmanaged",
+            "Unmanaged disks are only supported for Linux VMs"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Managed disks eliminate the need to manage storage accounts yourself. Azure handles: storage account provisioning, redundancy (LRS/GRS), scaling, snapshots. Unmanaged disks require you to create and manage storage accounts manually. Managed disks are now the default and recommended approach.",
+          "homelab": {
+            "title": "Deploy VM with Managed Disks",
+            "description": "Create an Azure VM with managed disks and configure snapshots.",
+            "steps": [
+              "Azure portal: Create resource > Virtual Machine",
+              "Basic tab: select managed disk automatically (default)",
+              "Disks tab: verify 'Managed disk' is selected, not 'Unmanaged'",
+              "Create VM, wait for deployment",
+              "In VM > Disks: verify disk shows 'Managed disk'",
+              "Create snapshot: Disks > Create Snapshot",
+              "Use snapshot to create new disk > attach to new VM",
+              "Verify: new VM has copy of original VM's data"
+            ]
+          }
+        },
+        {
+          "id": "azure_002",
+          "difficulty": "intermediate",
+          "type": "mcq",
+          "question": "You're designing an Azure network and need to connect an on-premises data center to Azure securely. Which technology is best?",
+          "options": [
+            "Internet-facing RDP endpoints with strong passwords",
+            "Azure VPN Gateway (Site-to-Site VPN) or ExpressRoute for dedicated private connection",
+            "Azure Virtual Network peering",
+            "Allow all traffic in Network Security Groups"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Site-to-Site VPN provides encrypted IPSec tunnel from on-premises to Azure. ExpressRoute is a dedicated private connection (more expensive but higher performance). Both are secure, enterprise-grade solutions. Virtual Network peering is for connecting Azure VNets, not on-premises. RDP endpoints are never secure for production.",
+          "homelab": {
+            "title": "Set Up Site-to-Site VPN to Azure",
+            "description": "Configure a VPN connection from simulated on-premises to Azure.",
+            "steps": [
+              "Azure: Create Virtual Network (10.0.0.0/16) and Gateway Subnet (10.0.255.0/27)",
+              "Create VPN Gateway (Route-based, standard SKU)",
+              "On-premises simulation: GNS3 router with local subnet 192.168.0.0/24",
+              "Create Local Network Gateway in Azure: represent on-premises network",
+              "Create VPN Connection: select VPN gateway and local network gateway",
+              "On GNS3 router: configure IPSec tunnel to Azure public IP",
+              "Test: ping from on-premises network to Azure VM - traffic goes through VPN tunnel"
+            ]
+          }
+        },
+        {
+          "id": "azure_003",
+          "difficulty": "intermediate",
+          "type": "free_response",
+          "question": "Your application needs to scale from 10 to 10,000 concurrent users. Explain how you'd use Azure autoscaling, load balancers, and geo-redundancy to handle this growth.",
+          "modelAnswer": "Architecture: 1) Application hosted on Azure App Service (PaaS) or VM Scale Sets (IaaS). 2) Azure Load Balancer or Application Gateway (Layer 7) distributes traffic across instances. 3) Azure Autoscale policy: CPU > 80% = scale out, CPU < 20% = scale in. Set min 2 instances, max 100. 4) Geo-redundancy: deploy App Service in 2+ regions (e.g., East US, West Europe), use Traffic Manager to route users to nearest region. 5) Database: Azure SQL with read replicas and failover groups. 6) Caching: Azure Cache for Redis to reduce database load. 7) CDN: Azure Front Door for edge caching. Monitoring: Application Insights tracks performance, alerts on errors. Cost: start with Standard tier, scale to Premium as needed. Total cost grows with usage but not linearly due to economies of scale.",
+          "homelab": {
+            "title": "Build Highly Available Multi-Region Azure App",
+            "description": "Deploy app with autoscaling and geo-redundancy.",
+            "steps": [
+              "Create App Service Plan (Standard tier) in East US",
+              "Create App Service in East US, deploy test app",
+              "Create App Service in West Europe region",
+              "Setup Traffic Manager: priority routing to East US, failover to West Europe",
+              "Configure Autoscale: Scale Up at 80% CPU, Scale Down at 20% CPU, min 2 instances, max 10",
+              "Load test using Apache JMeter: simulate 100+ concurrent users",
+              "Monitor: watch App Service scale out to 5-10 instances",
+              "Simulate East US failure: disable App Service, verify Traffic Manager fails over to West Europe",
+              "Review Application Insights metrics: response time, throughput, error rate"
+            ]
+          }
+        },
+        {
+          "id": "azure_004",
+          "difficulty": "foundational",
+          "type": "mcq",
+          "question": "You need to store sensitive data (passwords, API keys) that your Azure App Service will access at runtime. Where should you store these?",
+          "options": [
+            "In environment variables in the App Service configuration",
+            "In the application code (so it's always available)",
+            "Azure Key Vault - secrets are encrypted and accessed securely via managed identity",
+            "In a text file on the VM filesystem"
+          ],
+          "correctAnswer": 2,
+          "explanation": "Azure Key Vault is the secure way to manage secrets, certificates, and keys. App Service accesses Key Vault using Managed Identity (no credentials stored in code). This prevents secrets from being exposed in source control, logs, or configuration. Environment variables are better than code/files, but Key Vault is enterprise best practice.",
+          "homelab": {
+            "title": "Use Azure Key Vault with App Service",
+            "description": "Store secrets in Key Vault and access them from App Service.",
+            "steps": [
+              "Azure portal: Create Key Vault resource",
+              "Create secret: Name='DBPassword', Value='P@ssw0rd123'",
+              "Create App Service, enable Managed Identity: Settings > Identity > System assigned > On",
+              "Grant App Service access to Key Vault: Key Vault > Access Control > Add app service identity",
+              "In App Service code: use Azure SDK to fetch secret from Key Vault",
+              "Deploy app, test it can access secret",
+              "Monitor: Key Vault > Monitoring > see secret access logs"
+            ]
+          }
+        },
+        {
+          "id": "azure_005",
+          "difficulty": "advanced",
+          "type": "mcq",
+          "question": "You're using Azure DevOps to deploy your app. An attacker gains access to a developer's credentials and pushes malicious code to the main branch. How can you prevent this?",
+          "options": [
+            "Disable the developer account",
+            "Use branch policies: require pull request review, enforce code quality gates, enable signed commits",
+            "Move all code to private repositories (already done by default)",
+            "Use multi-factor authentication on the developer account"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Branch policies prevent direct pushes to main: require peer review, enforce build success, check for code coverage, require signed commits. Signed commits use GPG/certificate to verify the committer's identity - this prevents an attacker from impersonating the developer even with stolen credentials. MFA (Option D) is also important but doesn't prevent this specific attack if credentials are compromised.",
+          "homelab": {
+            "title": "Set Up Azure DevOps Branch Protection & Signed Commits",
+            "description": "Configure branch policies and signed commits to prevent malicious pushes.",
+            "steps": [
+              "Azure DevOps: Repositories > Branches",
+              "Select main branch > Branch policies",
+              "Enable: Require a minimum number of reviewers (set to 2)",
+              "Check: Prohibit most recent push by committers",
+              "Check: Enforce work item linking",
+              "Require: Successful build before merge",
+              "Test: try to push directly to main from test branch - blocked",
+              "Create pull request instead: requires 2 approvals to merge",
+              "For signed commits: Enable in repo settings > Require signed commits",
+              "Developers must set up GPG key to sign commits"
+            ]
+          }
+        },
+        {
+          "id": "azure_006",
+          "difficulty": "intermediate",
+          "type": "mcq",
+          "question": "Your Azure SQL Database is hitting performance limits during peak hours. Query execution times doubled in the past month. What should you check first?",
+          "options": [
+            "Immediately upgrade to a higher service tier",
+            "Review Query Performance Insights to identify slow queries, check DTU/vCore usage, and look for missing indexes",
+            "Restart the database - this clears cache and might improve performance",
+            "Disable all non-critical queries"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Query Performance Insights shows which queries consume the most resources. DTU usage shows if you're hitting capacity limits. Check for: missing indexes, N+1 queries, table scans on large tables. Only upgrade if actual bottleneck is insufficient compute/memory. Restarting only helps if there's a memory leak, which is rare.",
+          "homelab": {
+            "title": "Optimize Azure SQL Performance",
+            "description": "Identify and fix slow queries using Query Performance Insights.",
+            "steps": [
+              "Azure portal: SQL Database > Query Performance Insight",
+              "Identify top resource-consuming queries",
+              "Click on a slow query: see execution plan, suggest missing indexes",
+              "Review Table Sizes: if query scans 1M+ rows, likely needs index",
+              "Create index on frequently filtered columns: CREATE INDEX idx_status ON Orders(Status) WHERE Status = 'Pending'",
+              "Re-run query: execution time should drop significantly",
+              "Monitor DTU usage: if consistently above 80%, consider scaling up service tier"
+            ]
+          }
+        },
+        {
+          "id": "azure_007",
+          "difficulty": "intermediate",
+          "type": "free_response",
+          "question": "You're migrating a legacy on-premises SQL Server database to Azure SQL with 5TB of data. Walk through your migration strategy, including downtime considerations and validation steps.",
+          "modelAnswer": "Pre-migration: 1) Use Data Migration Assistant (DMA) to assess compatibility, identify schema/code differences. 2) Create target Azure SQL Database with appropriate service tier (estimate based on current workload). 3) Backup on-premises SQL database. 4) Main migration: 3 options - a) DMS (Azure Database Migration Service) for minimal downtime (continuous sync + cutover), b) Bulk copy (BCP/BACPAC) for faster load (downtime during cutover), c) Manual script migration for control. 5) DMS approach: Set up replication pipeline, continuously sync transactions, perform test failover, schedule maintenance window (2-4 hours), execute final sync and cutover. 6) Validation: Compare row counts (SELECT COUNT(*) on all tables), spot-check data integrity, run critical queries/reports, test application connectivity. 7) Rollback plan if issues found: keep on-premises DB online for N days post-cutover. 8) Cost: DMS charges based on size and time, Azure SQL charges by DTU usage.",
+          "homelab": {
+            "title": "SQL Server Migration to Azure SQL",
+            "description": "Practice migrating SQL database to Azure using DMA and DMS.",
+            "steps": [
+              "On-premises: Set up SQL Server 2019 instance with sample database (50GB simulated)",
+              "Azure: Create SQL Database (Standard S3 tier)",
+              "Download Data Migration Assistant: Run compatibility assessment",
+              "DMA identifies any blocking issues (usually minor schema differences)",
+              "Create backup of on-premises database: BACKUP DATABASE to .bak file",
+              "Use DMS: Create migration project, configure source/target",
+              "DMS starts continuous replication, syncs data",
+              "Perform test failover: verify application can connect to Azure SQL",
+              "Schedule cutover window, execute final sync",
+              "Validate: COUNT(*) on key tables match, run sample queries",
+              "Monitor: query performance in Query Performance Insight"
+            ]
+          }
+        }
+      ]
+    },
+    "scripting": {
+      "displayName": "PowerShell / Scripting",
+      "icon": "⚙️",
+      "color": "#00d9ff",
+      "questions": [
+        {
+          "id": "script_001",
+          "difficulty": "foundational",
+          "type": "mcq",
+          "question": "You write a PowerShell script to bulk disable users from a CSV file. The script fails silently on some users and doesn't report errors. What should you add to catch and report failures?",
+          "options": [
+            "Use -ErrorAction SilentlyContinue to suppress errors",
+            "Wrap commands in Try-Catch blocks, use Write-Error to report, and continue processing remaining users",
+            "Add -Verbose flag to see what's happening",
+            "Use -ErrorAction Stop to stop on first error"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Try-Catch handles errors without stopping the script. Loop through each user, wrap Disable-ADUser in Try-Catch, log errors to file or output. This way, if user 5 fails, users 6-100 still process. Write-Error logs details (reason: user doesn't exist, already disabled, etc.).",
+          "homelab": {
+            "title": "Error Handling in Bulk Operations",
+            "description": "Write a script to bulk disable users with comprehensive error handling.",
+            "steps": [
+              "Create CSV: users.csv with columns: SamAccountName, Reason",
+              "Write script: import CSV, loop through each user",
+              "Wrap Disable-ADUser in Try-Catch:",
+              "  Try { Disable-ADUser -Identity $user -Confirm:$false }",
+              "  Catch { Write-Error \"Failed to disable $user : $_\" }",
+              "Log results: successful disables and errors to output file",
+              "Run script: Test with mix of valid/invalid users",
+              "Review output: shows which users succeeded, which failed and why"
+            ]
+          }
+        },
+        {
+          "id": "script_002",
+          "difficulty": "intermediate",
+          "type": "free_response",
+          "question": "Write a PowerShell script that monitors a directory for new files, copies them to a backup location, and renames them with a timestamp. The script should run as a scheduled task and log all actions.",
+          "modelAnswer": "Script outline: 1) Set variables: $sourceDir, $backupDir, $logFile. 2) Check if source dir exists, create if needed. 3) Get all files modified in last hour: Get-ChildItem $sourceDir -Filter *.* | Where {$_.LastWriteTime -gt (Get-Date).AddHours(-1)}. 4) For each file: generate timestamped name (e.g., filename_20240422_143022.ext), copy to backup dir. 5) Log each action: Add-Content $logFile -Value \"$(Get-Date) - Copied $($file.Name) to $backupDir\". 6) Error handling: Catch copy failures, log errors, don't stop script. 7) Scheduled task: Create via Task Scheduler to run every hour, with account that has file permissions. 8) Output: log shows all copy attempts, successes, and failures.",
+          "homelab": {
+            "title": "Build Directory Monitor & Backup Script",
+            "description": "Create a production-ready monitoring and backup solution.",
+            "steps": [
+              "Create test directories: C:\\SourceFiles, C:\\BackupFiles, logs folder",
+              "Write script (Monitor-Files.ps1) with:",
+              "  - Get new files from source directory",
+              "  - Rename with timestamp: $timestamp = Get-Date -Format 'yyyyMMdd_HHmmss'",
+              "  - Copy to backup: Copy-Item $file -Destination \"$backupDir\\$($file.BaseName)_$timestamp$($file.Extension)\"",
+              "  - Logging: each action timestamped in log file",
+              "  - Error handling: try-catch around copy operation",
+              "Test locally: run script, create test files, verify backup copies with timestamps",
+              "Create scheduled task: powershell.exe -File C:\\Scripts\\Monitor-Files.ps1",
+              "Set to run hourly, log output to file",
+              "Verify: scheduled task logs show successful executions"
+            ]
+          }
+        },
+        {
+          "id": "script_003",
+          "difficulty": "intermediate",
+          "type": "mcq",
+          "question": "You need to loop through 10,000 users and perform an action on each. Using a simple foreach loop causes the script to run very slowly. What optimization technique should you use?",
+          "options": [
+            "Switch to Python - PowerShell is too slow for large datasets",
+            "Use -Parallel parameter in foreach loop to process multiple users simultaneously",
+            "Use Write-Progress to show progress faster",
+            "Nothing - 10,000 users is fast in PowerShell"
+          ],
+          "correctAnswer": 1,
+          "explanation": "PowerShell 7+ supports -Parallel on foreach loops, which uses multiple threads. Example: foreach -Parallel ($user in $users) { ... }. This dramatically speeds up I/O-bound operations (like AD queries). However, be careful: threads can exceed resource limits, so use -ThrottleLimit to limit concurrent threads (default 5). For PS 5.1 or slower operations, use Invoke-Parallel module or .NET threading.",
+          "homelab": {
+            "title": "Optimize Script Performance with Parallel Processing",
+            "description": "Compare sequential vs parallel processing for bulk operations.",
+            "steps": [
+              "Create 1000 test objects (simulating users)",
+              "Script 1: Sequential loop - measure time (5-10 minutes likely)",
+              "  foreach ($item in $items) { Get-ADUser $item }",
+              "Script 2: Parallel loop - measure time (1-2 minutes)",
+              "  foreach -Parallel ($item in $items) { Get-ADUser $item }",
+              "Add throttle limit to prevent resource exhaustion:",
+              "  foreach -Parallel -ThrottleLimit 10 ($item in $items) { ... }",
+              "Compare execution times - parallel is 5-10x faster",
+              "Monitor Task Manager: parallel uses multiple threads"
+            ]
+          }
+        },
+        {
+          "id": "script_004",
+          "difficulty": "advanced",
+          "type": "mcq",
+          "question": "Your script creates a large number of AD users in a loop. Performance drops significantly after creating 500+ users. What is the likely cause and how do you fix it?",
+          "options": [
+            "AD database is full - archive old users first",
+            "AD replication is slow - you need a second DC",
+            "Insufficient throttling/batching - you're overwhelming the DC with requests; use batching or add delays between requests",
+            "PowerShell has a hardcoded 500-user limit"
+          ],
+          "correctAnswer": 2,
+          "explanation": "Creating many AD objects rapidly can overwhelm the DC. Fix: 1) Add Start-Sleep between creations (e.g., -MilliSeconds 100), 2) Batch operations (create 50 users, wait, create 50 more), 3) Use Invoke-Command with -HideComputerName to batch at DC level, 4) Monitor DC performance (CPU, disk I/O). The 500-user threshold is often a performance cliff, not a limit.",
+          "homelab": {
+            "title": "Batch Processing for Bulk AD Operations",
+            "description": "Optimize bulk user creation with batching and throttling.",
+            "steps": [
+              "Script 1: Create users rapidly (no throttling)",
+              "  for ($i=1; $i -le 1000; $i++) { New-ADUser -Name \"User$i\" }",
+              "Monitor DC: CPU spikes, memory usage high after ~500 users",
+              "Script 2: Add batching with delay",
+              "  for ($i=1; $i -le 1000; $i++) { New-ADUser -Name \"User$i\"; Start-Sleep -Milliseconds 50 }",
+              "Execution time increases but DC stays healthy",
+              "Script 3: Batch at DC level",
+              "  Invoke-Command -ComputerName DC01 -ScriptBlock { foreach ($user in $userList) { New-ADUser ... } }",
+              "Compare: Script 3 is fastest because DC handles all creations locally"
+            ]
+          }
+        },
+        {
+          "id": "script_005",
+          "difficulty": "foundational",
+          "type": "mcq",
+          "question": "You want to secure a PowerShell script that handles passwords. You hardcoded the admin password in the script file as plain text. What's the security issue and the fix?",
+          "options": [
+            "No issue - only admins can read the script",
+            "Plain text passwords can be found in source control, logs, backups - use secure credential storage (Get-Credential, Azure Key Vault, or pass as parameter)",
+            "Passwords in scripts are fine as long as the file is in C:\\Windows",
+            "Switch to batch files - PowerShell is insecure"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Never hardcode passwords in scripts. Risks: source control history, backup exposure, process memory dumps, log files. Fix: 1) Use Get-Credential to prompt user for password at runtime, 2) Store in Key Vault (Azure) or Credential Manager (Windows), 3) Pass as parameter with SecureString, 4) Use service accounts with managed credentials.",
+          "homelab": {
+            "title": "Secure Password Handling in Scripts",
+            "description": "Refactor script to securely handle credentials.",
+            "steps": [
+              "Bad script: $password = 'P@ssw0rd123'; $cred = New-Object -TypeName pscredential -ArgumentList 'admin', ($password | ConvertTo-SecureString -AsPlainText -Force)",
+              "Good script option 1: $cred = Get-Credential (prompts user)",
+              "Good script option 2: Store in Windows Credential Manager",
+              "  cmdkey /add:vault /user:admin /pass:P@ssw0rd123",
+              "  $cred = Get-StoredCredential -Target vault",
+              "Good script option 3: Use Azure Key Vault (for cloud scenarios)",
+              "  $secret = Get-AzKeyVaultSecret -VaultName myVault -Name password",
+              "Test: run script, verify no plain-text passwords in process memory"
+            ]
+          }
+        }
+      ]
+    },
+    "emailsecurity": {
+      "displayName": "Email Security / Exchange",
+      "icon": "📧",
+      "color": "#ff6b00",
+      "questions": [
+        {
+          "id": "email_001",
+          "difficulty": "foundational",
+          "type": "mcq",
+          "question": "Your Exchange server receives an email from 'ceo@company.com' asking an employee to wire $100,000 to an external account. The email appears legitimate. What is this attack and what should you do?",
+          "options": [
+            "This is a legitimate CEO request - process it",
+            "Business Email Compromise (BEC) / CEO Fraud - verify via phone with CEO using a known number, never call the email sender",
+            "Phishing - delete the email",
+            "Your mail server has been hacked - shut it down"
+          ],
+          "correctAnswer": 1,
+          "explanation": "BEC is one of the costliest attacks. Email appears to come from trusted sender (spoofed) or account is compromised. NEVER reply to the email or call the number in the signature. Instead: 1) Call the CEO directly using known phone number, 2) Check email headers for spoofing (From vs Return-Path), 3) Look for urgent/pressure language, 4) Report to security team, 5) Check if CEO's account was compromised (review sent items, forwarding rules).",
+          "homelab": {
+            "title": "Detect & Respond to BEC Attack",
+            "description": "Identify BEC red flags and practice incident response.",
+            "steps": [
+              "Create test email: appear to come from CEO@company.com (external account spoofing)",
+              "Content: urgent wire transfer request with pressure",
+              "Receive as employee - identify red flags (urgency, unusual request, external sender)",
+              "As admin: Check email headers - analyze From, Return-Path, SPF/DKIM/DMARC",
+              "If CEO's account compromised: check for forwarding rules, suspicious logins",
+              "In Exchange: Transport rules to block external emails spoofing internal addresses",
+              "Result: email blocked before reaching inbox"
+            ]
+          }
+        },
+        {
+          "id": "email_002",
+          "difficulty": "intermediate",
+          "type": "mcq",
+          "question": "You want to prevent users from forwarding emails outside the company domain via Outlook rules. However, users are bypassing this by forwarding to a personal email, then forwarding externally. How do you prevent this?",
+          "options": [
+            "Disable mail forwarding entirely - no exceptions",
+            "Allow only specific forwarding rules at the transport level, audit forwarding rules, and block at the mailbox level",
+            "Users can't bypass this - it's not possible",
+            "Monitor user mailboxes manually"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Multi-layered approach: 1) Transport Rule in Exchange: block forwarding to external domains, 2) Mailbox rule audit: New-InboxRule can be restricted via policy, 3) Conditional Access: block file downloads from risky apps, 4) DLP (Data Loss Prevention): flag/block emails with sensitive data going external, 5) Audit forwarding: review Get-MailboxAutoReplyConfiguration and forwarding settings regularly.",
+          "homelab": {
+            "title": "Prevent Email Forwarding Abuse",
+            "description": "Configure transport rules and policies to prevent unauthorized forwarding.",
+            "steps": [
+              "Exchange admin center: Mail flow > Rules",
+              "Create rule: 'Block External Forwarding'",
+              "Condition: Message property > Forward to > External recipient",
+              "Action: Reject the message with notification",
+              "Test: Create test mailbox, try to set up forwarding rule to personal email - blocked",
+              "Audit existing rules: Get-InboxRule -Mailbox * | Where {$_.ForwardTo -like '*@external.com'}",
+              "Review mailbox forwarding: Get-Mailbox -ResultSize Unlimited | Get-MailboxAutoReplyConfiguration",
+              "Alert on new forwarding: audit logs trigger alert when forwarding rule created"
+            ]
+          }
+        },
+        {
+          "id": "email_003",
+          "difficulty": "intermediate",
+          "type": "free_response",
+          "question": "Your organization experiences a ransomware attack via email. An employee clicked a malicious link that downloaded ransomware, encrypting hundreds of files on the file server. Walk through incident response: containment, investigation, and recovery.",
+          "modelAnswer": "Incident Response: 1) CONTAINMENT (immediate): Isolate infected machine + file server from network. Disconnect RDP/remote access. 2) Investigation: Check email logs (Unified Audit Log) - identify which employee, when, link details. Review EDR logs for process chain (outlook.exe → browser → malware.exe). Check file server for encryption timestamp - determine attack scope. 3) Ransom? No. Check backups. 4) Recovery: Restore file server from backup (pre-encryption), verify backup integrity before restoring. 5) Remediation: Reset affected user's password, scan machine with Malwarebytes, update endpoint protection. 6) Organization-wide: Disable macro execution (GPO), require ASLR/DEP, deploy EDR agent to all machines, email user education. 7) Root cause: Weak email filtering allowed malicious link. Deploy Defender for Office 365 with Advanced Threat Protection (ATP). 8) Testing: restore backup to test machine first, verify data integrity before production restore.",
+          "homelab": {
+            "title": "Ransomware Incident Response Lab",
+            "description": "Simulate ransomware attack, investigate, and practice recovery.",
+            "steps": [
+              "Lab network: file server, workstation, EDR agent installed",
+              "Simulate attack: Download eicar test file (safe sample), simulate ransomware process chain",
+              "CONTAINMENT: Manually isolate workstation, check file server replication",
+              "INVESTIGATION: Review Event Viewer for suspicious process creation",
+              "Identify: Which user, which file, exact timestamp",
+              "Create timeline: Track attack progression through logs",
+              "RECOVERY: Restore file server from backup snapshot (pre-attack)",
+              "Verify: Check file integrity post-restore",
+              "REMEDIATION: Update EDR signatures, deploy email filter rules",
+              "Post-incident: Create runbook documenting this exact scenario"
+            ]
+          }
+        },
+        {
+          "id": "email_004",
+          "difficulty": "advanced",
+          "type": "mcq",
+          "question": "Your organization needs to comply with GDPR. An employee deletes a client's email from their mailbox. Regulators ask to see the email - it's gone from Outlook and Deleted Items. How can you recover it, and what is your retention strategy?",
+          "options": [
+            "You can't recover deleted emails - privacy requires permanent deletion",
+            "Use in-place hold / litigation hold to preserve email, then use eDiscovery to search and recover",
+            "Restore from backup tape - retention strategy should align with regulatory requirements",
+            "Both B and C are correct"
+          ],
+          "correctAnswer": 3,
+          "explanation": "Legal hold / in-place hold preserves emails even after deletion, critical for GDPR (right to access) and litigation. eDiscovery can search held mailboxes to recover deleted emails. Retention policy should be: 1) Establish regulatory requirements (GDPR = up to 3 years for contracts), 2) Set mailbox retention (Exchange retention policy), 3) Use legal hold when needed, 4) Backup for disaster recovery (not compliance). This balances privacy (deletion when retention expires) with compliance (access when required).",
+          "homelab": {
+            "title": "Implement Email Retention & eDiscovery",
+            "description": "Set up retention policies and practice eDiscovery for compliance.",
+            "steps": [
+              "Exchange admin center: Retention policies > Create policy",
+              "Set retention: 3 years for business emails, 1 year for personal",
+              "Create legal hold: Security & Compliance > eDiscovery > Create case",
+              "Add mailbox to hold: all emails preserved indefinitely",
+              "Delete email from user mailbox - confirm it's gone from Outlook",
+              "Use eDiscovery Search: search for keywords, date range, sender",
+              "Results show 'deleted' email is still recoverable",
+              "Export results to PST for review",
+              "Release hold when not needed - respects retention policy"
+            ]
+          }
+        }
+      ]
+    },
+    "architecture": {
+      "displayName": "IT Architecture & Strategy",
+      "icon": "🏗️",
+      "color": "#c084fc",
+      "questions": [
+        {
+          "id": "arch_001",
+          "difficulty": "intermediate",
+          "type": "mcq",
+          "question": "Your company is deciding between on-premises infrastructure and cloud (SaaS/IaaS). What are the key trade-offs you should evaluate?",
+          "options": [
+            "Cloud is always cheaper",
+            "Evaluate: capital expenditure vs operational expenditure, control vs managed services, compliance requirements, scalability needs, vendor lock-in, security responsibility",
+            "On-premises is more secure - never use cloud",
+            "The choice doesn't matter - they're identical"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Trade-offs: CapEx (on-prem: buy hardware upfront) vs OpEx (cloud: pay-as-you-go). Control (on-prem: full control, more work) vs managed (cloud: less management, less control). Compliance (some orgs require on-prem due to data residency). Scalability (cloud scales instantly, on-prem needs planning). Vendor lock-in (cloud services are harder to migrate out of). Security responsibility (cloud: shared responsibility, on-prem: your responsibility). Each organization's needs differ.",
+          "homelab": {
+            "title": "Compare On-Prem vs Cloud Architecture",
+            "description": "Build both on-prem and cloud setups, compare cost/complexity.",
+            "steps": [
+              "On-prem: Set up server, backup, redundancy, cooling (estimate costs)",
+              "Cloud: Set up equivalent on Azure App Service, SQL Database, Backup Vault",
+              "Compare 3-year costs: on-prem (hardware + electricity + support) vs cloud (subscription)",
+              "Compare management: on-prem (patches, updates, monitoring) vs cloud (Azure handles most)",
+              "Scenario: traffic triples - on-prem needs new hardware (2 weeks), cloud scales in minutes",
+              "Scenario: move to new location - on-prem needs new site, cloud just sign new region"
+            ]
+          }
+        },
+        {
+          "id": "arch_002",
+          "difficulty": "advanced",
+          "type": "free_response",
+          "question": "Design an IT architecture for a growing startup (currently 50 employees, planning to 1000+ in 5 years). Consider infrastructure, security, user management, disaster recovery, and budget constraints.",
+          "modelAnswer": "Year 1-2 (50-150 employees): Cloud-first approach - minimal on-prem. Infrastructure: Microsoft 365 (teams, email, docs), Azure (if custom app needed), small local NAS for file backup. User Management: Azure AD (directory, SSO), Conditional Access. Security: MFA on all accounts, basic EDR/antivirus, email filtering. Budget: ~$200/employee/year. DR: geo-redundant backups. Year 3-4 (150-500 employees): Add complexity - hybrid. Infrastructure: keep cloud + add hybrid identity sync, on-prem Exchange if email compliance needed. Security: advance to Zero Trust, implement PAM (privileged access). Budget: ~$300-400/employee/year. Year 5+ (500-1000+): Enterprise. Infrastructure: multi-region Azure, on-prem datacenter for compliance, VPN/ExpressRoute for integration. Security: SIEM, threat intelligence, advanced analytics. Budget: ~$500+/employee/year. Cost growth is sub-linear due to economies of scale. Key: start simple, add automation as you grow. Avoid over-engineering early (technical debt vs business velocity tradeoff).",
+          "homelab": {
+            "title": "Architect Scalable Startup Infrastructure",
+            "description": "Design phased growth from 50 to 1000 employees.",
+            "steps": [
+              "Phase 1: Set up M365 tenant, basic Azure AD, Teams, 365 apps",
+              "Phase 1 security: MFA, basic Intune MDM",
+              "Phase 1 budget: estimate per-employee costs",
+              "Phase 2 (200 employees): Add hybrid identity (on-prem AD sync to Azure AD)",
+              "Phase 2 security: Conditional Access policies, advanced threat protection",
+              "Phase 3 (500 employees): On-prem infrastructure - file server, Exchange hybrid",
+              "Phase 3 security: PAM vault for admin accounts, EDR on all endpoints",
+              "Phase 4 (1000+ employees): Multi-region architecture, SIEM/SOC",
+              "Document: cost per phase, technical decisions, rationale"
+            ]
+          }
+        },
+        {
+          "id": "arch_003",
+          "difficulty": "intermediate",
+          "type": "mcq",
+          "question": "A critical business system goes down, and your disaster recovery plan hasn't been tested in 2 years. What is the primary risk?",
+          "options": [
+            "You have backups - recovery is guaranteed to work",
+            "Untested DR plans often fail when needed - RTO/RPO targets may not be met, data may be corrupt, recovery procedures may have errors",
+            "DR testing is nice but not critical",
+            "You should never document DR plans - it's a security liability"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Untested disaster recovery is worse than no DR - it gives false confidence. Common failures: 1) Backup corrupt, 2) Recovery takes longer than RTO target, 3) Restored data is stale (exceeds RPO), 4) Documentation is outdated, 5) Key personnel have left. Best practice: test DR quarterly, document results, update runbooks annually.",
+          "homelab": {
+            "title": "Implement & Test Disaster Recovery",
+            "description": "Create DR plan, test failover, and document procedures.",
+            "steps": [
+              "Backup setup: daily incremental + weekly full backup to separate location",
+              "DR Plan document: RTO (recovery time = 4 hours), RPO (data loss = 1 hour)",
+              "Test 1: Restore to test VM - measure actual time vs RTO target",
+              "If actual > RTO: identify bottleneck (network speed, VM provisioning, etc.)",
+              "Test 2: Failover critical app - verify it works on restored system",
+              "Test 3: Data integrity - spot-check key data is consistent",
+              "Document: actual times, issues encountered, resolutions",
+              "Quarterly retesting: ensure procedures stay current"
+            ]
+          }
+        }
+      ]
     }
   }
 }
