@@ -22,6 +22,9 @@
   --text: #e8e8f2;
   --text2: #a0a0c0;
   --muted: #5a5a78;
+  --success: #4ade80;
+  --danger: #ef4444;
+  --warning: #f97316;
 }
 
 body.light-mode {
@@ -43,13 +46,15 @@ body.light-mode {
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
+html, body { height: 100%; }
+
 body {
   background: var(--bg);
   color: var(--text);
   font-family: 'DM Sans', sans-serif;
-  min-height: 100vh;
   overflow-x: hidden;
   transition: background-color 0.3s ease, color 0.3s ease;
+  line-height: 1.6;
 }
 
 body::before {
@@ -59,7 +64,14 @@ body::before {
   pointer-events: none; z-index: 999;
 }
 
-.wrap { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 36px 22px 100px; }
+.wrap { position: relative; z-index: 1; max-width: 1400px; margin: 0 auto; padding: 36px 22px 100px; }
+
+/* SCREENS */
+.screen { display: none; animation: fadeUp 0.4s ease; min-height: 100vh; }
+.screen.active { display: block; }
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
 
 /* LOGIN SCREEN */
 #login-screen {
@@ -67,13 +79,14 @@ body::before {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
+  padding: 20px;
 }
 
 .login-container {
   background: var(--surface);
   border: 1px solid var(--border);
   padding: 60px 40px;
-  border-radius: 8px;
+  border-radius: 12px;
   max-width: 450px;
   width: 100%;
   box-shadow: 0 20px 60px rgba(0,0,0,0.3);
@@ -116,7 +129,7 @@ body::before {
   font-weight: 600;
 }
 
-.form-group input {
+.form-group input, .form-group select {
   width: 100%;
   padding: 12px 16px;
   background: var(--surface2);
@@ -124,11 +137,11 @@ body::before {
   color: var(--text);
   font-family: 'DM Sans', sans-serif;
   font-size: 14px;
-  border-radius: 4px;
+  border-radius: 6px;
   transition: border-color 0.2s;
 }
 
-.form-group input:focus {
+.form-group input:focus, .form-group select:focus {
   outline: none;
   border-color: var(--accent);
 }
@@ -145,21 +158,48 @@ body::before {
 
 .btn {
   font-family: 'Space Mono', monospace;
-  font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
   padding: 13px 30px;
-  border: none; cursor: pointer;
+  border: none;
+  cursor: pointer;
   transition: all .18s;
-  display: inline-flex; align-items: center; gap: 9px;
-  flex: 1;
-  justify-content: center;
-  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  border-radius: 6px;
+  font-weight: 700;
 }
 
-.btn-p { background: var(--accent); color: #000; font-weight: 700; }
-.btn-p:hover { background: #33eeff; box-shadow: 0 0 24px rgba(0,229,255,.35); transform: translateY(-1px); }
+.btn-p {
+  background: var(--accent);
+  color: #000;
+}
 
-.btn-g { background: transparent; color: var(--text2); border: 1px solid var(--border2); }
-.btn-g:hover { border-color: var(--text2); color: var(--text); }
+.btn-p:hover {
+  background: #33eeff;
+  box-shadow: 0 0 24px rgba(0,229,255,.35);
+  transform: translateY(-1px);
+}
+
+.btn-p:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-g {
+  background: transparent;
+  color: var(--text2);
+  border: 1px solid var(--border2);
+  flex: 1;
+}
+
+.btn-g:hover {
+  border-color: var(--text2);
+  color: var(--text);
+}
 
 .toggle-form {
   text-align: center;
@@ -174,95 +214,34 @@ body::before {
   text-decoration: underline;
 }
 
-/* INTERESTS SCREEN */
-#interests-screen {
-  display: none;
-  min-height: 100vh;
-}
-
-.interests-container {
-  text-align: center;
-  padding: 60px 20px;
-}
-
-.interests-header {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 42px;
-  letter-spacing: 2px;
-  margin-bottom: 10px;
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent3) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.interests-subtitle {
-  font-size: 14px;
-  color: var(--text2);
-  margin-bottom: 50px;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.interests-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
-  margin-bottom: 40px;
-}
-
-.interest-card {
-  border: 2px solid var(--border);
-  background: var(--surface);
-  padding: 30px 20px;
-  cursor: pointer;
-  transition: all .2s;
-  border-radius: 8px;
-}
-
-.interest-card:hover {
-  border-color: var(--accent);
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(0,229,255,0.1);
-}
-
-.interest-card.selected {
-  border-color: var(--accent3);
-  background: rgba(184,255,87,0.05);
-}
-
-.interest-card .icon {
-  font-size: 40px;
+/* ERROR MESSAGE */
+.error-msg {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  padding: 12px 16px;
+  border-radius: 6px;
   margin-bottom: 15px;
-}
-
-.interest-card .name {
-  font-family: 'Space Mono', monospace;
   font-size: 12px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: var(--text);
-  margin-bottom: 8px;
+  border-left: 3px solid #ef4444;
 }
 
-.interest-card .desc {
-  font-size: 11px;
-  color: var(--muted);
-  line-height: 1.5;
-}
-
-.interests-actions {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-  max-width: 400px;
-  margin: 0 auto;
+.success-msg {
+  background: rgba(74, 222, 128, 0.1);
+  color: #4ade80;
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  font-size: 12px;
+  border-left: 3px solid #4ade80;
 }
 
 /* DASHBOARD */
 #dashboard-screen {
   display: none;
+}
+
+#dashboard-screen.active {
+  display: block;
 }
 
 .nav-header {
@@ -272,6 +251,8 @@ body::before {
   margin-bottom: 40px;
   border-bottom: 1px solid var(--border);
   padding-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 20px;
 }
 
 .nav-logo {
@@ -288,6 +269,7 @@ body::before {
   display: flex;
   gap: 20px;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .user-info {
@@ -329,6 +311,8 @@ body::before {
   margin-bottom: 30px;
   border-bottom: 1px solid var(--border2);
   padding-bottom: 0;
+  overflow-x: auto;
+  flex-wrap: wrap;
 }
 
 .tab {
@@ -343,11 +327,11 @@ body::before {
   text-transform: uppercase;
   border-bottom: 2px solid transparent;
   transition: all 0.2s;
+  white-space: nowrap;
 }
 
 .tab:hover {
   color: var(--text);
-  border-bottom-color: var(--border);
 }
 
 .tab.active {
@@ -361,9 +345,10 @@ body::before {
 
 .tab-content.active {
   display: block;
+  animation: slideIn 0.3s ease;
 }
 
-/* DOMAIN SECTIONS */
+/* SECTION HEADERS */
 .section-header {
   font-family: 'Space Mono', monospace;
   font-size: 11px;
@@ -378,6 +363,7 @@ body::before {
   margin-top: 0;
 }
 
+/* DOMAIN GRID */
 .domain-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -481,6 +467,547 @@ body::before {
   color: var(--accent4);
 }
 
+/* QUIZ SCREEN */
+#quiz-screen {
+  display: none;
+}
+
+#quiz-screen.active {
+  display: block;
+}
+
+.quiz-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.quiz-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  letter-spacing: 2px;
+}
+
+.quiz-progress {
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.progress-bar {
+  background: var(--surface3);
+  height: 4px;
+  margin-bottom: 30px;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent3));
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.progress-fill::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: -4px;
+  width: 9px;
+  height: 9px;
+  background: var(--accent3);
+  border-radius: 50%;
+  box-shadow: 0 0 12px var(--accent3);
+}
+
+.quiz-meta {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+
+.q-tag {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2.5px;
+  padding: 5px 12px;
+  border: 1px solid;
+  text-transform: uppercase;
+  border-radius: 4px;
+}
+
+.q-diff {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  color: var(--muted);
+}
+
+.q-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 13px;
+  letter-spacing: 3px;
+  color: var(--muted);
+  margin-bottom: 14px;
+  line-height: 1;
+}
+
+.q-text {
+  font-size: 17px;
+  line-height: 1.7;
+  font-weight: 500;
+  margin-bottom: 28px;
+  color: var(--text);
+}
+
+.q-code {
+  font-family: 'Space Mono', monospace;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-left: 3px solid var(--accent);
+  padding: 16px 20px;
+  font-size: 12px;
+  line-height: 1.8;
+  margin-bottom: 26px;
+  white-space: pre-wrap;
+  color: var(--accent3);
+  overflow-x: auto;
+  border-radius: 4px;
+}
+
+.ans-area {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 22px;
+}
+
+.aopt {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 14px 18px;
+  cursor: pointer;
+  transition: all .13s;
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+  text-align: left;
+  width: 100%;
+  border-radius: 6px;
+}
+
+.aopt:hover:not(.disabled) {
+  border-color: var(--accent);
+  background: rgba(0,229,255,.04);
+}
+
+.aopt.sel {
+  border-color: var(--accent);
+  background: rgba(0,229,255,.07);
+}
+
+.aopt.correct {
+  border-color: var(--accent3) !important;
+  background: rgba(184,255,87,.07) !important;
+}
+
+.aopt.wrong {
+  border-color: var(--accent2) !important;
+  background: rgba(255,60,110,.07) !important;
+}
+
+.aopt.disabled {
+  cursor: default;
+}
+
+.opt-l {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  min-width: 18px;
+  padding-top: 2px;
+  flex-shrink: 0;
+}
+
+.opt-t {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text);
+}
+
+/* FREE RESPONSE */
+.open-wrap {
+  margin-bottom: 22px;
+  display: none;
+}
+
+.open-wrap.active {
+  display: block;
+}
+
+.open-wrap textarea {
+  width: 100%;
+  min-height: 150px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  line-height: 1.65;
+  padding: 15px;
+  resize: vertical;
+  outline: none;
+  transition: border-color .2s;
+  border-radius: 6px;
+}
+
+.open-wrap textarea:focus {
+  border-color: var(--accent);
+}
+
+.open-wrap textarea::placeholder {
+  color: var(--muted);
+}
+
+.open-hint {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+/* FEEDBACK BOX */
+#fb-box {
+  display: none;
+  background: var(--surface2);
+  border-left: 3px solid var(--accent3);
+  padding: 20px 24px;
+  margin-bottom: 22px;
+  animation: fadeUp .3s ease;
+  border-radius: 4px;
+}
+
+#fb-box.active {
+  display: block;
+}
+
+#fb-box.neg {
+  border-left-color: var(--accent2);
+}
+
+#fb-box.neutral {
+  border-left-color: var(--accent);
+}
+
+.fb-lbl {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+#fb-text {
+  font-size: 13px;
+  line-height: 1.75;
+  color: var(--text);
+  white-space: pre-line;
+}
+
+.score-run {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  color: var(--muted);
+  margin-top: 12px;
+}
+
+/* POST-QUESTION CONTENT */
+.post-question-section {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 6px;
+}
+
+.post-question-section.hidden {
+  display: none;
+}
+
+.post-title {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.post-content {
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--text2);
+  margin-bottom: 15px;
+}
+
+.lab-steps {
+  font-size: 12px;
+  color: var(--text);
+}
+
+.lab-step {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.lab-step:last-child {
+  border-bottom: none;
+}
+
+.q-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+#submit-btn {
+  flex: 1;
+}
+
+#next-btn {
+  display: none;
+  flex: 1;
+}
+
+/* RESULTS SCREEN */
+#results-screen {
+  display: none;
+  animation: fadeUp .5s ease;
+}
+
+#results-screen.active {
+  display: block;
+}
+
+.res-head {
+  text-align: center;
+  padding: 44px 0 52px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 44px;
+}
+
+.grade-ring {
+  width: 150px;
+  height: 150px;
+  margin: 0 auto 26px;
+  position: relative;
+}
+
+.grade-ring svg {
+  transform: rotate(-90deg);
+}
+
+.ring-bg {
+  fill: none;
+  stroke: var(--surface3);
+  stroke-width: 7;
+}
+
+.ring-fill {
+  fill: none;
+  stroke-width: 7;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1.8s cubic-bezier(0.2, 1, 0.4, 1);
+}
+
+.grade-inner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.grade-pct {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 46px;
+  letter-spacing: 2px;
+  line-height: 1;
+}
+
+.grade-tier {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: var(--muted);
+  margin-top: 3px;
+}
+
+.res-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 34px;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+
+.res-sub {
+  font-size: 13px;
+  color: var(--text2);
+}
+
+.bk-section {
+  margin-bottom: 44px;
+}
+
+.bk-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.bk-icon {
+  font-size: 16px;
+  min-width: 24px;
+}
+
+.bk-name {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  min-width: 175px;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.bk-bar-wrap {
+  flex: 1;
+  background: var(--surface3);
+  height: 4px;
+  border-radius: 2px;
+}
+
+.bk-bar {
+  height: 100%;
+  transition: width 1.2s ease;
+  border-radius: 2px;
+}
+
+.bk-score {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  min-width: 65px;
+  text-align: right;
+}
+
+.verdict-box {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  padding: 28px;
+  margin-bottom: 36px;
+  border-radius: 6px;
+}
+
+.verdict-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  letter-spacing: 2px;
+  color: var(--accent);
+  margin-bottom: 14px;
+}
+
+#verdict-text {
+  font-size: 14px;
+  line-height: 1.9;
+  color: var(--text);
+}
+
+.rev-section {
+  margin-bottom: 36px;
+}
+
+.rev-item {
+  border: 1px solid var(--border);
+  margin-bottom: 6px;
+  overflow: hidden;
+  border-radius: 6px;
+}
+
+.rev-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 13px 16px;
+  cursor: pointer;
+  background: var(--surface);
+  transition: background .15s;
+}
+
+.rev-head:hover {
+  background: var(--surface2);
+}
+
+.rev-icon {
+  font-size: 13px;
+  min-width: 20px;
+  margin-top: 1px;
+  flex-shrink: 0;
+}
+
+.rev-meta {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1px;
+  color: var(--muted);
+  margin-bottom: 3px;
+  text-transform: uppercase;
+}
+
+.rev-q {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.45;
+  flex: 1;
+}
+
+.rev-body {
+  display: none;
+  padding: 16px 18px;
+  background: var(--surface2);
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--text2);
+}
+
+.rev-body.active {
+  display: block;
+}
+
+.rev-body b {
+  color: var(--text);
+}
+
+.rev-body .ua {
+  background: var(--surface3);
+  border-left: 2px solid var(--accent4);
+  padding: 10px 14px;
+  margin-bottom: 14px;
+  font-size: 13px;
+  color: var(--text);
+  border-radius: 4px;
+}
+
 /* LEADERBOARD */
 .leaderboard-container {
   display: grid;
@@ -549,6 +1076,7 @@ body::before {
   color: var(--accent);
 }
 
+/* RESPONSIVE */
 @media (max-width: 768px) {
   .leaderboard-container {
     grid-template-columns: 1fr;
@@ -561,79 +1089,76 @@ body::before {
   .login-container {
     padding: 40px 30px;
   }
+  
+  .nav-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .nav-right {
+    width: 100%;
+  }
 }
-</style>
 
+</style>
 </head>
 <body>
 
 <!-- LOGIN SCREEN -->
-<div id="login-screen" class="wrap">
-  <div class="login-container">
-    <div class="login-header">
-      <div class="login-logo">SKILLFORGE</div>
-      <div class="login-tagline">Company Learning Platform</div>
-    </div>
-
-    <form id="login-form" onsubmit="handleLogin(event)">
-      <div class="form-group">
-        <label>Username</label>
-        <input type="text" id="username" placeholder="Enter your username" required>
-      </div>
-      <div class="form-group">
-        <label>Password</label>
-        <input type="password" id="password" placeholder="Enter your password" required>
-      </div>
-      <div class="login-actions">
-        <button type="submit" class="btn btn-p">SIGN IN</button>
-        <button type="button" class="btn btn-g" onclick="toggleAuthForm()">CREATE ACCOUNT</button>
-      </div>
-    </form>
-
-    <form id="register-form" style="display:none;" onsubmit="handleRegister(event)">
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" id="email" placeholder="Your company email" required>
-      </div>
-      <div class="form-group">
-        <label>Username</label>
-        <input type="text" id="reg-username" placeholder="Choose username" required>
-      </div>
-      <div class="form-group">
-        <label>Password</label>
-        <input type="password" id="reg-password" placeholder="Choose password" required>
-      </div>
-      <div class="login-actions">
-        <button type="submit" class="btn btn-p">CREATE ACCOUNT</button>
-        <button type="button" class="btn btn-g" onclick="toggleAuthForm()">SIGN IN</button>
-      </div>
-    </form>
-
-    <div class="toggle-form" style="display:none;" id="toggle-text">
-      Don't have an account? <a onclick="toggleAuthForm()">Create one</a>
-    </div>
-  </div>
-</div>
-
-<!-- INTERESTS SELECTION SCREEN -->
-<div id="interests-screen">
+<div id="login-screen" class="screen active">
   <div class="wrap">
-    <div class="interests-container">
-      <div class="interests-header">SELECT YOUR LEARNING PATH</div>
-      <div class="interests-subtitle">Choose up to 2 roles or certifications to focus on. You can always change these later from your dashboard.</div>
-      
-      <div class="interests-grid" id="interests-grid"></div>
+    <div class="login-container">
+      <div class="login-header">
+        <div class="login-logo">SKILLFORGE</div>
+        <div class="login-tagline">Company Learning Platform</div>
+      </div>
 
-      <div class="interests-actions">
-        <button class="btn btn-p" onclick="confirmInterests()">CONFIRM SELECTIONS</button>
-        <button class="btn btn-g" onclick="skipInterests()">SKIP FOR NOW</button>
+      <div id="error-container"></div>
+      <div id="success-container"></div>
+
+      <form id="login-form" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" id="login-username" placeholder="Enter your username" required>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="login-password" placeholder="Enter your password" required>
+        </div>
+        <div class="login-actions">
+          <button type="submit" class="btn btn-p">SIGN IN</button>
+          <button type="button" class="btn btn-g" onclick="toggleAuthForm()">CREATE ACCOUNT</button>
+        </div>
+      </form>
+
+      <form id="register-form" style="display:none;" onsubmit="handleRegister(event)">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="reg-email" placeholder="Your company email" required>
+        </div>
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" id="reg-username" placeholder="Choose username" required>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="reg-password" placeholder="Min 8 chars: A-Z, number, special char" required>
+        </div>
+        <div class="login-actions">
+          <button type="submit" class="btn btn-p">CREATE ACCOUNT</button>
+          <button type="button" class="btn btn-g" onclick="toggleAuthForm()">SIGN IN</button>
+        </div>
+      </form>
+
+      <div class="toggle-form" id="toggle-text" style="display:none;">
+        Don't have an account? <a onclick="toggleAuthForm()">Create one</a>
       </div>
     </div>
   </div>
 </div>
 
-<!-- MAIN DASHBOARD -->
-<div id="dashboard-screen">
+<!-- DASHBOARD SCREEN -->
+<div id="dashboard-screen" class="screen">
   <div class="wrap">
     <div class="nav-header">
       <div class="nav-logo">SKILLFORGE</div>
@@ -651,7 +1176,6 @@ body::before {
       <button class="tab active" onclick="switchTab('my-learning')">MY LEARNING</button>
       <button class="tab" onclick="switchTab('all-domains')">ALL DOMAINS</button>
       <button class="tab" onclick="switchTab('leaderboard')">LEADERBOARD</button>
-      <button class="tab" onclick="switchTab('study-materials')">STUDY MATERIALS</button>
     </div>
 
     <!-- MY LEARNING TAB -->
@@ -685,95 +1209,183 @@ body::before {
         </div>
       </div>
     </div>
+  </div>
+</div>
 
-    <!-- STUDY MATERIALS TAB -->
-    <div id="study-materials" class="tab-content">
-      <div class="section-header">📖 STUDY GUIDES</div>
-      <div style="background: var(--surface); border: 1px solid var(--border); padding: 40px; text-align: center; border-radius: 8px;">
-        <p style="color: var(--muted); margin-bottom: 15px;">Study materials coming soon</p>
-        <p style="font-size: 12px; color: var(--text2);">Check back soon for official certification guides and learning resources</p>
+<!-- QUIZ SCREEN -->
+<div id="quiz-screen" class="screen">
+  <div class="wrap">
+    <div class="quiz-header">
+      <div class="quiz-title" id="quiz-domain-name">Quiz</div>
+      <div class="quiz-progress" id="quiz-progress">1 / 10</div>
+    </div>
+
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill" style="width: 0%;"></div>
+    </div>
+
+    <div class="quiz-meta">
+      <div class="q-tag" id="q-tag">DOMAIN</div>
+      <div class="q-diff" id="q-diff">DIFFICULTY: foundational</div>
+    </div>
+
+    <div class="q-num" id="q-num">Q1</div>
+    <div class="q-text" id="q-text">Question text...</div>
+    <pre class="q-code" id="q-code"></pre>
+
+    <div class="ans-area" id="ans-area"></div>
+
+    <div class="open-wrap" id="open-wrap">
+      <div class="open-hint">// FREE RESPONSE - Compare your answer to model answer after submission.</div>
+      <textarea id="open-ans" placeholder="Write your detailed answer here..."></textarea>
+    </div>
+
+    <div id="fb-box">
+      <div class="fb-lbl" id="fb-lbl">FEEDBACK</div>
+      <div id="fb-text"></div>
+      <div class="score-run" id="score-run"></div>
+    </div>
+
+    <div id="post-question" style="display:none;">
+      <div class="post-question-section" id="explanation-section"></div>
+      <div class="post-question-section hidden" id="homelab-section"></div>
+      <div class="post-question-section hidden" id="resources-section"></div>
+    </div>
+
+    <div class="q-actions">
+      <button class="btn btn-p" id="submit-btn" onclick="submitAnswer()">SUBMIT ANSWER</button>
+      <button class="btn btn-g" id="next-btn" onclick="nextQuestion()">NEXT QUESTION →</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESULTS SCREEN -->
+<div id="results-screen" class="screen">
+  <div class="wrap">
+    <div class="res-head">
+      <div class="grade-ring">
+        <svg width="150" height="150" viewBox="0 0 150 150">
+          <circle class="ring-bg" cx="75" cy="75" r="63"/>
+          <circle class="ring-fill" id="ring-fill" cx="75" cy="75" r="63"
+            stroke-dasharray="395.8" stroke-dashoffset="395.8"
+            stroke="url(#rg)"/>
+          <defs>
+            <linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#00e5ff"/>
+              <stop offset="50%" stop-color="#b8ff57"/>
+              <stop offset="100%" stop-color="#ff3c6e"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <div class="grade-inner">
+          <div class="grade-pct" id="gpct">-</div>
+          <div class="grade-tier" id="gtier">SCORE</div>
+        </div>
       </div>
+      <div class="res-title" id="rtitle">ASSESSMENT COMPLETE</div>
+      <div class="res-sub" id="rsub">0 / 0 pts</div>
+    </div>
+
+    <div class="section-header">Domain Breakdown</div>
+    <div class="bk-section" id="bk-wrap"></div>
+
+    <div class="section-header">Honest Verdict</div>
+    <div class="verdict-box">
+      <div class="verdict-title">// DEBRIEF</div>
+      <div id="verdict-text"></div>
+    </div>
+
+    <div class="section-header">Question Review - tap to expand</div>
+    <div class="rev-section" id="q-review"></div>
+
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:30px;">
+      <button class="btn btn-p" onclick="restart()">RETAKE ASSESSMENT</button>
+      <button class="btn btn-g" onclick="changeDomains()">CHANGE DOMAINS</button>
     </div>
   </div>
 </div>
 
 <script>
-// STATE MANAGEMENT
+// ==================== STATE ====================
+const API_BASE = 'http://localhost:5000/api';
+const API_URL = window.location.hostname === 'localhost' 
+  ? 'http://localhost:5000/api'
+  : 'https://yourdomain.com/api';
+
 let currentUser = null;
-let userInterests = [];
+let currentQuiz = null;
+let quizQuestions = [];
+let currentQuestionIndex = 0;
+let quizAnswers = [];
+let quizScores = [];
 let selectedInterests = [];
-let BANK = null;
-let CERT_DOMAINS = null;
-let ROLE_DOMAINS = null;
+let QUESTIONS_DATA = null;
 
-// INIT
-window.addEventListener('load', () => {
-  loadTheme();
-  loadSession();
-  loadDomainData();
-});
+// ==================== AUTH ====================
+async function handleLogin(e) {
+  e.preventDefault();
+  const username = document.getElementById('login-username').value;
+  const password = document.getElementById('login-password').value;
 
-// THEME MANAGEMENT
-function toggleTheme() {
-  document.body.classList.toggle('light-mode');
-  localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
-  document.querySelector('.theme-toggle').textContent = 
-    document.body.classList.contains('light-mode') ? '🌙 DARK' : '☀️ LIGHT';
-}
-
-function loadTheme() {
-  if (localStorage.getItem('theme') === 'light') {
-    document.body.classList.add('light-mode');
-    document.querySelector('.theme-toggle').textContent = '🌙 DARK';
-  }
-}
-
-// SESSION MANAGEMENT
-function saveSession() {
-  if (currentUser) {
-    sessionStorage.setItem('user', JSON.stringify(currentUser));
-    sessionStorage.setItem('userInterests', JSON.stringify(userInterests));
-  }
-}
-
-function loadSession() {
-  const user = sessionStorage.getItem('user');
-  const interests = sessionStorage.getItem('userInterests');
-  
-  if (user) {
-    currentUser = JSON.parse(user);
-    userInterests = interests ? JSON.parse(interests) : [];
-    showDashboard();
-  }
-}
-
-function clearSession() {
-  sessionStorage.removeItem('user');
-  sessionStorage.removeItem('userInterests');
-  currentUser = null;
-  userInterests = [];
-  selectedInterests = [];
-}
-
-// LOAD DOMAIN DATA
-async function loadDomainData() {
   try {
-    const response = await fetch('questions.json');
-    const data = await response.json();
-    CERT_DOMAINS = data.certDomains;
-    ROLE_DOMAINS = data.roleDomains;
-    
-    if (!currentUser) {
-      renderInterests();
+    const res = await fetch(`${API_URL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    });
+    const data = await res.json();
+
+    if (res.ok) {
+      currentUser = data.user;
+      localStorage.setItem('token', data.tokens.accessToken);
+      showSuccess('Login successful!');
+      setTimeout(() => showDashboard(), 1500);
     } else {
-      renderDashboard();
+      showError(data.error || 'Login failed');
     }
   } catch (err) {
-    console.error('Error loading domains:', err);
+    showError('Network error: ' + err.message);
   }
 }
 
-// AUTH FUNCTIONS
+async function handleRegister(e) {
+  e.preventDefault();
+  const email = document.getElementById('reg-email').value;
+  const username = document.getElementById('reg-username').value;
+  const password = document.getElementById('reg-password').value;
+
+  if (password.length < 8 || !/[A-Z]/.test(password) || !/[0-9]/.test(password) || !/[!@#$%^&*]/.test(password)) {
+    showError('Password must have 8+ chars, uppercase, number, and special char');
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_URL}/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, username, password })
+    });
+    const data = await res.json();
+
+    if (res.ok) {
+      currentUser = data.user;
+      localStorage.setItem('token', data.tokens.accessToken);
+      showSuccess('Account created! Redirecting...');
+      setTimeout(() => showDashboard(), 1500);
+    } else {
+      showError(data.error || 'Registration failed');
+    }
+  } catch (err) {
+    showError('Network error: ' + err.message);
+  }
+}
+
+function logout() {
+  currentUser = null;
+  localStorage.removeItem('token');
+  showScreen('login-screen');
+}
+
 function toggleAuthForm() {
   document.getElementById('login-form').style.display = 
     document.getElementById('login-form').style.display === 'none' ? 'block' : 'none';
@@ -783,198 +1395,115 @@ function toggleAuthForm() {
     document.getElementById('toggle-text').style.display === 'none' ? 'block' : 'none';
 }
 
-function handleLogin(e) {
-  e.preventDefault();
-  const username = document.getElementById('username').value;
-  const password = document.getElementById('password').value;
-  
-  // TEMPORARY: In real scenario, validate against backend
-  if (username && password) {
-    currentUser = {
-      username: username,
-      email: username + '@company.com',
-      rank: 'Bronze',
-      points: 0,
-      joinDate: new Date()
-    };
-    saveSession();
-    showInterests();
-  }
+// ==================== THEME ====================
+function toggleTheme() {
+  document.body.classList.toggle('light-mode');
+  localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
+  document.querySelector('.theme-toggle').textContent = 
+    document.body.classList.contains('light-mode') ? '🌙 DARK' : '☀️ LIGHT';
 }
 
-function handleRegister(e) {
-  e.preventDefault();
-  const email = document.getElementById('email').value;
-  const username = document.getElementById('reg-username').value;
-  const password = document.getElementById('reg-password').value;
-  
-  // TEMPORARY: In real scenario, register with backend
-  if (email && username && password) {
-    currentUser = {
-      username: username,
-      email: email,
-      rank: 'Bronze',
-      points: 0,
-      joinDate: new Date()
-    };
-    saveSession();
-    showInterests();
-  }
+// ==================== UI HELPERS ====================
+function showScreen(screenId) {
+  document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+  document.getElementById(screenId).classList.add('active');
+  window.scrollTo(0, 0);
 }
 
-function logout() {
-  clearSession();
-  location.reload();
+function showError(msg) {
+  const container = document.getElementById('error-container');
+  container.innerHTML = `<div class="error-msg">${msg}</div>`;
+  setTimeout(() => container.innerHTML = '', 5000);
 }
 
-// SCREEN NAVIGATION
-function showLogin() {
-  document.getElementById('login-screen').style.display = 'flex';
-  document.getElementById('interests-screen').style.display = 'none';
-  document.getElementById('dashboard-screen').style.display = 'none';
+function showSuccess(msg) {
+  const container = document.getElementById('success-container');
+  container.innerHTML = `<div class="success-msg">${msg}</div>`;
+  setTimeout(() => container.innerHTML = '', 5000);
 }
 
-function showInterests() {
-  if (userInterests.length === 0) {
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('interests-screen').style.display = 'block';
-    document.getElementById('dashboard-screen').style.display = 'none';
-    renderInterests();
-  } else {
-    showDashboard();
-  }
+function switchTab(tabName) {
+  document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById(tabName).classList.add('active');
 }
 
-function showDashboard() {
-  document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('interests-screen').style.display = 'none';
-  document.getElementById('dashboard-screen').style.display = 'block';
-  renderDashboard();
-}
-
-// INTERESTS SELECTION
-function renderInterests() {
-  const grid = document.getElementById('interests-grid');
-  let html = '';
-  
-  // Add cert domains
-  Object.entries(CERT_DOMAINS || {}).forEach(([key, domain]) => {
-    html += `
-      <div class="interest-card ${selectedInterests.includes(key) ? 'selected' : ''}" onclick="toggleInterest('${key}')">
-        <div class="icon">${domain.icon}</div>
-        <div class="name">${domain.displayName}</div>
-        <div class="desc">${domain.description}</div>
-      </div>
-    `;
-  });
-  
-  // Add role domains
-  Object.entries(ROLE_DOMAINS || {}).forEach(([key, domain]) => {
-    html += `
-      <div class="interest-card ${selectedInterests.includes(key) ? 'selected' : ''}" onclick="toggleInterest('${key}')">
-        <div class="icon">${domain.icon}</div>
-        <div class="name">${domain.displayName}</div>
-        <div class="desc">${domain.description}</div>
-      </div>
-    `;
-  });
-  
-  grid.innerHTML = html;
-}
-
-function toggleInterest(domain) {
-  if (selectedInterests.includes(domain)) {
-    selectedInterests = selectedInterests.filter(d => d !== domain);
-  } else if (selectedInterests.length < 2) {
-    selectedInterests.push(domain);
-  }
-  renderInterests();
-}
-
-function confirmInterests() {
-  if (selectedInterests.length > 0) {
-    userInterests = selectedInterests;
-    saveSession();
-    showDashboard();
-  }
-}
-
-function skipInterests() {
-  userInterests = Object.keys(ROLE_DOMAINS).slice(0, 2);
-  saveSession();
-  showDashboard();
-}
-
-// DASHBOARD RENDERING
-function renderDashboard() {
-  // Update user info
+// ==================== DASHBOARD ====================
+async function showDashboard() {
+  showScreen('dashboard-screen');
   document.getElementById('display-username').textContent = currentUser.username;
   document.getElementById('display-rank').textContent = currentUser.rank || 'Bronze';
-  
-  // Render my learning domains
-  let myCerts = '';
-  let myRoles = '';
-  
-  userInterests.forEach(key => {
-    if (CERT_DOMAINS[key]) {
-      myCerts += renderDomainCard(key, CERT_DOMAINS[key], 'cert');
-    }
-    if (ROLE_DOMAINS[key]) {
-      myRoles += renderDomainCard(key, ROLE_DOMAINS[key], 'role');
-    }
-  });
-  
-  document.getElementById('my-cert-domains').innerHTML = myCerts || '<p style="color: var(--muted);">No certifications selected</p>';
-  document.getElementById('my-role-domains').innerHTML = myRoles || '<p style="color: var(--muted);">No roles selected</p>';
-  
-  // Render all domains
-  let allCerts = '';
-  let allRoles = '';
-  
-  Object.entries(CERT_DOMAINS).forEach(([key, domain]) => {
-    allCerts += renderDomainCard(key, domain, 'cert');
-  });
-  
-  Object.entries(ROLE_DOMAINS).forEach(([key, domain]) => {
-    allRoles += renderDomainCard(key, domain, 'role');
-  });
-  
-  document.getElementById('all-cert-domains').innerHTML = allCerts;
-  document.getElementById('all-role-domains').innerHTML = allRoles;
-  
-  // Render leaderboards
-  renderLeaderboards();
+
+  // Load questions from questions.json
+  try {
+    const res = await fetch('./questions.json');
+    QUESTIONS_DATA = await res.json();
+    renderDomains();
+    renderLeaderboard();
+  } catch (err) {
+    console.error('Failed to load questions:', err);
+  }
 }
 
-function renderDomainCard(key, domain, type) {
-  const qCount = (domain.questions || []).length;
-  const comingSoon = domain.status === 'coming_soon';
-  
-  return `
-    <div class="domain-card ${comingSoon ? 'coming-soon' : ''}" 
-         onclick="${!comingSoon ? `startQuiz('${key}')` : ''}">
-      <div class="domain-icon">${domain.icon}</div>
-      <div class="domain-name">${domain.displayName}</div>
-      <div class="domain-type">${type === 'cert' ? '🔐 CERTIFICATION' : '💼 ROLE'}</div>
-      <div class="domain-desc">${domain.description}</div>
-      <div class="domain-meta">
-        <span class="domain-count">${qCount} QUESTIONS</span>
-        <span class="domain-status ${domain.status}">${domain.status === 'coming_soon' ? 'COMING SOON' : 'ACTIVE'}</span>
-      </div>
+function renderDomains() {
+  const certs = document.getElementById('all-cert-domains');
+  const roles = document.getElementById('all-role-domains');
+  const myCerts = document.getElementById('my-cert-domains');
+  const myRoles = document.getElementById('my-role-domains');
+
+  certs.innerHTML = '';
+  roles.innerHTML = '';
+  myCerts.innerHTML = '';
+  myRoles.innerHTML = '';
+
+  for (const [key, bank] of Object.entries(QUESTIONS_DATA.questionBanks)) {
+    const card = createDomainCard(key, bank);
+    if (bank.type === 'cert') {
+      certs.appendChild(card.cloneNode(true));
+      if (currentUser.interests?.includes(key)) {
+        myCerts.appendChild(card);
+      }
+    } else {
+      roles.appendChild(card.cloneNode(true));
+      if (currentUser.interests?.includes(key)) {
+        myRoles.appendChild(card);
+      }
+    }
+  }
+}
+
+function createDomainCard(key, bank) {
+  const card = document.createElement('div');
+  card.className = bank.status === 'coming_soon' ? 'domain-card coming-soon' : 'domain-card';
+  if (bank.status !== 'coming_soon') {
+    card.onclick = () => startQuiz(key, bank);
+  }
+
+  const qCount = bank.questions?.length || 0;
+  card.innerHTML = `
+    <div class="domain-icon">${bank.icon}</div>
+    <div class="domain-name">${bank.displayName}</div>
+    <div class="domain-type">${bank.type === 'cert' ? '🔐 CERTIFICATION' : '💼 ROLE'}</div>
+    <div class="domain-desc">${bank.description || bank.displayName}</div>
+    <div class="domain-meta">
+      <span class="domain-count">${qCount} QUESTIONS</span>
+      <span class="domain-status ${bank.status === 'coming_soon' ? 'coming-soon' : 'active'}">${bank.status === 'coming_soon' ? 'COMING SOON' : 'ACTIVE'}</span>
     </div>
   `;
+  return card;
 }
 
-function renderLeaderboards() {
-  // TEMPORARY: Mock leaderboard data
+async function renderLeaderboard() {
+  // Mock data - replace with API call
   const mockLeaders = [
     { rank: 1, username: 'Alex Johnson', points: 2850 },
     { rank: 2, username: 'Sarah Chen', points: 2720 },
     { rank: 3, username: 'Marcus Rivera', points: 2510 },
-    { rank: 4, username: 'You', points: currentUser.points },
-    { rank: 5, username: 'Emma Davis', points: 1920 }
+    { rank: 4, username: 'Emma Davis', points: 1920 },
+    { rank: 5, username: 'Jordan Smith', points: 1750 }
   ];
-  
+
   const weeklyHtml = mockLeaders.map((l, i) => `
     <div class="leaderboard-item">
       <div class="rank ${i < 3 ? 'top-3' : ''}">#${l.rank}</div>
@@ -985,26 +1514,199 @@ function renderLeaderboards() {
       <div class="lb-points">${l.points}</div>
     </div>
   `).join('');
-  
+
   document.getElementById('weekly-board').innerHTML = weeklyHtml;
   document.getElementById('alltime-board').innerHTML = weeklyHtml;
 }
 
-// TAB SWITCHING
-function switchTab(tab) {
-  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
-  
-  document.getElementById(tab).classList.add('active');
-  event.target.classList.add('active');
+// ==================== QUIZ ====================
+function startQuiz(domainKey, domainBank) {
+  currentQuiz = { key: domainKey, bank: domainBank };
+  quizQuestions = domainBank.questions || [];
+  quizAnswers = new Array(quizQuestions.length).fill(null);
+  quizScores = new Array(quizQuestions.length).fill(0);
+  currentQuestionIndex = 0;
+
+  showScreen('quiz-screen');
+  document.getElementById('quiz-domain-name').textContent = domainBank.displayName;
+  renderQuestion();
 }
 
-// QUIZ FUNCTIONS
-function startQuiz(domain) {
-  console.log('Starting quiz for domain:', domain);
-  // Will implement full quiz view next
-}
-</script>
+function renderQuestion() {
+  const q = quizQuestions[currentQuestionIndex];
+  const progress = currentQuestionIndex + 1;
 
-</body>
-</html>
+  document.getElementById('quiz-progress').textContent = `${progress} / ${quizQuestions.length}`;
+  document.getElementById('q-num').textContent = `Q${progress}`;
+  document.getElementById('q-text').textContent = q.question;
+  document.getElementById('q-tag').textContent = currentQuiz.bank.displayName;
+  document.getElementById('q-tag').style.borderColor = currentQuiz.bank.color;
+  document.getElementById('q-tag').style.color = currentQuiz.bank.color;
+  document.getElementById('q-diff').textContent = `DIFFICULTY: ${q.difficulty}`;
+
+  document.getElementById('q-code').textContent = q.codeBlock || '';
+  document.getElementById('q-code').style.display = q.codeBlock ? 'block' : 'none';
+
+  // Render answers based on type
+  const ansArea = document.getElementById('ans-area');
+  ansArea.innerHTML = '';
+
+  if (q.type === 'mcq') {
+    document.getElementById('open-wrap').classList.remove('active');
+    const shuffled = q.options.map((opt, i) => ({ opt, origIdx: i })).sort(() => Math.random() - 0.5);
+    
+    shuffled.forEach(({ opt, origIdx }, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'aopt';
+      btn.dataset.index = origIdx;
+      btn.onclick = () => selectOption(origIdx);
+      btn.innerHTML = `<span class="opt-l">${String.fromCharCode(65 + i)}.</span><span class="opt-t">${opt}</span>`;
+      if (quizAnswers[currentQuestionIndex] === origIdx) {
+        btn.classList.add('sel');
+      }
+      ansArea.appendChild(btn);
+    });
+  } else if (q.type === 'free_response') {
+    document.getElementById('open-wrap').classList.add('active');
+    document.getElementById('open-ans').value = quizAnswers[currentQuestionIndex] || '';
+  }
+
+  document.getElementById('fb-box').classList.remove('active');
+  document.getElementById('post-question').style.display = 'none';
+  document.getElementById('submit-btn').style.display = 'inline-flex';
+  document.getElementById('next-btn').style.display = 'none';
+
+  updateProgressBar();
+}
+
+function selectOption(idx) {
+  quizAnswers[currentQuestionIndex] = idx;
+  document.querySelectorAll('.aopt').forEach(btn => btn.classList.remove('sel'));
+  document.querySelector(`[data-index="${idx}"]`).classList.add('sel');
+}
+
+function updateProgressBar() {
+  const progress = ((currentQuestionIndex + 1) / quizQuestions.length) * 100;
+  document.getElementById('progress-fill').style.width = progress + '%';
+}
+
+function submitAnswer() {
+  const q = quizQuestions[currentQuestionIndex];
+  let isCorrect = false;
+
+  if (q.type === 'mcq') {
+    isCorrect = quizAnswers[currentQuestionIndex] === q.correctAnswer;
+    quizScores[currentQuestionIndex] = isCorrect ? 1 : 0;
+
+    // Show feedback
+    document.querySelectorAll('.aopt').forEach((btn, i) => {
+      btn.classList.add('disabled');
+      if (i === q.correctAnswer) {
+        btn.classList.add('correct');
+      } else if (btn.dataset.index == quizAnswers[currentQuestionIndex] && !isCorrect) {
+        btn.classList.add('wrong');
+      }
+    });
+  } else {
+    // Free response - always 0.5 points (for comparison purposes)
+    quizScores[currentQuestionIndex] = 0.5;
+  }
+
+  // Show feedback box
+  const fbBox = document.getElementById('fb-box');
+  fbBox.classList.add('active');
+  fbBox.classList.toggle('neg', !isCorrect && q.type === 'mcq');
+
+  const label = q.type === 'mcq' 
+    ? (isCorrect ? '✓ CORRECT' : '✗ INCORRECT')
+    : '📝 MODEL ANSWER';
+
+  document.getElementById('fb-lbl').textContent = label;
+  document.getElementById('fb-text').textContent = q.explanation || q.modelAnswer || 'No explanation available.';
+
+  const correct = quizScores.filter(s => s === 1).length;
+  const attempted = quizAnswers.filter(a => a !== null).length;
+  document.getElementById('score-run').textContent = `Progress: ${correct}/${attempted} correct so far`;
+
+  // Show post-question content
+  if (q.explanation) {
+    document.getElementById('explanation-section').innerHTML = `
+      <div class="post-title">📚 DEEPER EXPLANATION</div>
+      <div class="post-content">${q.explanation}</div>
+    `;
+    document.getElementById('explanation-section').classList.remove('hidden');
+  }
+
+  if (q.homelab) {
+    document.getElementById('homelab-section').innerHTML = `
+      <div class="post-title">🏗️ HOME LAB SCENARIO</div>
+      <div class="post-content"><strong>${q.homelab.title}</strong></div>
+      <div class="post-content">${q.homelab.description}</div>
+      <div class="lab-steps">${q.homelab.steps.map(step => `<div class="lab-step">• ${step}</div>`).join('')}</div>
+    `;
+    document.getElementById('homelab-section').classList.remove('hidden');
+  }
+
+  document.getElementById('post-question').style.display = 'block';
+
+  document.getElementById('submit-btn').style.display = 'none';
+  document.getElementById('next-btn').style.display = 'inline-flex';
+  document.getElementById('next-btn').textContent = currentQuestionIndex < quizQuestions.length - 1 ? 'NEXT QUESTION →' : 'SEE MY RESULTS →';
+}
+
+function nextQuestion() {
+  if (currentQuestionIndex < quizQuestions.length - 1) {
+    currentQuestionIndex++;
+    renderQuestion();
+  } else {
+    showResults();
+  }
+}
+
+// ==================== RESULTS ====================
+function showResults() {
+  showScreen('results-screen');
+  const totalCorrect = quizScores.filter(s => s === 1).length;
+  const totalFree = quizScores.filter(s => s === 0.5).length;
+  const earnedPoints = totalCorrect + (totalFree * 0.5);
+  const percentage = Math.round((earnedPoints / quizScores.length) * 100);
+
+  document.getElementById('gpct').textContent = percentage + '%';
+  document.getElementById('rsub').textContent = `${earnedPoints} / ${quizScores.length} pts`;
+
+  const tier = percentage >= 90 ? 'ELITE' : percentage >= 78 ? 'STRONG' : percentage >= 62 ? 'DEVELOPING' : percentage >= 45 ? 'FOUNDATIONAL' : 'NEEDS WORK';
+  document.getElementById('gtier').textContent = tier;
+
+  document.getElementById('rtitle').textContent = percentage >= 78 ? 'STRONG PERFORMANCE' : percentage >= 55 ? 'PASSING - GAPS IDENTIFIED' : 'SIGNIFICANT GAPS FOUND';
+
+  // Animate ring
+  setTimeout(() => {
+    const circumference = 2 * Math.PI * 63;
+    const offset = circumference - (percentage / 100) * circumference;
+    document.getElementById('ring-fill').style.strokeDashoffset = offset;
+  }, 150);
+
+  // Domain breakdown
+  const breakdown = quizQuestions.map((q, i) => ({
+    domain: currentQuiz.bank.displayName,
+    score: quizScores[i] || 0
+  }));
+
+  const bkEl = document.getElementById('bk-wrap');
+  bkEl.innerHTML = `
+    <div class="bk-row">
+      <div class="bk-icon">${currentQuiz.bank.icon}</div>
+      <div class="bk-name">${currentQuiz.bank.displayName}</div>
+      <div class="bk-bar-wrap"><div class="bk-bar" style="width:${percentage}%;background:${currentQuiz.bank.color}"></div></div>
+      <div class="bk-score">${earnedPoints}/${quizScores.length} · ${percentage}%</div>
+    </div>
+  `;
+
+  // Verdict
+  let verdict = '';
+  if (percentage >= 88) {
+    verdict = `Elite-tier performance. You've mastered ${currentQuiz.bank.displayName}. Strength shown in all areas. Next: take advanced certification exams or move to different domain.`;
+  } else if (percentage >= 72) {
+    verdict = `Strong knowledge with clear understanding of ${currentQuiz.bank.displayName}. Gaps in advanced scenarios. Next: focus on 1-2 weak areas for 30 days, then retake.`;
+  } else if (percentage >= 55) {
+    verdict = `Solid foundations but significant gaps in advanced concepts.
