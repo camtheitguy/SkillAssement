@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SkillForge - Company Learning Platform</title>
+<title>SkillForge - Adaptive Assessment Platform</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚔️</text></svg>">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap');
@@ -23,9 +23,6 @@
   --text: #e8e8f2;
   --text2: #a0a0c0;
   --muted: #5a5a78;
-  --success: #4ade80;
-  --danger: #ef4444;
-  --warning: #f97316;
 }
 
 body.light-mode {
@@ -65,17 +62,32 @@ body::before {
   pointer-events: none; z-index: 999;
 }
 
-.wrap { position: relative; z-index: 1; max-width: 1400px; margin: 0 auto; padding: 36px 22px 100px; }
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+  background-size: 44px 44px;
+  pointer-events: none; z-index: 0;
+}
+
+.wrap {
+  position: relative; z-index: 1;
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 36px 22px 100px;
+}
 
 /* SCREENS */
-.screen { display: none !important; animation: fadeUp 0.4s ease; min-height: 100vh; }
+.screen { display: none !important; animation: fadeUp 0.4s ease; }
 .screen.active { display: block !important; }
 
 @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
 @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-/* LOGIN SCREEN */
+/* ────────────────────────────────── LOGIN ────────────────────────────────── */
 #login-screen {
   display: flex !important;
   align-items: center;
@@ -218,7 +230,6 @@ body::before {
   text-decoration: underline;
 }
 
-/* MESSAGE ALERTS */
 .error-msg, .success-msg {
   padding: 12px 16px;
   border-radius: 6px;
@@ -240,7 +251,6 @@ body::before {
   border-left-color: #4ade80;
 }
 
-/* LOADING SPINNER */
 .spinner {
   display: inline-block;
   width: 14px;
@@ -251,33 +261,72 @@ body::before {
   animation: spin 0.8s linear infinite;
 }
 
-/* DASHBOARD */
-.nav-header {
+/* ────────────────────────────────── HEADER ────────────────────────────────── */
+header {
   display: flex;
+  align-items: flex-end;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 40px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid var(--border);
+  gap: 16px;
   flex-wrap: wrap;
-  gap: 20px;
+  padding-bottom: 28px;
+  margin-bottom: 40px;
+  border-bottom: 1px solid var(--border);
 }
 
-.nav-logo {
+.logo-block .logo {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 28px;
-  letter-spacing: 2px;
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent3) 100%);
+  font-size: 54px;
+  letter-spacing: 4px;
+  line-height: 1;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent3) 55%, var(--accent2) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-.nav-right {
+.logo-block .version {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 4px;
+  color: var(--muted);
+  margin-top: 2px;
+  text-transform: uppercase;
+}
+
+.header-right {
+  text-align: right;
   display: flex;
   gap: 20px;
   align-items: center;
   flex-wrap: wrap;
+}
+
+.live-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--accent3);
+  background: rgba(184,255,87,0.08);
+  border: 1px solid rgba(184,255,87,0.2);
+  padding: 5px 12px;
+}
+
+.live-dot {
+  width: 6px; height: 6px;
+  background: var(--accent3);
+  border-radius: 50%;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.25} }
+
+#q-counter {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
 }
 
 .user-info {
@@ -294,12 +343,6 @@ body::before {
   font-size: 11px;
   color: var(--accent);
   font-family: 'Space Mono', monospace;
-}
-
-.user-rank {
-  font-size: 10px;
-  color: var(--accent3);
-  text-transform: uppercase;
 }
 
 .theme-toggle, .logout-btn {
@@ -319,229 +362,177 @@ body::before {
   color: var(--accent);
 }
 
-.tabs {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 30px;
-  border-bottom: 1px solid var(--border2);
-  padding-bottom: 0;
-  overflow-x: auto;
-  flex-wrap: wrap;
-}
-
-.tab {
-  padding: 12px 20px;
-  background: transparent;
-  border: none;
-  color: var(--text2);
-  cursor: pointer;
+/* ────────────────────────────────── LABELS & TITLES ────────────────────────────────── */
+.sec-label {
   font-family: 'Space Mono', monospace;
-  font-size: 11px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  border-bottom: 2px solid transparent;
-  transition: all 0.2s;
-  white-space: nowrap;
-}
-
-.tab:hover {
-  color: var(--text);
-}
-
-.tab.active {
+  font-size: 9px;
+  letter-spacing: 4px;
   color: var(--accent);
-  border-bottom-color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 10px;
 }
 
-.tab-content {
-  display: none !important;
-}
-
-.tab-content.active {
-  display: block !important;
-  animation: slideIn 0.3s ease;
-}
-
-/* SECTION HEADERS */
-.section-header {
-  font-family: 'Space Mono', monospace;
-  font-size: 11px;
+.scr-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 38px;
   letter-spacing: 2px;
-  color: var(--accent);
-  text-transform: uppercase;
-  margin-bottom: 20px;
-  margin-top: 40px;
+  margin-bottom: 10px;
+  line-height: 1.1;
 }
 
-.section-header:first-of-type {
-  margin-top: 0;
+.scr-desc {
+  font-size: 14px;
+  color: var(--text2);
+  line-height: 1.75;
+  margin-bottom: 36px;
+  max-width: 660px;
 }
 
-/* DOMAIN GRID */
+/* ────────────────────────────────── DOMAIN GRID ────────────────────────────────── */
 .domain-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
-  margin-bottom: 40px;
+  grid-template-columns: repeat(auto-fill, minmax(245px, 1fr));
+  gap: 10px;
+  margin-bottom: 30px;
 }
 
-.domain-card {
+.dcard {
   border: 1px solid var(--border);
   background: var(--surface);
-  padding: 24px;
+  padding: 20px;
   cursor: pointer;
-  transition: all .2s;
-  border-radius: 8px;
+  transition: all .18s ease;
   position: relative;
   overflow: hidden;
+  user-select: none;
 }
 
-.domain-card::before {
+.dcard::after {
   content: '';
   position: absolute;
-  top: 0; right: 0;
-  width: 100px; height: 100px;
-  background: radial-gradient(circle, rgba(0,229,255,0.1) 0%, transparent 70%);
-  pointer-events: none;
+  inset: 0;
+  background: linear-gradient(135deg, transparent 50%, rgba(0,229,255,0.04));
+  opacity: 0;
+  transition: opacity .2s;
 }
 
-.domain-card:hover {
-  border-color: var(--accent);
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(0,229,255,0.08);
+.dcard:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,229,255,0.08); }
+.dcard:hover::after { opacity: 1; }
+
+.dcard.sel { border-color: var(--accent); background: rgba(0,229,255,0.05); }
+.dcard.sel .dchk { opacity: 1; transform: scale(1); }
+
+.dchk {
+  position: absolute; top: 12px; right: 12px;
+  width: 20px; height: 20px;
+  background: var(--accent);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; color: #000; font-weight: 700;
+  opacity: 0; transform: scale(0.5);
+  transition: all .2s;
 }
 
-.domain-icon {
-  font-size: 32px;
-  margin-bottom: 12px;
-}
+.d-icon { font-size: 24px; margin-bottom: 10px; }
 
-.domain-name {
+.d-name {
   font-family: 'Space Mono', monospace;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 1px;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
   color: var(--text);
-  margin-bottom: 4px;
+  margin-bottom: 5px;
 }
 
-.domain-type {
-  font-size: 10px;
-  color: var(--muted);
-  margin-bottom: 8px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
+.d-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
 
-.domain-desc {
-  font-size: 13px;
-  color: var(--text2);
-  line-height: 1.5;
-  margin-bottom: 15px;
-  min-height: 40px;
-}
-
-.domain-meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: 15px;
-  border-top: 1px solid var(--border2);
-  font-size: 11px;
-  color: var(--muted);
-}
-
-.domain-status {
+.d-count {
+  margin-top: 10px;
   font-family: 'Space Mono', monospace;
-  text-transform: uppercase;
-  letter-spacing: 1px;
   font-size: 9px;
-  color: var(--accent3);
-}
-
-/* QUIZ SCREEN */
-.quiz-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 30px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid var(--border);
-}
-
-.quiz-title {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 28px;
   letter-spacing: 2px;
+  color: var(--accent);
+  opacity: .6;
 }
 
-.quiz-progress {
+.tag-strip { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 30px; min-height: 28px; }
+.tag {
   font-family: 'Space Mono', monospace;
-  font-size: 12px;
-  color: var(--muted);
+  font-size: 9px; letter-spacing: 1.5px;
+  padding: 4px 10px;
+  border: 1px solid var(--border2);
+  color: var(--text2); text-transform: uppercase;
 }
 
-.progress-bar {
-  background: var(--surface3);
-  height: 4px;
-  margin-bottom: 30px;
-  border-radius: 2px;
-  overflow: hidden;
-}
+/* ────────────────────────────────── QUESTION SCREEN ────────────────────────────────── */
+#qscreen { display: none; animation: fadeUp .4s ease; }
 
-.progress-fill {
+.prog-wrap { background: var(--surface3); height: 2px; margin-bottom: 40px; }
+.prog-fill {
   height: 100%;
   background: linear-gradient(90deg, var(--accent), var(--accent3));
-  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: width .6s cubic-bezier(.4,0,.2,1);
+  position: relative;
+}
+.prog-fill::after {
+  content: '';
+  position: absolute; right: 0; top: -4px;
+  width: 9px; height: 9px;
+  background: var(--accent3); border-radius: 50%;
+  box-shadow: 0 0 12px var(--accent3);
 }
 
-.quiz-meta {
-  display: flex;
-  gap: 20px;
-  margin-bottom: 30px;
-  flex-wrap: wrap;
+.q-meta {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px; flex-wrap: wrap; gap: 8px;
 }
 
-.q-tag {
+.q-domain-tag {
   font-family: 'Space Mono', monospace;
-  font-size: 9px;
-  letter-spacing: 2.5px;
+  font-size: 9px; letter-spacing: 2.5px;
   padding: 5px 12px;
   border: 1px solid;
   text-transform: uppercase;
-  border-radius: 4px;
 }
 
 .q-diff {
   font-family: 'Space Mono', monospace;
-  font-size: 9px;
-  letter-spacing: 1.5px;
+  font-size: 9px; letter-spacing: 1.5px;
   color: var(--muted);
 }
+
+.diff-foundational { color: var(--accent3); border-color: rgba(184,255,87,.3); }
+.diff-intermediate { color: var(--accent4); border-color: rgba(255,170,0,.3); }
+.diff-advanced { color: var(--accent2); border-color: rgba(255,60,110,.3); }
 
 .q-num {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 13px;
-  letter-spacing: 3px;
-  color: var(--muted);
-  margin-bottom: 14px;
+  font-size: 13px; letter-spacing: 3px;
+  color: var(--muted); margin-bottom: 14px;
 }
 
 .q-text {
-  font-size: 17px;
-  line-height: 1.7;
-  font-weight: 500;
-  margin-bottom: 28px;
+  font-size: 17px; line-height: 1.7;
+  font-weight: 500; margin-bottom: 28px;
   color: var(--text);
 }
 
-.ans-area {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 22px;
+.q-code {
+  font-family: 'Space Mono', monospace;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-left: 3px solid var(--accent);
+  padding: 16px 20px;
+  font-size: 12px; line-height: 1.8;
+  margin-bottom: 26px;
+  white-space: pre-wrap;
+  color: var(--accent3);
+  display: none;
+  overflow-x: auto;
 }
+
+.ans-area { display: flex; flex-direction: column; gap: 8px; margin-bottom: 22px; }
 
 .aopt {
   border: 1px solid var(--border);
@@ -549,51 +540,43 @@ body::before {
   padding: 14px 18px;
   cursor: pointer;
   transition: all .13s;
-  display: flex;
-  align-items: flex-start;
-  gap: 13px;
-  text-align: left;
-  width: 100%;
-  border-radius: 6px;
+  display: flex; align-items: flex-start; gap: 13px;
+  text-align: left; width: 100%;
 }
 
-.aopt:hover:not(.disabled) {
-  border-color: var(--accent);
-  background: rgba(0,229,255,.04);
-}
-
-.aopt.sel {
-  border-color: var(--accent);
-  background: rgba(0,229,255,.07);
-}
-
-.aopt.correct {
-  border-color: var(--accent3) !important;
-  background: rgba(184,255,87,.07) !important;
-}
-
-.aopt.wrong {
-  border-color: var(--accent2) !important;
-  background: rgba(255,60,110,.07) !important;
-}
-
-.aopt.disabled {
-  cursor: default;
-}
+.aopt:hover:not(.disabled) { border-color: var(--accent); background: rgba(0,229,255,.04); }
+.aopt.sel { border-color: var(--accent); background: rgba(0,229,255,.07); }
+.aopt.correct { border-color: var(--accent3) !important; background: rgba(184,255,87,.07) !important; }
+.aopt.wrong { border-color: var(--accent2) !important; background: rgba(255,60,110,.07) !important; }
+.aopt.disabled { cursor: default; }
 
 .opt-l {
   font-family: 'Space Mono', monospace;
-  font-size: 10px;
-  color: var(--muted);
-  min-width: 18px;
-  padding-top: 2px;
-  flex-shrink: 0;
+  font-size: 10px; color: var(--muted);
+  min-width: 18px; padding-top: 2px; flex-shrink: 0;
 }
 
-.opt-t {
-  font-size: 14px;
-  line-height: 1.55;
+.opt-t { font-size: 14px; line-height: 1.55; color: var(--text); }
+
+.open-wrap { margin-bottom: 22px; display: none; }
+.open-wrap textarea {
+  width: 100%; min-height: 120px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
   color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; line-height: 1.65;
+  padding: 15px; resize: vertical; outline: none;
+  transition: border-color .2s;
+}
+.open-wrap textarea:focus { border-color: var(--accent); }
+.open-wrap textarea::placeholder { color: var(--muted); }
+
+.open-hint {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px; letter-spacing: 2px;
+  color: var(--muted);
+  margin-bottom: 8px;
 }
 
 #fb-box {
@@ -603,48 +586,32 @@ body::before {
   padding: 20px 24px;
   margin-bottom: 22px;
   animation: fadeUp .3s ease;
-  border-radius: 4px;
 }
 
-#fb-box.active {
-  display: block;
-}
-
-#fb-box.neg {
-  border-left-color: var(--accent2);
-}
+#fb-box.neg { border-left-color: var(--accent2); }
+#fb-box.neutral { border-left-color: var(--accent); }
 
 .fb-lbl {
   font-family: 'Space Mono', monospace;
-  font-size: 9px;
-  letter-spacing: 2.5px;
-  text-transform: uppercase;
-  margin-bottom: 10px;
+  font-size: 9px; letter-spacing: 2.5px;
+  text-transform: uppercase; margin-bottom: 10px;
 }
 
 #fb-text {
-  font-size: 13px;
-  line-height: 1.75;
-  color: var(--text);
+  font-size: 13px; line-height: 1.75;
+  color: var(--text); white-space: pre-line;
 }
 
-.q-actions {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-top: 20px;
+.score-run {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px; color: var(--muted); margin-top: 12px;
 }
 
-#submit-btn {
-  flex: 1;
-}
+.q-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
 
-#next-btn {
-  display: none;
-  flex: 1;
-}
+/* ────────────────────────────────── RESULTS ────────────────────────────────── */
+#rscreen { display: none; animation: fadeUp .5s ease; }
 
-/* RESULTS SCREEN */
 .res-head {
   text-align: center;
   padding: 44px 0 52px;
@@ -652,298 +619,116 @@ body::before {
   margin-bottom: 44px;
 }
 
-.grade-ring {
-  width: 150px;
-  height: 150px;
-  margin: 0 auto 26px;
-  position: relative;
-}
-
-.grade-ring svg {
-  transform: rotate(-90deg);
-}
-
-.ring-bg {
-  fill: none;
-  stroke: var(--surface3);
-  stroke-width: 7;
-}
-
-.ring-fill {
-  fill: none;
-  stroke-width: 7;
-  stroke-linecap: round;
-  transition: stroke-dashoffset 1.8s cubic-bezier(0.2, 1, 0.4, 1);
-}
-
+.grade-ring { width: 150px; height: 150px; margin: 0 auto 26px; position: relative; }
+.grade-ring svg { transform: rotate(-90deg); }
+.ring-bg { fill: none; stroke: var(--surface3); stroke-width: 7; }
+.ring-fill { fill: none; stroke-width: 7; stroke-linecap: round; transition: stroke-dashoffset 1.8s cubic-bezier(.2,1,.4,1); }
 .grade-inner {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
 }
-
 .grade-pct {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 46px;
-  letter-spacing: 2px;
-  line-height: 1;
+  font-size: 46px; letter-spacing: 2px; line-height: 1;
 }
-
 .grade-tier {
   font-family: 'Space Mono', monospace;
-  font-size: 9px;
-  letter-spacing: 3px;
-  color: var(--muted);
-  margin-top: 3px;
+  font-size: 9px; letter-spacing: 3px;
+  color: var(--muted); margin-top: 3px;
 }
 
 .res-title {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 34px;
-  letter-spacing: 2px;
-  margin-bottom: 8px;
+  font-size: 34px; letter-spacing: 2px; margin-bottom: 8px;
 }
+.res-sub { font-size: 13px; color: var(--text2); }
 
-.res-sub {
-  font-size: 13px;
-  color: var(--text2);
-}
-
-.bk-section {
-  margin-bottom: 44px;
-}
-
+.bk-section { margin-bottom: 44px; }
 .bk-row {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 13px 0;
+  display: flex; align-items: center;
+  gap: 14px; padding: 13px 0;
   border-bottom: 1px solid var(--border);
 }
-
-.bk-icon {
-  font-size: 16px;
-  min-width: 24px;
-}
-
+.bk-icon { font-size: 16px; min-width: 24px; }
 .bk-name {
   font-family: 'Space Mono', monospace;
-  font-size: 9px;
-  letter-spacing: 1.5px;
-  min-width: 175px;
-  text-transform: uppercase;
-  color: var(--text);
+  font-size: 9px; letter-spacing: 1.5px;
+  min-width: 175px; text-transform: uppercase; color: var(--text);
 }
-
-.bk-bar-wrap {
-  flex: 1;
-  background: var(--surface3);
-  height: 4px;
-  border-radius: 2px;
-}
-
-.bk-bar {
-  height: 100%;
-  transition: width 1.2s ease;
-  border-radius: 2px;
-}
-
+.bk-bar-wrap { flex: 1; background: var(--surface3); height: 4px; }
+.bk-bar { height: 100%; transition: width 1.2s ease; }
 .bk-score {
   font-family: 'Space Mono', monospace;
-  font-size: 10px;
-  color: var(--muted);
-  min-width: 65px;
-  text-align: right;
+  font-size: 10px; color: var(--muted);
+  min-width: 65px; text-align: right;
 }
 
 .verdict-box {
   background: var(--surface);
   border: 1px solid var(--border2);
-  padding: 28px;
-  margin-bottom: 36px;
-  border-radius: 6px;
+  padding: 28px; margin-bottom: 36px;
 }
-
 .verdict-title {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 22px;
-  letter-spacing: 2px;
-  color: var(--accent);
-  margin-bottom: 14px;
+  font-size: 22px; letter-spacing: 2px;
+  color: var(--accent); margin-bottom: 14px;
 }
+#verdict-text { font-size: 14px; line-height: 1.9; color: var(--text); }
 
-#verdict-text {
-  font-size: 14px;
-  line-height: 1.9;
-  color: var(--text);
-}
-
-.rev-section {
-  margin-bottom: 36px;
-}
-
-.rev-item {
-  border: 1px solid var(--border);
-  margin-bottom: 6px;
-  overflow: hidden;
-  border-radius: 6px;
-}
-
+.rev-section { margin-bottom: 36px; }
+.rev-item { border: 1px solid var(--border); margin-bottom: 6px; overflow: hidden; }
 .rev-head {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 13px 16px;
-  cursor: pointer;
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 13px 16px; cursor: pointer;
   background: var(--surface);
   transition: background .15s;
 }
-
-.rev-head:hover {
-  background: var(--surface2);
-}
-
-.rev-icon {
-  font-size: 13px;
-  min-width: 20px;
-  margin-top: 1px;
-  flex-shrink: 0;
-}
-
+.rev-head:hover { background: var(--surface2); }
+.rev-icon { font-size: 13px; min-width: 20px; margin-top: 1px; flex-shrink: 0; }
 .rev-meta {
   font-family: 'Space Mono', monospace;
-  font-size: 9px;
-  letter-spacing: 1px;
-  color: var(--muted);
-  margin-bottom: 3px;
-  text-transform: uppercase;
+  font-size: 9px; letter-spacing: 1px;
+  color: var(--muted); margin-bottom: 3px; text-transform: uppercase;
 }
-
-.rev-q {
-  font-size: 13px;
-  color: var(--text);
-  line-height: 1.45;
-  flex: 1;
-}
-
+.rev-q { font-size: 13px; color: var(--text); line-height: 1.45; flex: 1; }
 .rev-body {
   display: none;
   padding: 16px 18px;
   background: var(--surface2);
   border-top: 1px solid var(--border);
-  font-size: 13px;
-  line-height: 1.8;
-  color: var(--text2);
+  font-size: 13px; line-height: 1.8; color: var(--text2);
 }
-
-.rev-body.active {
-  display: block;
-}
-
-.rev-body b {
-  color: var(--text);
-}
-
-/* LEADERBOARD */
-.leaderboard-container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 30px;
-}
-
-.leaderboard-box {
-  border: 1px solid var(--border);
-  background: var(--surface);
-  padding: 24px;
-  border-radius: 8px;
-}
-
-.leaderboard-title {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 20px;
-  letter-spacing: 2px;
-  margin-bottom: 20px;
-  color: var(--accent);
-}
-
-.leaderboard-item {
-  display: flex;
-  align-items: center;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--border2);
-}
-
-.leaderboard-item:last-child {
-  border-bottom: none;
-}
-
-.rank {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 18px;
-  font-weight: 700;
-  min-width: 30px;
-  color: var(--accent3);
-}
-
-.rank.top-3 {
-  color: var(--accent2);
-}
-
-.user-details {
-  flex: 1;
-  margin-left: 15px;
-}
-
-.lb-username {
-  font-weight: 600;
+.rev-body.active { display: block; }
+.rev-body b { color: var(--text); }
+.rev-body .ua {
+  background: var(--surface3);
+  border-left: 2px solid var(--accent4);
+  padding: 10px 14px;
+  margin-bottom: 14px;
   font-size: 13px;
   color: var(--text);
-}
-
-.lb-score {
-  font-size: 11px;
-  color: var(--muted);
-}
-
-.lb-points {
-  font-family: 'Space Mono', monospace;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--accent);
 }
 
 @media (max-width: 768px) {
-  .leaderboard-container {
-    grid-template-columns: 1fr;
-  }
-  .domain-grid {
-    grid-template-columns: 1fr;
-  }
-  .login-container {
-    padding: 40px 30px;
-  }
-  .nav-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .nav-right {
-    width: 100%;
-  }
+  .wrap { padding: 20px 15px 80px; }
+  .login-container { padding: 40px 30px; }
+  .scr-title { font-size: 28px; }
+  header { flex-direction: column; align-items: flex-start; }
 }
 </style>
 </head>
 <body>
 
+<!-- ════════════════════════════════════════════════════════════ -->
 <!-- LOGIN SCREEN -->
+<!-- ════════════════════════════════════════════════════════════ -->
 <div id="login-screen" class="screen active">
   <div class="wrap">
     <div class="login-container">
       <div class="login-header">
         <div class="login-logo">SKILLFORGE</div>
-        <div class="login-tagline">Company Learning Platform</div>
+        <div class="login-tagline">Adaptive Assessment Platform</div>
       </div>
 
       <div id="error-container"></div>
@@ -990,89 +775,97 @@ body::before {
   </div>
 </div>
 
-<!-- DASHBOARD SCREEN -->
-<div id="dashboard-screen" class="screen">
+<!-- ════════════════════════════════════════════════════════════ -->
+<!-- DOMAIN SELECT SCREEN -->
+<!-- ════════════════════════════════════════════════════════════ -->
+<div id="dscreen" class="screen">
   <div class="wrap">
-    <div class="nav-header">
-      <div class="nav-logo">⚔️ SKILLFORGE</div>
-      <div class="nav-right">
+    <header>
+      <div class="logo-block">
+        <div class="logo">SKILLFORGE</div>
+        <div class="version">ADAPTIVE ASSESSMENT · V2.0</div>
+      </div>
+      <div class="header-right">
+        <div class="live-pill"><span class="live-dot"></span> LIVE SESSION</div>
         <div class="user-info">
-          <div class="username" id="display-username">User</div>
-          <div class="user-points" id="display-points">0 PTS</div>
-          <div class="user-rank" id="display-rank">Bronze</div>
+          <div class="username" id="username-label">User</div>
+          <div class="user-points" id="points-label">0 PTS</div>
         </div>
         <button class="theme-toggle" onclick="toggleTheme()">☀️ LIGHT</button>
         <button class="logout-btn" onclick="logout()">LOGOUT</button>
       </div>
+    </header>
+
+    <div class="sec-label">Step 01 — Configure</div>
+    <div class="scr-title">SELECT YOUR DOMAINS</div>
+    <div class="scr-desc">Pick up to 6 domains. Each contains diverse questions from foundational to advanced. Multiple choice with realistic distractors + open-ended scenarios. Rotate new questions on every attempt. No definitions. Real-world problems only.</div>
+
+    <div class="domain-grid" id="dgrid"></div>
+
+    <div class="tag-strip" id="sel-tags"></div>
+    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+      <button class="btn btn-p" id="start-btn" disabled onclick="startAssessment()">START ASSESSMENT →</button>
+      <span style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);" id="sel-count">0 domains selected (max 6)</span>
     </div>
+  </div>
+</div>
 
-    <div class="tabs">
-      <button class="tab active" onclick="switchTab('all-domains')">AVAILABLE DOMAINS</button>
-      <button class="tab" onclick="switchTab('leaderboard')">LEADERBOARD</button>
-    </div>
-
-    <!-- ALL DOMAINS TAB -->
-    <div id="all-domains" class="tab-content active">
-      <div class="section-header">🔐 CERTIFICATIONS</div>
-      <div class="domain-grid" id="all-cert-domains"></div>
-
-      <div class="section-header">💼 ROLES</div>
-      <div class="domain-grid" id="all-role-domains"></div>
-    </div>
-
-    <!-- LEADERBOARD TAB -->
-    <div id="leaderboard" class="tab-content">
-      <div class="leaderboard-container">
-        <div class="leaderboard-box">
-          <div class="leaderboard-title">WEEKLY LEADERS 🏆</div>
-          <div id="weekly-board"></div>
-        </div>
-        <div class="leaderboard-box">
-          <div class="leaderboard-title">ALL-TIME CHAMPIONS 👑</div>
-          <div id="alltime-board"></div>
-        </div>
+<!-- ════════════════════════════════════════════════════════════ -->
+<!-- QUESTION SCREEN -->
+<!-- ════════════════════════════════════════════════════════════ -->
+<div id="qscreen" class="screen">
+  <div class="wrap">
+    <header>
+      <div class="logo-block">
+        <div class="logo">SKILLFORGE</div>
       </div>
+      <div class="header-right">
+        <div class="live-pill"><span class="live-dot"></span> ASSESSMENT LIVE</div>
+        <div id="q-counter">0 / 0 answered</div>
+        <button class="logout-btn" onclick="logout()">EXIT</button>
+      </div>
+    </header>
+
+    <div class="prog-wrap"><div class="prog-fill" id="prog" style="width:0%"></div></div>
+    <div class="q-meta">
+      <div class="q-domain-tag" id="q-tag">DOMAIN</div>
+      <div class="q-diff" id="q-diff">DIFFICULTY: —</div>
     </div>
-  </div>
-</div>
-
-<!-- QUIZ SCREEN -->
-<div id="quiz-screen" class="screen">
-  <div class="wrap">
-    <div class="quiz-header">
-      <div class="quiz-title" id="quiz-domain-name">Quiz</div>
-      <div class="quiz-progress" id="quiz-progress">1 / 10</div>
-    </div>
-
-    <div class="progress-bar">
-      <div class="progress-fill" id="progress-fill" style="width: 0%;"></div>
-    </div>
-
-    <div class="quiz-meta">
-      <div class="q-tag" id="q-tag">DOMAIN</div>
-      <div class="q-diff" id="q-diff">DIFFICULTY: foundational</div>
-    </div>
-
-    <div class="q-num" id="q-num">Q1</div>
-    <div class="q-text" id="q-text">Question text...</div>
-
+    <div class="q-num" id="q-num">Q1 of 0</div>
+    <div class="q-text" id="q-text"></div>
+    <pre class="q-code" id="q-code"></pre>
     <div class="ans-area" id="ans-area"></div>
-
-    <div id="fb-box">
-      <div class="fb-lbl" id="fb-lbl">FEEDBACK</div>
-      <div id="fb-text"></div>
+    <div class="open-wrap" id="open-wrap">
+      <div class="open-hint">// OPEN RESPONSE — be specific. Model answer revealed after submit.</div>
+      <textarea id="open-ans" placeholder="Write what you actually know. Vague answers get called out in the review."></textarea>
     </div>
-
+    <div id="fb-box">
+      <div class="fb-lbl" id="fb-lbl"></div>
+      <div id="fb-text"></div>
+      <div class="score-run" id="score-run"></div>
+    </div>
     <div class="q-actions">
-      <button class="btn btn-p" id="submit-btn" onclick="submitAnswer()">SUBMIT ANSWER</button>
-      <button class="btn btn-g" id="next-btn" onclick="nextQuestion()">NEXT QUESTION →</button>
+      <button class="btn btn-p" id="sub-btn" onclick="submitAnswer()">SUBMIT ANSWER</button>
+      <button class="btn btn-g" id="nxt-btn" style="display:none" onclick="nextQ()">NEXT →</button>
     </div>
   </div>
 </div>
 
+<!-- ════════════════════════════════════════════════════════════ -->
 <!-- RESULTS SCREEN -->
-<div id="results-screen" class="screen">
+<!-- ════════════════════════════════════════════════════════════ -->
+<div id="rscreen" class="screen">
   <div class="wrap">
+    <header>
+      <div class="logo-block">
+        <div class="logo">SKILLFORGE</div>
+      </div>
+      <div class="header-right">
+        <button class="theme-toggle" onclick="toggleTheme()">☀️ LIGHT</button>
+        <button class="logout-btn" onclick="logout()">EXIT</button>
+      </div>
+    </header>
+
     <div class="res-head">
       <div class="grade-ring">
         <svg width="150" height="150" viewBox="0 0 150 150">
@@ -1089,188 +882,122 @@ body::before {
           </defs>
         </svg>
         <div class="grade-inner">
-          <div class="grade-pct" id="gpct">-</div>
+          <div class="grade-pct" id="gpct">—</div>
           <div class="grade-tier" id="gtier">SCORE</div>
         </div>
       </div>
       <div class="res-title" id="rtitle">ASSESSMENT COMPLETE</div>
-      <div class="res-sub" id="rsub">0 / 0 pts</div>
+      <div class="res-sub" id="rsub"></div>
     </div>
 
-    <div class="section-header">Domain Breakdown</div>
+    <div class="sec-label">Domain Breakdown</div>
     <div class="bk-section" id="bk-wrap"></div>
 
-    <div class="section-header">Verdict</div>
+    <div class="sec-label">Honest Verdict</div>
     <div class="verdict-box">
       <div class="verdict-title">// DEBRIEF</div>
       <div id="verdict-text"></div>
     </div>
 
-    <div class="section-header">Question Review</div>
+    <div class="sec-label" style="margin-bottom:14px;">Question Review — tap to expand</div>
     <div class="rev-section" id="q-review"></div>
 
     <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:30px;">
-      <button class="btn btn-p" onclick="restart()">RETAKE</button>
-      <button class="btn btn-g" onclick="changeDomains()">BACK HOME</button>
+      <button class="btn btn-p" onclick="restart()">RETAKE ASSESSMENT</button>
+      <button class="btn btn-g" onclick="changeDomains()">CHANGE DOMAINS</button>
     </div>
   </div>
 </div>
 
 <script>
-// ==================== CONFIG ====================
+// ═══════════════════════════════════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════════════════════════════════
 const API_URL = window.location.hostname === 'localhost' 
   ? 'http://localhost:5000/api'
   : 'https://skill-forgeapi.onrender.com/api';
 
 console.log('🔧 API URL:', API_URL);
 
-// Hardcoded domains with expanded question pools
-const DOMAINS = {
-  '3': {
-    id: 3,
-    displayName: 'CompTIA Security+',
-    type: 'certification',
-    icon: '🔐',
-    color: '#ff1493',
-    description: 'Entry-level cybersecurity certification',
-    questions: [
-      {
-        id: 1,
-        difficulty: 'foundational',
-        questionText: 'Under the CIA triad, which component ensures that data cannot be altered without authorization?',
-        options: [
-          'Confidentiality - data is kept secret',
-          'Integrity - data is accurate, complete, and has not been altered',
-          'Availability - data is accessible when needed',
-          'Authenticity - user identity is verified'
-        ],
-        correctAnswer: 1,
-        explanation: 'CIA Triad: Confidentiality (secrecy), Integrity (accuracy/no alteration), Availability (accessible). Integrity is violated if data is modified without authorization.'
-      },
-      {
-        id: 2,
-        difficulty: 'intermediate',
-        questionText: 'Which cryptographic algorithm is commonly used for both encryption and digital signatures?',
-        options: [
-          'AES (Advanced Encryption Standard)',
-          'RSA (Rivest-Shamir-Adleman)',
-          'SHA-256',
-          'MD5'
-        ],
-        correctAnswer: 1,
-        explanation: 'RSA is an asymmetric encryption algorithm that supports both encryption and digital signatures. AES is symmetric, SHA-256 and MD5 are hashing algorithms, not encryption.'
-      },
-      {
-        id: 3,
-        difficulty: 'foundational',
-        questionText: 'What is a common method of social engineering?',
-        options: [
-          'Phishing emails',
-          'Port scanning',
-          'SQL injection',
-          'Buffer overflow'
-        ],
-        correctAnswer: 0,
-        explanation: 'Phishing is a social engineering attack using deceptive emails. Port scanning, SQL injection, and buffer overflow are technical attacks, not social engineering.'
-      }
-    ]
-  },
-  '4': {
-    id: 4,
-    displayName: 'Help Desk / SysAdmin',
-    type: 'role',
-    icon: '🖥️',
-    color: '#00e5ff',
-    description: 'System Administration and User Support',
-    questions: [
-      {
-        id: 4,
-        difficulty: 'foundational',
-        questionText: 'A user\'s PC is showing IP address 169.254.88.34. What does this indicate?',
-        options: [
-          'Normal DHCP assignment',
-          'APIPA (Automatic Private IP Addressing) - DHCP server unavailable',
-          'Static IP configuration error',
-          'Network adapter failure'
-        ],
-        correctAnswer: 1,
-        explanation: '169.254.x.x is the APIPA range. It means the DHCP server is unreachable and Windows assigned a link-local address automatically.'
-      },
-      {
-        id: 5,
-        difficulty: 'intermediate',
-        questionText: 'What is the primary purpose of Group Policy Objects (GPO) in Windows environments?',
-        options: [
-          'To manage file permissions only',
-          'To centrally manage computer and user configurations across the domain',
-          'To create backup copies of user files',
-          'To monitor network traffic'
-        ],
-        correctAnswer: 1,
-        explanation: 'GPOs allow administrators to centrally manage thousands of computers and user configurations simultaneously in Active Directory domains.'
-      },
-      {
-        id: 6,
-        difficulty: 'foundational',
-        questionText: 'Which command would you use in Windows to view all active network connections?',
-        options: [
-          'ipconfig',
-          'netstat',
-          'ping',
-          'tracert'
-        ],
-        correctAnswer: 1,
-        explanation: 'netstat displays all active network connections, listening ports, and network statistics. ipconfig shows IP configuration, ping tests connectivity, tracert traces route to host.'
-      }
-    ]
-  },
-  '5': {
-    id: 5,
-    displayName: 'Network Administration',
-    type: 'certification',
-    icon: '🌐',
-    color: '#b8ff57',
-    description: 'Core networking concepts and protocols',
-    questions: [
-      {
-        id: 7,
-        difficulty: 'foundational',
-        questionText: 'Which layer of the OSI model is responsible for routing packets?',
-        options: [
-          'Physical Layer (Layer 1)',
-          'Data Link Layer (Layer 2)',
-          'Network Layer (Layer 3)',
-          'Transport Layer (Layer 4)'
-        ],
-        correctAnswer: 2,
-        explanation: 'Layer 3 (Network Layer) handles routing, IP addressing, and logical network paths. Layer 2 handles MAC addresses, Layer 4 handles protocols like TCP/UDP.'
-      },
-      {
-        id: 8,
-        difficulty: 'intermediate',
-        questionText: 'What is the difference between TCP and UDP?',
-        options: [
-          'TCP is faster than UDP',
-          'TCP is connection-oriented and reliable; UDP is connectionless and faster',
-          'UDP is more secure than TCP',
-          'There is no functional difference'
-        ],
-        correctAnswer: 1,
-        explanation: 'TCP provides guaranteed delivery in order (connection-oriented), while UDP sends datagrams without guarantees (connectionless). UDP is faster but less reliable.'
-      }
-    ]
-  }
+// QUESTION BANK - SAME AS ORIGINAL
+const BANK = {
+  helpdesk: [
+    { difficulty:'foundational', type:'mcq', question:"A user's PC is showing IP address 169.254.88.34. They can't reach anything on the network. What is happening and what do you do first?", options:["The IP is in a reserved range for site-local traffic — route it through the VPN gateway","The machine got an APIPA address, meaning it failed to get a DHCP lease — check if the DHCP server is reachable and run ipconfig /release then /renew","The subnet mask is wrong — change it from /16 to /24 manually","The network adapter needs to be re-registered in DNS — run ipconfig /registerdns"], answer:'B', explanation:"169.254.x.x is an APIPA (Automatic Private IP Addressing) address — Windows assigns this automatically when DHCP fails. Causes: DHCP server down, scope exhausted, network connectivity issue between the client and DHCP server (wrong VLAN, blocked port 67/68, or the machine isn't reaching the server). Steps: ping the DHCP server, check DHCP console for scope exhaustion, verify the switch port, run ipconfig /release && ipconfig /renew. If it persists, check the Windows DHCP client service is running." },
+    { difficulty:'foundational', type:'mcq', question:"A user gets 'Access Denied' when trying to open a folder on a file server. You verify their AD account is active and in the correct department group. What do you check next?", options:["Reset their password — Access Denied always indicates a Kerberos token issue","Check the share permissions AND the NTFS permissions — both must allow access, and the effective permission is the most restrictive intersection","Add them directly to the local Administrators group on the file server","Check if the file server's domain trust is intact using nltest /sc_verify"], answer:'B', explanation:"Windows file access has two permission layers: Share Permissions (control network access to the share) and NTFS Permissions (control the actual file/folder). The effective permission is the most restrictive combination of both. Common scenario: NTFS allows the group, but Share permissions are set to 'Everyone: Read' — user can read but not write. Always check both." },
+    { difficulty:'intermediate', type:'mcq', question:"You need to force-apply a GPO to a set of machines immediately without waiting for the default 90-minute refresh interval. What command do you run on the target machines, and how would you run it remotely against 50 machines?", options:["gpupdate on each machine manually; there's no remote option built into Windows","gpupdate /force on each machine; remotely use Invoke-GPUpdate -Computer from the GPMC module or psexec","net group 'Policy' /add on each machine to trigger a policy pull","Restart the 'Group Policy Client' service remotely using sc \\\\machinename stop gpsvc"], answer:'B', explanation:"gpupdate /force re-applies all policies regardless of whether they've changed. Remotely: the GPMC PowerShell module's Invoke-GPUpdate -Computer allows you to target specific machines or OUs. Alternatively, use Invoke-Command -ComputerName (list) -ScriptBlock { gpupdate /force } via PowerShell remoting if WinRM is enabled." }
+  ],
+  networking: [
+    { difficulty:'foundational', type:'mcq', question:"You're troubleshooting why two devices on the same switch can't communicate. Device A is 192.168.10.5/24 and Device B is 192.168.20.5/24. What is the problem?", options:["The switch needs a trunk port configured between the two ports","They're in different subnets — without a router or Layer 3 switch, they cannot communicate directly regardless of physical connectivity","The subnet masks are wrong — change both to /16","ARP cache needs clearing on both devices"], answer:'B', explanation:"Devices communicate directly only if they're in the same subnet. 192.168.10.x/24 and 192.168.20.x/24 are different /24 networks. Device A will try to ARP for a router (its default gateway) to reach Device B — if no L3 device handles inter-subnet routing, the traffic goes nowhere." },
+    { difficulty:'intermediate', type:'mcq', question:"You configure a site-to-site VPN between two branch offices. The tunnel comes up (IKE phase 1 and 2 complete), but traffic between subnets doesn't flow. What is the most likely issue?", options:["The pre-shared keys don't match — they need to be identical on both sides","The interesting traffic selectors (proxy IDs / crypto ACLs) don't match on both sides — one side expects a different source/destination subnet","NAT traversal (NAT-T) is not enabled and the traffic is being NATed before encryption","The VPN uses AES-128 but the remote site requires AES-256"], answer:'B', explanation:"If Phase 1 and Phase 2 complete successfully, the tunnel is up — the issue is what traffic is being sent through it. IPsec site-to-site VPNs use traffic selectors (proxy IDs) that define the source and destination subnets permitted through the tunnel. If they don't match, traffic is dropped." }
+  ],
+  m365: [
+    { difficulty:'foundational', type:'mcq', question:"A user reports they can't access their mailbox in Outlook or OWA. Other users are fine. Their account is enabled in AD and synced to Entra. What do you check first?", options:["Check if the Exchange Online license is assigned — a missing or removed license immediately blocks mailbox access","Reset their password and have them re-authenticate","Check if the user is in the correct AD OU for Exchange sync","Run a mailbox repair request in the Exchange Admin Center"], answer:'A', explanation:"In M365, the Exchange Online license must be assigned for mailbox access. If the license was removed or expired, the mailbox becomes inaccessible within 30 days." },
+    { difficulty:'intermediate', type:'mcq', question:"You need to give a help desk technician the ability to reset passwords for standard users but NOT for admin accounts. What is the correct way to set this up?", options:["Add the technician to the Domain Admins group with a policy restricting admin resets","Create a custom admin role in Entra ID with 'Reset Password' permission scoped to non-admin users only, using Entra's administrative units if needed to restrict scope","Give the technician 'Password Administrator' built-in role — it can reset passwords for all users including other admins","Use Exchange Admin Center to delegate password reset permissions"], answer:'B', explanation:"Built-in roles like 'Password Administrator' cannot reset passwords for users with admin roles — this is by design (protection against privilege escalation)." }
+  ],
+  azure: [
+    { difficulty:'foundational', type:'mcq', question:"What is the difference between Azure RBAC and Entra ID roles, and why does it matter for least privilege?", options:["They're the same thing — Entra ID roles are just the newer name for Azure RBAC","Azure RBAC controls access to Azure resources (VMs, storage, subscriptions). Entra ID roles control access to Entra/M365 directory objects (users, groups, apps). They're separate systems and both must be configured for proper least privilege","Entra ID roles are for cloud-only accounts; Azure RBAC is for hybrid accounts synced from AD","Azure RBAC is free; Entra ID roles require P2 licensing"], answer:'B', explanation:"Critical distinction: Azure RBAC scopes to Azure resources — subscriptions, resource groups, specific resources. Entra ID roles control directory operations. A user can be Owner on a subscription while having zero Entra roles, or vice versa." },
+    { difficulty:'intermediate', type:'mcq', question:"You need to give a service principal (app registration) read access to blobs in a specific Azure Storage Account. What is the correct approach?", options:["Add the storage account key to the application's configuration — storage keys are the primary auth method","Assign the 'Storage Blob Data Reader' RBAC role to the service principal scoped to the specific storage account or container, and use the service principal's credentials (certificate or client secret) for auth","Create a SAS token and embed it in the application config — this is the recommended approach for service principals","Enable 'Allow all networks' on the storage account firewall so the service principal can authenticate"], answer:'B', explanation:"RBAC is the correct approach for service principals. Use certificate auth for the service principal (more secure than client secrets)." }
+  ],
+  secops: [
+    { difficulty:'foundational', type:'mcq', question:"Your EDR flags this process chain: outlook.exe → powershell.exe → mshta.exe → net.exe 'user /add'. What is this attack chain most likely?", options:["A legitimate admin script run from Outlook; MITRE: T1053 Scheduled Task","Phishing email with a malicious attachment executing a multi-stage payload; MITRE T1566.001 leading to T1059.001 and T1136","A macro virus from a downloaded Office file; MITRE: T1204.001","Both B and C are correct — the initial delivery is T1566 or T1204, PowerShell is T1059.001, mshta.exe abuse is T1218.005, net user /add is T1136.001"], answer:'D', explanation:"This is a full kill chain: phishing → PowerShell → mshta.exe (Living Off the Land Binary) → account creation. Multiple MITRE techniques in sequence." },
+    { difficulty:'intermediate', type:'mcq', question:"You're reviewing SIEM alerts and see: 200 authentication failures across 50 different user accounts from a single IP in 10 minutes, then the attacks stop. No accounts were compromised. What attack is this?", options:["Credential stuffing — attacker stopped because they exhausted their credential list","Password spray — attacker likely stopped because an account lockout alert fired, or they hit the lockout threshold","Brute force — attacker ran out of common passwords in their wordlist","Reconnaissance scan — this is port scanning, not authentication attempts"], answer:'B', explanation:"Password spray — testing one or few passwords against many accounts to avoid per-account lockout thresholds. The abrupt stop is a telltale sign: sophisticated attackers monitor for alerting and pause before triggering lockouts." }
+  ],
+  scripting: [
+    { difficulty:'foundational', type:'mcq', code:`$users = Get-ADUser -Filter * -Properties Department
+$users | Where-Object { $_.Department -eq "IT" }
+foreach ($user in $users) {
+    Write-Output $user.Name
+}`, question:"What is wrong with this PowerShell script, and what does it actually output?", options:["Nothing is wrong — it outputs IT department users' names","The Where-Object filter result is never stored or used — the foreach still iterates over ALL users, not just IT. The filtered output goes to the pipeline and is discarded","Get-ADUser -Filter * will timeout on large directories — use -Filter {Department -eq 'IT'} instead","Both B and C — the filter output is wasted AND the -Filter * approach is inefficient"], answer:'D', explanation:"Two issues: 1) The Where-Object result is piped to console and not assigned to a variable, so foreach runs over all users. 2) Get-ADUser -Filter * fetches every user — better to use server-side filtering." },
+    { difficulty:'intermediate', type:'open', question:"Write a PowerShell script that queries all AD computers, checks if each one is reachable via ping, and for reachable machines checks if a specific Windows service ('wuauserv') is running. Output a CSV with columns: ComputerName, Online, ServiceStatus, LastChecked.", options:null, answer:null, explanation:`$results = @()
+$computers = Get-ADComputer -Filter * | Select-Object -ExpandProperty Name
+foreach ($computer in $computers) {
+    $online = Test-Connection -ComputerName $computer -Count 1 -Quiet -ErrorAction SilentlyContinue
+    $svcStatus = 'N/A'
+    if ($online) {
+        try {
+            $svc = Get-Service -ComputerName $computer -Name wuauserv -ErrorAction Stop
+            $svcStatus = $svc.Status
+        } catch {
+            $svcStatus = 'Error: ' + $_.Exception.Message
+        }
+    }
+    $results += [PSCustomObject]@{
+        ComputerName  = $computer
+        Online        = $online
+        ServiceStatus = $svcStatus
+        LastChecked   = (Get-Date -Format 'yyyy-MM-dd HH:mm:ss')
+    }
+}
+$results | Export-Csv -Path 'C:\\Reports\\ServiceCheck.csv' -NoTypeInformation` }
+  ],
+  emailsec: [
+    { difficulty:'foundational', type:'mcq', question:"A client asks you to explain the difference between SPF, DKIM, and DMARC in plain terms and what happens if only SPF is configured but not DKIM or DMARC.", options:["SPF and DKIM are the same thing — DMARC is the enforcement layer","SPF: verifies the sending mail server's IP is authorized. DKIM: cryptographically signs the email content. DMARC: tells receivers what to do when SPF/DKIM fail. Without DKIM or DMARC, SPF passes mean nothing — spoofed emails can still deliver since there's no enforcement policy","SPF is for inbound mail, DKIM is for outbound, DMARC combines both","Without DMARC, emails are rejected automatically — SPF alone causes more rejections"], answer:'B', explanation:"SPF: verifies envelope-from (Return-Path) domain. DKIM: cryptographically signs email. DMARC: enforces policy and requires alignment with Header From domain. Without DMARC, spoofed emails can deliver." },
+    { difficulty:'intermediate', type:'mcq', question:"You're checking a client's SPF record and it reads: v=spf1 include:spf.protection.outlook.com include:sendgrid.net include:mailchimp.com include:zendesk.com include:salesforce.com ip4:203.0.113.10 include:smtp.thirdparty.net ~all. What is the problem?", options:["The ~all should be -all for proper rejection","The SPF record exceeds the 10 DNS lookup limit — each 'include:' counts as a lookup, and some includes expand recursively, causing 'PermError' which may cause emails to fail","ip4 addresses are not supported in SPF — use the 'a' mechanism instead","The record is too long and will be truncated by DNS — split it into multiple TXT records"], answer:'B', explanation:"RFC 7208 limits SPF to 10 DNS lookups. This record has 6 includes which likely exceed the limit when expanded recursively. Use SPF flattening tools to replace includes with actual IP ranges." }
+  ],
+  architecture: [
+    { difficulty:'foundational', type:'mcq', question:"A client with 50 employees asks whether to implement VPN or Zero Trust Network Access (ZTNA) for remote work. What is the fundamental architectural difference?", options:["VPN and ZTNA do the same thing — ZTNA is just a newer marketing term for VPN","VPN grants network-level access (once connected, the user is 'inside'). ZTNA grants application-level access (user accesses specific apps, never gets network-level access). For a cloud-first M365 business with no on-prem servers, Conditional Access + ZTNA principles is the correct approach","ZTNA requires dedicated hardware appliances and is too expensive for 50 employees — use VPN","VPN is required for M365 compliance — Microsoft recommends all M365 traffic go through a corporate VPN"], answer:'B', explanation:"VPN = network-level trust. ZTNA = application-level trust. For pure cloud/M365: Conditional Access is the right approach. VPN is appropriate when you have on-premises resources." },
+    { difficulty:'intermediate', type:'mcq', question:"You're doing a NIST CSF gap assessment for a healthcare client. They have: EDR on all endpoints, no asset inventory, backups tested quarterly, no formal IR plan, HIPAA risk assessment done 3 years ago, and staff phishing training once per year. Rank their top 3 gaps in priority order.", options:["1) No IR plan 2) Infrequent phishing training 3) Outdated risk assessment","1) No asset inventory (Identify function is the foundation) 2) No IR plan (Respond function) 3) Outdated risk assessment (HIPAA requires regular reviews)","1) Quarterly backup testing (should be monthly) 2) No asset inventory 3) No IR plan","1) Phishing training frequency 2) Risk assessment age 3) No IR plan"], answer:'B', explanation:"NIST CSF function priority: Identify (know what you have) → Protect → Detect → Respond → Recover. Without asset inventory, every other function is degraded. IR plan is critical when incidents occur. HIPAA risk assessment needs periodic review." }
+  ]
 };
 
-// ==================== STATE ====================
-let currentUser = null;
-let currentQuiz = null;
-let quizQuestions = [];
-let currentQuestionIndex = 0;
-let quizAnswers = {};
-let quizScores = [];
+// DOMAIN METADATA
+const DMETA = {
+  helpdesk:     { label:'HELP DESK / SYSADMIN',      icon:'🖥️', color:'#00e5ff' },
+  networking:   { label:'NETWORK ENGINEERING',        icon:'🌐', color:'#b8ff57' },
+  m365:         { label:'M365 / EXCHANGE / ENTRA',    icon:'📧', color:'#ffaa00' },
+  azure:        { label:'AZURE CLOUD / ENTRA ID',     icon:'☁️', color:'#c084fc' },
+  secops:       { label:'SECURITY OPERATIONS',        icon:'🛡️', color:'#ff3c6e' },
+  scripting:    { label:'SCRIPTING / AUTOMATION',     icon:'💻', color:'#00e5ff' },
+  emailsec:     { label:'EMAIL SECURITY',             icon:'📨', color:'#b8ff57' },
+  architecture: { label:'SECURITY ARCHITECTURE',      icon:'🏗️', color:'#ffaa00' }
+};
 
-// ==================== AUTH ====================
+// ═══════════════════════════════════════════════════════════════════════════
+// STATE & AUTH
+// ═══════════════════════════════════════════════════════════════════════════
+let currentUser = null;
+let selD = [], questions = [], curQ = 0, scores = {}, answers = [];
+
 async function handleLogin(e) {
   e.preventDefault();
   console.log('📝 Login attempt...');
@@ -1305,7 +1032,9 @@ async function handleLogin(e) {
       showSuccess('Login successful!');
       
       setTimeout(() => {
-        showDashboard();
+        showScreen('dscreen');
+        updateUserDisplay();
+        renderDomainGrid();
         submitBtn.disabled = false;
         submitBtn.textContent = 'SIGN IN';
       }, 500);
@@ -1340,23 +1069,8 @@ async function handleRegister(e) {
     return false;
   }
 
-  if (password.length < 8) {
-    showError('Password must be at least 8 characters');
-    return false;
-  }
-
-  if (!/[A-Z]/.test(password)) {
-    showError('Password must contain an uppercase letter');
-    return false;
-  }
-
-  if (!/[0-9]/.test(password)) {
-    showError('Password must contain a number');
-    return false;
-  }
-
-  if (!/[!@#$%^&*]/.test(password)) {
-    showError('Password must contain a special character (!@#$%^&*)');
+  if (password.length < 8 || !/[A-Z]/.test(password) || !/[0-9]/.test(password) || !/[!@#$%^&*]/.test(password)) {
+    showError('Password: 8+ chars, uppercase, number, special char');
     return false;
   }
 
@@ -1381,7 +1095,9 @@ async function handleRegister(e) {
       showSuccess('Account created!');
       
       setTimeout(() => {
-        showDashboard();
+        showScreen('dscreen');
+        updateUserDisplay();
+        renderDomainGrid();
         submitBtn.disabled = false;
         submitBtn.textContent = 'CREATE ACCOUNT';
       }, 500);
@@ -1404,12 +1120,13 @@ async function handleRegister(e) {
 
 function logout() {
   currentUser = null;
+  selD = []; questions = []; curQ = 0; scores = {}; answers = [];
   localStorage.removeItem('authToken');
   localStorage.removeItem('refreshToken');
   localStorage.removeItem('user');
-  showScreen('login-screen');
   document.getElementById('login-form').reset();
   document.getElementById('register-form').reset();
+  showScreen('login-screen');
 }
 
 function toggleAuthForm() {
@@ -1428,22 +1145,9 @@ function toggleAuthForm() {
   }
 }
 
-// ==================== THEME ====================
-function toggleTheme() {
-  document.body.classList.toggle('light-mode');
-  localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
-  const btn = document.querySelector('.theme-toggle');
-  btn.textContent = document.body.classList.contains('light-mode') ? '🌙 DARK' : '☀️ LIGHT';
-}
-
-if (localStorage.getItem('theme') === 'light') {
-  document.body.classList.add('light-mode');
-  if (document.querySelector('.theme-toggle')) {
-    document.querySelector('.theme-toggle').textContent = '🌙 DARK';
-  }
-}
-
-// ==================== UI ====================
+// ═══════════════════════════════════════════════════════════════════════════
+// UI HELPERS
+// ═══════════════════════════════════════════════════════════════════════════
 function showScreen(screenId) {
   console.log('📺 Showing screen:', screenId);
   document.querySelectorAll('.screen').forEach(el => {
@@ -1452,9 +1156,6 @@ function showScreen(screenId) {
   const screen = document.getElementById(screenId);
   if (screen) {
     screen.classList.add('active');
-    console.log('✅ Screen shown:', screenId);
-  } else {
-    console.error('❌ Screen not found:', screenId);
   }
   window.scrollTo(0, 0);
 }
@@ -1475,287 +1176,347 @@ function showSuccess(msg) {
   }
 }
 
-function switchTab(tabName) {
-  document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-  event.target.classList.add('active');
-  document.getElementById(tabName).classList.add('active');
+function updateUserDisplay() {
+  if (!currentUser) return;
+  document.getElementById('username-label').textContent = currentUser.username;
+  document.getElementById('points-label').textContent = (currentUser.points || 0) + ' PTS';
 }
 
-// ==================== DASHBOARD ====================
-async function showDashboard() {
-  console.log('📊 Loading dashboard for:', currentUser.username);
-  showScreen('dashboard-screen');
-  
-  document.getElementById('display-username').textContent = currentUser.username;
-  document.getElementById('display-rank').textContent = currentUser.rank || 'Bronze';
-  document.getElementById('display-points').textContent = `${currentUser.points || 0} PTS`;
-
-  renderDomains();
-  renderLeaderboard();
+function toggleTheme() {
+  document.body.classList.toggle('light-mode');
+  localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
+  const btn = document.querySelector('.theme-toggle');
+  btn.textContent = document.body.classList.contains('light-mode') ? '🌙 DARK' : '☀️ LIGHT';
 }
 
-function renderDomains() {
-  const allCerts = document.getElementById('all-cert-domains');
-  const allRoles = document.getElementById('all-role-domains');
+if (localStorage.getItem('theme') === 'light') {
+  document.body.classList.add('light-mode');
+  const btn = document.querySelector('.theme-toggle');
+  if (btn) btn.textContent = '🌙 DARK';
+}
 
-  allCerts.innerHTML = '';
-  allRoles.innerHTML = '';
-
-  Object.values(DOMAINS).forEach(domain => {
-    const card = createDomainCard(domain);
-    if (domain.type === 'certification') {
-      allCerts.appendChild(card);
-    } else {
-      allRoles.appendChild(card);
-    }
+// ═══════════════════════════════════════════════════════════════════════════
+// DOMAIN SELECTION
+// ═══════════════════════════════════════════════════════════════════════════
+function renderDomainGrid() {
+  const dgrid = document.getElementById('dgrid');
+  dgrid.innerHTML = '';
+  Object.entries(DMETA).forEach(([key, meta]) => {
+    const qCount = BANK[key]?.length || 0;
+    const card = document.createElement('div');
+    card.className = 'dcard';
+    card.dataset.d = key;
+    card.onclick = () => toggleDomain(key);
+    card.innerHTML = `
+      <div class="dchk">✓</div>
+      <div class="d-icon">${meta.icon}</div>
+      <div class="d-name">${meta.label}</div>
+      <div class="d-desc">Adaptive questions across difficulty levels</div>
+      <div class="d-count">${qCount} QUESTIONS</div>
+    `;
+    dgrid.appendChild(card);
   });
+  renderSelUI();
 }
 
-function createDomainCard(domain) {
-  const card = document.createElement('div');
-  card.className = 'domain-card';
-  card.style.borderColor = domain.color;
-  card.onclick = () => startQuiz(domain);
-  card.innerHTML = `
-    <div class="domain-icon">${domain.icon}</div>
-    <div class="domain-name">${domain.displayName}</div>
-    <div class="domain-desc">${domain.description}</div>
-    <div class="domain-meta">
-      <span>${domain.questions.length} QUESTIONS</span>
-      <span class="domain-status">ACTIVE</span>
-    </div>
-  `;
-  return card;
-}
-
-async function renderLeaderboard() {
-  try {
-    const token = localStorage.getItem('authToken');
-    const [weekly, alltime] = await Promise.all([
-      fetch(`${API_URL}/leaderboard/weekly`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      }).then(r => r.ok ? r.json() : Promise.resolve({ leaderboard: [] })),
-      fetch(`${API_URL}/leaderboard/alltime`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      }).then(r => r.ok ? r.json() : Promise.resolve({ leaderboard: [] }))
-    ]);
-
-    const format = (items) => items && items.length ? items.slice(0, 5).map((u, i) => `
-      <div class="leaderboard-item">
-        <div class="rank ${i < 3 ? 'top-3' : ''}">#${i + 1}</div>
-        <div class="user-details">
-          <div class="lb-username">${u.username}</div>
-          <div class="lb-score">${u.quizzesCompleted || 0} quizzes</div>
-        </div>
-        <div class="lb-points">${u.points || 0}</div>
-      </div>
-    `).join('') : '<p style="color: var(--muted); padding: 20px; text-align: center;">No leaderboard data yet</p>';
-
-    document.getElementById('weekly-board').innerHTML = format(weekly.leaderboard);
-    document.getElementById('alltime-board').innerHTML = format(alltime.leaderboard);
-  } catch (err) {
-    console.error('Leaderboard error:', err);
-    document.getElementById('weekly-board').innerHTML = '<p style="color: var(--muted); padding: 20px; text-align: center;">Unable to load leaderboard</p>';
-    document.getElementById('alltime-board').innerHTML = '<p style="color: var(--muted); padding: 20px; text-align: center;">Unable to load leaderboard</p>';
+function toggleDomain(d) {
+  if (selD.includes(d)) {
+    selD = selD.filter(x => x !== d);
+    document.querySelector(`[data-d="${d}"]`).classList.remove('sel');
+  } else if (selD.length < 6) {
+    selD.push(d);
+    document.querySelector(`[data-d="${d}"]`).classList.add('sel');
   }
+  renderSelUI();
 }
 
-// ==================== QUIZ ====================
-function startQuiz(domain) {
-  console.log('🎯 Starting quiz:', domain.displayName);
-  currentQuiz = domain;
-  
-  // Shuffle and select random questions (max 10)
-  let questions = [...domain.questions];
-  questions = questions.sort(() => Math.random() - 0.5).slice(0, 10);
-  
-  quizQuestions = questions;
-  currentQuestionIndex = 0;
-  quizAnswers = {};
-  quizScores = [];
-
-  showScreen('quiz-screen');
-  document.getElementById('quiz-domain-name').textContent = domain.displayName;
-  renderQuestion();
+function renderSelUI() {
+  document.getElementById('sel-tags').innerHTML =
+    selD.map(d => `<span class="tag">${DMETA[d].icon} ${DMETA[d].label}</span>`).join('');
+  document.getElementById('start-btn').disabled = selD.length === 0;
+  document.getElementById('sel-count').textContent =
+    `${selD.length} domain${selD.length !== 1 ? 's' : ''} selected (max 6)`;
 }
 
-function renderQuestion() {
-  const q = quizQuestions[currentQuestionIndex];
-  const progress = currentQuestionIndex + 1;
+// ═══════════════════════════════════════════════════════════════════════════
+// START ASSESSMENT
+// ═══════════════════════════════════════════════════════════════════════════
+function startAssessment() {
+  questions = [];
+  scores = {};
+  answers = [];
+  curQ = 0;
 
-  document.getElementById('quiz-progress').textContent = `${progress} / ${quizQuestions.length}`;
-  document.getElementById('q-num').textContent = `Q${progress}`;
-  document.getElementById('q-text').textContent = q.questionText;
-  document.getElementById('q-tag').textContent = currentQuiz.displayName;
-  document.getElementById('q-tag').style.borderColor = currentQuiz.color;
-  document.getElementById('q-tag').style.color = currentQuiz.color;
-  document.getElementById('q-diff').textContent = `DIFFICULTY: ${q.difficulty}`;
-
-  const ansArea = document.getElementById('ans-area');
-  ansArea.innerHTML = '';
-
-  // Shuffle options but track correct answer
-  const shuffled = q.options.map((opt, i) => ({ opt, idx: i })).sort(() => Math.random() - 0.5);
-  
-  shuffled.forEach(({ opt, idx }, i) => {
-    const btn = document.createElement('button');
-    btn.className = 'aopt';
-    btn.type = 'button';
-    btn.dataset.index = idx;
-    btn.onclick = (e) => { e.preventDefault(); selectOption(idx); };
-    btn.innerHTML = `<span class="opt-l">${String.fromCharCode(65 + i)}.</span><span class="opt-t">${opt}</span>`;
-    if (quizAnswers[q.id] === idx) btn.classList.add('sel');
-    ansArea.appendChild(btn);
+  selD.forEach(d => {
+    const pool = [...BANK[d]].sort(() => Math.random() - 0.5);
+    pool.forEach(q => questions.push({ ...q, domain: d }));
   });
 
-  document.getElementById('fb-box').classList.remove('active');
-  document.getElementById('submit-btn').style.display = 'inline-flex';
-  document.getElementById('next-btn').style.display = 'none';
+  questions.sort(() => Math.random() - 0.5);
 
-  const progress_pct = ((progress) / quizQuestions.length) * 100;
-  document.getElementById('progress-fill').style.width = progress_pct + '%';
-}
-
-function selectOption(idx) {
-  const q = quizQuestions[currentQuestionIndex];
-  quizAnswers[q.id] = idx;
-  document.querySelectorAll('.aopt').forEach(b => b.classList.remove('sel'));
-  document.querySelector(`[data-index="${idx}"]`).classList.add('sel');
-}
-
-async function submitAnswer() {
-  const q = quizQuestions[currentQuestionIndex];
-  if (quizAnswers[q.id] === undefined) {
-    showError('Please select an answer');
-    return;
-  }
-
-  const isCorrect = quizAnswers[q.id] === q.correctAnswer;
-  quizScores.push(isCorrect ? 1 : 0);
-
-  document.querySelectorAll('.aopt').forEach(btn => {
-    btn.classList.add('disabled');
-    const idx = parseInt(btn.dataset.index);
-    if (idx === q.correctAnswer) btn.classList.add('correct');
-    else if (idx === quizAnswers[q.id] && !isCorrect) btn.classList.add('wrong');
+  questions.forEach(q => {
+    if (!scores[q.domain]) scores[q.domain] = { earned: 0, total: 0 };
+    scores[q.domain].total++;
   });
 
-  const fbBox = document.getElementById('fb-box');
-  fbBox.classList.add('active');
-  fbBox.classList.toggle('neg', !isCorrect);
-  document.getElementById('fb-lbl').textContent = isCorrect ? '✓ CORRECT' : '✗ INCORRECT';
-  document.getElementById('fb-text').textContent = q.explanation;
-
-  document.getElementById('submit-btn').style.display = 'none';
-  document.getElementById('next-btn').style.display = 'inline-flex';
-  document.getElementById('next-btn').textContent = currentQuestionIndex < quizQuestions.length - 1 ? 'NEXT →' : 'RESULTS →';
+  showScreen('qscreen');
+  document.getElementById('q-counter').textContent = `0 / ${questions.length} answered`;
+  renderQ();
 }
 
-function nextQuestion() {
-  if (currentQuestionIndex < quizQuestions.length - 1) {
-    currentQuestionIndex++;
-    renderQuestion();
+// ═══════════════════════════════════════════════════════════════════════════
+// RENDER QUESTION
+// ═══════════════════════════════════════════════════════════════════════════
+function renderQ() {
+  const q = questions[curQ];
+  const pct = (curQ / questions.length) * 100;
+
+  document.getElementById('prog').style.width = pct + '%';
+  document.getElementById('q-num').textContent = `Q${curQ + 1} of ${questions.length}`;
+
+  const meta = DMETA[q.domain] || {};
+  const tagEl = document.getElementById('q-tag');
+  tagEl.textContent = meta.label || q.domain.toUpperCase();
+  tagEl.style.color = meta.color || 'var(--accent)';
+  tagEl.style.borderColor = (meta.color || 'var(--accent)') + '44';
+
+  const diffEl = document.getElementById('q-diff');
+  diffEl.textContent = 'DIFFICULTY: ' + (q.difficulty || '—').toUpperCase();
+  diffEl.className = 'q-diff diff-' + (q.difficulty || 'foundational');
+
+  document.getElementById('q-text').textContent = q.question;
+  document.getElementById('fb-box').style.display = 'none';
+  document.getElementById('sub-btn').style.display = 'inline-flex';
+  document.getElementById('sub-btn').disabled = false;
+  document.getElementById('nxt-btn').style.display = 'none';
+
+  const ce = document.getElementById('q-code');
+  if (q.code) { ce.style.display = 'block'; ce.textContent = q.code; }
+  else ce.style.display = 'none';
+
+  const aa = document.getElementById('ans-area');
+  const ow = document.getElementById('open-wrap');
+
+  if (q.type === 'mcq' && q.options) {
+    ow.style.display = 'none';
+    aa.style.display = 'flex';
+    aa.innerHTML = q.options.map((opt, i) =>
+      `<button class="aopt" data-i="${i}" onclick="pickOpt(this)">
+        <span class="opt-l">${String.fromCharCode(65 + i)}.</span>
+        <span class="opt-t">${opt}</span>
+      </button>`
+    ).join('');
   } else {
-    showResults();
+    aa.style.display = 'none';
+    ow.style.display = 'block';
+    document.getElementById('open-ans').value = '';
   }
 }
 
-async function showResults() {
-  showScreen('results-screen');
-  
-  const correct = quizScores.filter(s => s === 1).length;
-  const total = quizScores.length;
-  const pct = total > 0 ? Math.round((correct / total) * 100) : 0;
+function pickOpt(el) {
+  document.querySelectorAll('.aopt').forEach(o => o.classList.remove('sel'));
+  el.classList.add('sel');
+}
 
-  document.getElementById('gpct').textContent = pct + '%';
-  document.getElementById('rsub').textContent = `${correct} / ${total} correct`;
+// ═══════════════════════════════════════════════════════════════════════════
+// SUBMIT ANSWER
+// ═══════════════════════════════════════════════════════════════════════════
+function submitAnswer() {
+  const q = questions[curQ];
+  document.getElementById('sub-btn').disabled = true;
 
-  const tier = pct >= 90 ? 'ELITE' : pct >= 78 ? 'STRONG' : pct >= 62 ? 'DEVELOPING' : pct >= 45 ? 'FOUNDATIONAL' : 'NEEDS WORK';
-  document.getElementById('gtier').textContent = tier;
-  document.getElementById('rtitle').textContent = pct >= 88 ? '🎉 ELITE!' : pct >= 78 ? '✓ STRONG' : pct >= 55 ? '⚡ PASSING' : '⚠️ NEEDS WORK';
+  if (q.type === 'mcq') {
+    const sel = document.querySelector('.aopt.sel');
+    if (!sel) { document.getElementById('sub-btn').disabled = false; return; }
 
+    const ci = parseInt(sel.dataset.i);
+    const cl = String.fromCharCode(65 + ci);
+    const al = (q.answer || '').trim().toUpperCase().charAt(0);
+    const ok = cl === al;
+
+    document.querySelectorAll('.aopt').forEach((o, i) => {
+      o.classList.add('disabled');
+      const l = String.fromCharCode(65 + i);
+      if (l === al) o.classList.add('correct');
+      else if (i === ci && !ok) o.classList.add('wrong');
+    });
+
+    if (ok) scores[q.domain].earned++;
+    answers.push({ domain: q.domain, correct: ok, question: q.question, explanation: q.explanation });
+    showFB(ok, q.explanation, ok ? '✓ CORRECT' : '✗ INCORRECT', ok ? 'pos' : 'neg');
+
+  } else {
+    const ua = document.getElementById('open-ans').value.trim();
+    if (!ua) { document.getElementById('sub-btn').disabled = false; return; }
+    scores[q.domain].earned += 0.5;
+    answers.push({ domain: q.domain, correct: true, question: q.question, userAnswer: ua, explanation: q.explanation });
+    showFB(true,
+      '📋 MODEL ANSWER — compare honestly with what you wrote:\n\n' + q.explanation,
+      '📝 OPEN RESPONSE',
+      'neutral'
+    );
+  }
+}
+
+function showFB(ok, text, label, type) {
+  const box = document.getElementById('fb-box');
+  box.style.display = 'block';
+  box.className = type === 'neg' ? 'neg' : type === 'neutral' ? 'neutral' : '';
+
+  const lbl = document.getElementById('fb-lbl');
+  lbl.textContent = label;
+  lbl.style.color = type === 'neg' ? 'var(--accent2)' : type === 'neutral' ? 'var(--accent)' : 'var(--accent3)';
+
+  document.getElementById('fb-text').textContent = text || '';
+
+  const ta = answers.length;
+  const tc = answers.reduce((s, a) => s + (a.correct ? 1 : 0), 0);
+  document.getElementById('score-run').textContent = `Running tally: ${tc} / ${ta}`;
+  document.getElementById('q-counter').textContent = `${ta} / ${questions.length} answered`;
+
+  document.getElementById('sub-btn').style.display = 'none';
+  document.getElementById('nxt-btn').style.display = 'inline-flex';
+  document.getElementById('nxt-btn').textContent =
+    curQ < questions.length - 1 ? 'NEXT →' : 'SEE MY RESULTS →';
+}
+
+function nextQ() {
+  curQ++;
+  if (curQ >= questions.length) showResults();
+  else { renderQ(); document.getElementById('sub-btn').disabled = false; }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// RESULTS
+// ═══════════════════════════════════════════════════════════════════════════
+function showResults() {
+  showScreen('rscreen');
+
+  let earned = 0, possible = 0;
+  Object.values(scores).forEach(s => { earned += s.earned; possible += s.total; });
+  const pct = possible > 0 ? Math.round((earned / possible) * 100) : 0;
+
+  const circ = 395.8;
   setTimeout(() => {
-    const circumference = 2 * Math.PI * 63;
-    const offset = circumference - (pct / 100) * circumference;
-    document.getElementById('ring-fill').style.strokeDashoffset = offset;
+    document.getElementById('ring-fill').style.strokeDashoffset =
+      circ - (pct / 100) * circ;
   }, 150);
 
-  document.getElementById('bk-wrap').innerHTML = `
-    <div class="bk-row">
-      <div class="bk-icon">${currentQuiz.icon}</div>
-      <div class="bk-name">${currentQuiz.displayName}</div>
-      <div class="bk-bar-wrap"><div class="bk-bar" style="width:${pct}%;background:${currentQuiz.color}"></div></div>
-      <div class="bk-score">${correct}/${total} · ${pct}%</div>
-    </div>
-  `;
+  document.getElementById('gpct').textContent = pct + '%';
+  const tier = pct >= 90 ? 'ELITE' : pct >= 78 ? 'STRONG' : pct >= 62 ? 'DEVELOPING' : pct >= 45 ? 'FOUNDATIONAL' : 'NEEDS WORK';
+  document.getElementById('gtier').textContent = tier;
+  document.getElementById('rtitle').textContent =
+    pct >= 78 ? 'STRONG PERFORMANCE' : pct >= 55 ? 'PASSING — GAPS IDENTIFIED' : 'SIGNIFICANT GAPS FOUND';
+  document.getElementById('rsub').textContent =
+    `${Math.round(earned * 2) / 2} / ${possible} pts · ${Object.keys(scores).length} domain${Object.keys(scores).length !== 1 ? 's' : ''}`;
 
-  const verdictMap = {
-    elite: `Elite! You've mastered ${currentQuiz.displayName}. Consider advancing to intermediate material.`,
-    strong: `Strong performance! Study weak areas and retake in 30 days to reinforce knowledge.`,
-    developing: `Solid fundamentals. Focus on gaps and retake in 2 weeks.`,
-    foundational: `You're building foundational knowledge. Review core concepts and retake in 1 week.`,
-    needs: `Significant gaps identified. Study fundamentals and retake in 2-3 days.`
-  };
+  const bkEl = document.getElementById('bk-wrap');
+  const domArr = Object.entries(scores)
+    .map(([d, s]) => ({ d, p: Math.round((s.earned / s.total) * 100), earned: s.earned, total: s.total }))
+    .sort((a, b) => b.p - a.p);
 
-  let verdictKey = pct >= 88 ? 'elite' : pct >= 72 ? 'strong' : pct >= 55 ? 'developing' : pct >= 45 ? 'foundational' : 'needs';
-  document.getElementById('verdict-text').textContent = verdictMap[verdictKey];
-
-  document.getElementById('q-review').innerHTML = quizQuestions.map((q, i) => {
-    const userAns = quizAnswers[q.id];
-    const isCorrect = userAns === q.correctAnswer;
-    return `
-      <div class="rev-item">
-        <div class="rev-head" onclick="this.nextElementSibling.classList.toggle('active')">
-          <div class="rev-icon">${isCorrect ? '✓' : '✗'}</div>
-          <div>
-            <div class="rev-meta">Q${i + 1} · ${q.difficulty}</div>
-            <div class="rev-q">${q.questionText}</div>
-          </div>
-        </div>
-        <div class="rev-body">
-          <b>Your Answer:</b> ${q.options[userAns] || 'Not answered'}<br>
-          <b>Correct Answer:</b> ${q.options[q.correctAnswer]}<br>
-          <br>
-          <b>Explanation:</b> ${q.explanation}
-        </div>
-      </div>
-    `;
+  bkEl.innerHTML = domArr.map(({ d, p, earned, total }) => {
+    const col = p >= 80 ? 'var(--accent3)' : p >= 57 ? 'var(--accent)' : 'var(--accent2)';
+    return `<div class="bk-row">
+      <div class="bk-icon">${DMETA[d]?.icon || '—'}</div>
+      <div class="bk-name">${DMETA[d]?.label || d}</div>
+      <div class="bk-bar-wrap"><div class="bk-bar" style="width:0%;background:${col}" data-t="${p}"></div></div>
+      <div class="bk-score">${earned}/${total} · ${p}%</div>
+    </div>`;
   }).join('');
 
-  // Send quiz results to backend
+  setTimeout(() => {
+    document.querySelectorAll('.bk-bar').forEach(b => {
+      b.style.width = b.dataset.t + '%';
+    });
+  }, 200);
+
+  document.getElementById('verdict-text').textContent = buildVerdict(pct, domArr);
+
+  const revEl = document.getElementById('q-review');
+  revEl.innerHTML = answers.map((a, i) => `
+    <div class="rev-item">
+      <div class="rev-head" onclick="toggleRev(${i})">
+        <div class="rev-icon">${a.correct ? '✅' : '❌'}</div>
+        <div style="flex:1">
+          <div class="rev-meta">${DMETA[a.domain]?.label || a.domain} · ${questions[i]?.difficulty?.toUpperCase() || ''}</div>
+          <div class="rev-q">${a.question.substring(0, 90)}${a.question.length > 90 ? '…' : ''}</div>
+        </div>
+      </div>
+      <div class="rev-body" id="rev-${i}">
+        ${a.userAnswer ? `<div class="ua"><b>Your answer:</b> ${a.userAnswer}</div>` : ''}
+        <b>Explanation:</b> ${a.explanation}
+      </div>
+    </div>`).join('');
+
+  // Submit to backend
+  submitResultsToBackend(pct, earned, possible, domArr);
+}
+
+function toggleRev(i) {
+  const el = document.getElementById('rev-' + i);
+  el.style.display = el.style.display === 'block' ? 'none' : 'block';
+}
+
+function buildVerdict(pct, domArr) {
+  const best = domArr[0];
+  const worst = domArr[domArr.length - 1];
+  const bestLabel = DMETA[best?.d]?.label || 'your best domain';
+  const worstLabel = DMETA[worst?.d]?.label || 'your weakest domain';
+
+  if (pct >= 88) return `Elite-tier performance. You're operating at a level that goes well beyond typical — your ${bestLabel} results show genuine depth. The next move is ownership: lead architecture decisions, take on IR coordination, get the Sec+ and AZ-500 behind you. The gap between where you are and where you want to be is visibility and certs, not skill.`;
+  if (pct >= 72) return `Strong practitioner-level knowledge with real depth in ${bestLabel}. Advanced questions likely caught you on edge cases — that's where the gap between a good tech and a security engineer lives. ${worstLabel} needs focused lab time. You're on the right track: the Sec+ is well within reach.`;
+  if (pct >= 55) return `Solid foundations across the board but depth drops off sharply on advanced scenarios. ${bestLabel} is where you've put your time. ${worstLabel} exposed the biggest gaps — these will be tested harder on interviews. Spend 30 days building in your home lab specifically on domains scoring below 60%.`;
+  if (pct >= 38) return `Foundational knowledge is present but significant gaps exist in applying it under real conditions. Recognizing a concept and working through a live scenario are different skills. Focus on ${worstLabel} first. Pick one domain, build the lab scenario for it, break it, fix it.`;
+  return `The gaps identified here are significant but fixable — this isn't a talent issue, it's reps. Every scenario represents something you can build and test in your home lab this week. Don't re-read documentation. Build the thing. Break the thing. Fix the thing. Return in 30 days after lab hours.`;
+}
+
+async function submitResultsToBackend(pct, earned, possible, domArr) {
   try {
     const token = localStorage.getItem('authToken');
-    await fetch(`${API_URL}/quizzes/submit`, {
+    const domainScores = {};
+    domArr.forEach(({d, p}) => { domainScores[d] = p; });
+
+    await fetch(`${API_URL}/assessments/submit`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify({
-        domainId: currentQuiz.id,
-        domainName: currentQuiz.displayName,
-        score: pct,
-        correct,
-        total,
-        answers: quizAnswers,
+        overallScore: pct,
+        earnedPoints: earned,
+        totalPoints: possible,
+        domainScores: domainScores,
+        domainsAttempted: selD,
+        questionsAnswered: answers.length,
         timestamp: new Date().toISOString()
       })
-    }).catch(err => console.log('Submission logged locally:', err));
+    }).catch(err => console.log('Results logged locally:', err));
   } catch (err) {
     console.log('Results saved locally');
   }
 }
 
 function restart() {
-  showDashboard();
+  selD = []; questions = []; curQ = 0; scores = {}; answers = [];
+  showScreen('dscreen');
+  renderDomainGrid();
 }
 
 function changeDomains() {
-  showDashboard();
+  selD = []; questions = []; curQ = 0; scores = {}; answers = [];
+  document.querySelectorAll('.dcard').forEach(c => c.classList.remove('sel'));
+  document.getElementById('sel-tags').innerHTML = '';
+  document.getElementById('start-btn').disabled = true;
+  document.getElementById('sel-count').textContent = '0 domains selected (max 6)';
+  showScreen('dscreen');
+  renderDomainGrid();
 }
 
-// ==================== INIT ====================
+// ═══════════════════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════════════════
 window.addEventListener('load', () => {
   console.log('🚀 Page loaded');
   const token = localStorage.getItem('authToken');
@@ -1765,7 +1526,9 @@ window.addEventListener('load', () => {
     console.log('🔑 Token found, loading dashboard...');
     try {
       currentUser = JSON.parse(user);
-      showDashboard();
+      showScreen('dscreen');
+      updateUserDisplay();
+      renderDomainGrid();
     } catch (err) {
       console.error('Failed to parse stored user:', err);
       localStorage.removeItem('authToken');
@@ -1776,14 +1539,7 @@ window.addEventListener('load', () => {
     showScreen('login-screen');
   }
 });
-
-// Handle visibility change (refresh user data when tab regains focus)
-document.addEventListener('visibilitychange', () => {
-  if (!document.hidden && currentUser) {
-    console.log('👁️ Page regained focus');
-    // Could refresh leaderboard here
-  }
-});
 </script>
+
 </body>
 </html>
