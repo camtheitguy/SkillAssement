@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SKILLS AUDIT v2.2 - IT & Cybersecurity Assessment</title>
+<title>SkillForge - IT & Cybersecurity Assessment</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap');
 
@@ -319,8 +319,8 @@ header {
 
   <header>
     <div>
-      <div class="logo">SKILLS AUDIT</div>
-      <div class="version">IT & CYBERSECURITY · ADAPTIVE ASSESSMENT · V2.2</div>
+      <div class="logo">SKILLFORGE</div>
+      <div class="version">IT & CYBERSECURITY · ADAPTIVE ASSESSMENT · V2.3</div>
     </div>
     <div class="header-right">
       <button class="theme-toggle" onclick="toggleTheme()">☀️ LIGHT MODE</button>
@@ -425,11 +425,93 @@ header {
 let BANK = null;
 let DMETA = null;
 
-// LOAD QUESTIONS FROM JSON
-async function loadQuestions() {
+// LOAD QUESTIONS (embedded instead of fetching)
+function loadQuestions() {
   try {
-    const response = await fetch('questions.json');
-    const data = await response.json();
+    const data = {
+      "questionBanks": {
+        "secplus": {
+          "displayName": "CompTIA Security+",
+          "icon": "🔐",
+          "color": "#ff1493",
+          "questions": [
+            {
+              "id": "secplus_001",
+              "difficulty": "foundational",
+              "type": "mcq",
+              "question": "Under the CIA triad, which component ensures that data cannot be altered without authorization?",
+              "options": [
+                "Confidentiality - data is kept secret",
+                "Integrity - data is accurate, complete, and has not been altered",
+                "Availability - data is accessible when needed",
+                "Authenticity - user identity is verified"
+              ],
+              "correctAnswer": 1,
+              "explanation": "CIA Triad: Confidentiality (secrecy), Integrity (accuracy/no alteration), Availability (accessible). Integrity is violated if data is modified without authorization.",
+              "homelab": {
+                "title": "Understand & Test CIA Triad Violations",
+                "description": "Create scenarios demonstrating CIA triad violations.",
+                "steps": [
+                  "Create test file with sensitive data",
+                  "Scenario 1 - Confidentiality breach: unauthorized user reads file",
+                  "Fix: restrict read permissions to authorized users",
+                  "Scenario 2 - Integrity breach: file contents modified without logging",
+                  "Fix: enable File Integrity Monitoring (FIM)"
+                ]
+              }
+            }
+          ]
+        },
+        "helpdesk": {
+          "displayName": "Help Desk / SysAdmin",
+          "icon": "🖥️",
+          "color": "#00e5ff",
+          "questions": []
+        },
+        "networking": {
+          "displayName": "Network Engineering",
+          "icon": "🌐",
+          "color": "#b8ff57",
+          "questions": []
+        },
+        "secarchitecture": {
+          "displayName": "Security Architecture",
+          "icon": "🏰",
+          "color": "#ff006e",
+          "questions": []
+        },
+        "m365": {
+          "displayName": "Microsoft 365 / Teams",
+          "icon": "☁️",
+          "color": "#00d9ff",
+          "questions": []
+        },
+        "azure": {
+          "displayName": "Azure / Cloud Infrastructure",
+          "icon": "🚀",
+          "color": "#0080d9",
+          "questions": []
+        },
+        "scripting": {
+          "displayName": "PowerShell / Scripting",
+          "icon": "⚙️",
+          "color": "#00d9ff",
+          "questions": []
+        },
+        "emailsecurity": {
+          "displayName": "Email Security / Exchange",
+          "icon": "📧",
+          "color": "#ff6b00",
+          "questions": []
+        },
+        "architecture": {
+          "displayName": "IT Architecture & Strategy",
+          "icon": "🏗️",
+          "color": "#c084fc",
+          "questions": []
+        }
+      }
+    };
     
     BANK = {};
     DMETA = {};
@@ -446,7 +528,7 @@ async function loadQuestions() {
     renderDomainCards();
   } catch (err) {
     console.error('Error loading questions:', err);
-    document.getElementById('dgrid').innerHTML = '<div class="loading">Error loading questions. Check that questions.json is in the same folder.</div>';
+    document.getElementById('dgrid').innerHTML = '<div class="loading">Error loading questions.</div>';
   }
 }
 
