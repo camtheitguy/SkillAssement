@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SkillForge - Company Learning Platform</title>
 <style>
-<script src="js/config.js"></script>
 @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap');
 
 :root {
@@ -287,6 +286,12 @@ body::before {
   font-size: 10px;
   color: var(--accent3);
   text-transform: uppercase;
+}
+
+.user-points {
+  font-size: 11px;
+  color: var(--accent);
+  font-family: 'Space Mono', monospace;
 }
 
 .theme-toggle, .logout-btn {
@@ -1100,7 +1105,6 @@ body::before {
     width: 100%;
   }
 }
-
 </style>
 </head>
 <body>
@@ -1166,6 +1170,7 @@ body::before {
       <div class="nav-right">
         <div class="user-info">
           <div class="username" id="display-username">User</div>
+          <div class="user-points" id="display-points">0 PTS</div>
           <div class="user-rank" id="display-rank">Bronze</div>
         </div>
         <button class="theme-toggle" onclick="toggleTheme()">☀️ LIGHT</button>
@@ -1307,20 +1312,73 @@ body::before {
 </div>
 
 <script>
-// ==================== STATE ====================
-const API_BASE = 'http://localhost:5000/api';
+// ==================== CONFIGURATION ====================
 const API_URL = window.location.hostname === 'localhost' 
   ? 'http://localhost:5000/api'
-  : 'https://yourdomain.com/api';
+  : 'https://skill-forgeapi.onrender.com/api';
 
+// Hardcoded domains for now (API seeding issue)
+const HARDCODED_DOMAINS = {
+  '3': {
+    id: 3,
+    domainKey: 'secplus',
+    displayName: 'CompTIA Security+',
+    type: 'certification',
+    icon: '🔐',
+    color: '#ff1493',
+    status: 'active',
+    description: 'Entry-level cybersecurity certification',
+    questions: [
+      {
+        id: 1,
+        difficulty: 'foundational',
+        question: 'Under the CIA triad, which component ensures that data cannot be altered without authorization?',
+        options: [
+          'Confidentiality - data is kept secret',
+          'Integrity - data is accurate, complete, and has not been altered',
+          'Availability - data is accessible when needed',
+          'Authenticity - user identity is verified'
+        ],
+        correctAnswer: 1,
+        explanation: 'CIA Triad: Confidentiality (secrecy), Integrity (accuracy/no alteration), Availability (accessible). Integrity is violated if data is modified without authorization.'
+      }
+    ]
+  },
+  '4': {
+    id: 4,
+    domainKey: 'helpdesk',
+    displayName: 'Help Desk / SysAdmin',
+    type: 'role',
+    icon: '🖥️',
+    color: '#00e5ff',
+    status: 'active',
+    description: 'System Administration and User Support',
+    questions: [
+      {
+        id: 1,
+        difficulty: 'foundational',
+        question: 'A user\'s PC is showing IP address 169.254.88.34. What does this indicate?',
+        options: [
+          'Normal DHCP assignment',
+          'APIPA (Automatic Private IP Addressing) - DHCP server unavailable',
+          'Static IP configuration error',
+          'Network adapter failure'
+        ],
+        correctAnswer: 1,
+        explanation: '169.254.x.x is the APIPA range. It means the DHCP server is unreachable and Windows assigned a link-local address automatically.'
+      }
+    ]
+  }
+};
+
+// ==================== STATE ====================
 let currentUser = null;
 let currentQuiz = null;
+let currentSessionId = null;
 let quizQuestions = [];
 let currentQuestionIndex = 0;
-let quizAnswers = [];
+let quizAnswers = {};
 let quizScores = [];
-let selectedInterests = [];
-let QUESTIONS_DATA = null;
 
 // ==================== AUTH ====================
 async function handleLogin(e) {
@@ -1339,6 +1397,8 @@ async function handleLogin(e) {
     if (res.ok) {
       currentUser = data.user;
       localStorage.setItem('token', data.tokens.accessToken);
+      document.getElementById('login-username').value = '';
+      document.getElementById('login-password').value = '';
       showSuccess('Login successful!');
       setTimeout(() => showDashboard(), 1500);
     } else {
@@ -1371,6 +1431,9 @@ async function handleRegister(e) {
     if (res.ok) {
       currentUser = data.user;
       localStorage.setItem('token', data.tokens.accessToken);
+      document.getElementById('reg-email').value = '';
+      document.getElementById('reg-username').value = '';
+      document.getElementById('reg-password').value = '';
       showSuccess('Account created! Redirecting...');
       setTimeout(() => showDashboard(), 1500);
     } else {
@@ -1404,6 +1467,12 @@ function toggleTheme() {
     document.body.classList.contains('light-mode') ? '🌙 DARK' : '☀️ LIGHT';
 }
 
+// Load saved theme
+if (localStorage.getItem('theme') === 'light') {
+  document.body.classList.add('light-mode');
+  document.querySelector('.theme-toggle').textContent = '🌙 DARK';
+}
+
 // ==================== UI HELPERS ====================
 function showScreen(screenId) {
   document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
@@ -1412,15 +1481,19 @@ function showScreen(screenId) {
 }
 
 function showError(msg) {
-  const container = document.getElementById('error-container');
-  container.innerHTML = `<div class="error-msg">${msg}</div>`;
-  setTimeout(() => container.innerHTML = '', 5000);
+  const container = document.getElementById('error-container') || document.getElementById('success-container');
+  if (container) {
+    container.innerHTML = `<div class="error-msg">${msg}</div>`;
+    setTimeout(() => container.innerHTML = '', 5000);
+  }
 }
 
 function showSuccess(msg) {
-  const container = document.getElementById('success-container');
-  container.innerHTML = `<div class="success-msg">${msg}</div>`;
-  setTimeout(() => container.innerHTML = '', 5000);
+  const container = document.getElementById('success-container') || document.getElementById('error-container');
+  if (container) {
+    container.innerHTML = `<div class="success-msg">${msg}</div>`;
+    setTimeout(() => container.innerHTML = '', 5000);
+  }
 }
 
 function switchTab(tabName) {
@@ -1435,102 +1508,141 @@ async function showDashboard() {
   showScreen('dashboard-screen');
   document.getElementById('display-username').textContent = currentUser.username;
   document.getElementById('display-rank').textContent = currentUser.rank || 'Bronze';
+  document.getElementById('display-points').textContent = `${currentUser.points || 0} PTS`;
 
-  // Load questions from questions.json
-  try {
-    const res = await fetch('./questions.json');
-    QUESTIONS_DATA = await res.json();
-    renderDomains();
-    renderLeaderboard();
-  } catch (err) {
-    console.error('Failed to load questions:', err);
-  }
+  renderDomains();
+  renderLeaderboard();
 }
 
 function renderDomains() {
-  const certs = document.getElementById('all-cert-domains');
-  const roles = document.getElementById('all-role-domains');
+  const allCerts = document.getElementById('all-cert-domains');
+  const allRoles = document.getElementById('all-role-domains');
   const myCerts = document.getElementById('my-cert-domains');
   const myRoles = document.getElementById('my-role-domains');
 
-  certs.innerHTML = '';
-  roles.innerHTML = '';
+  allCerts.innerHTML = '';
+  allRoles.innerHTML = '';
   myCerts.innerHTML = '';
   myRoles.innerHTML = '';
 
-  for (const [key, bank] of Object.entries(QUESTIONS_DATA.questionBanks)) {
-    const card = createDomainCard(key, bank);
-    if (bank.type === 'cert') {
-      certs.appendChild(card.cloneNode(true));
-      if (currentUser.interests?.includes(key)) {
-        myCerts.appendChild(card);
+  // Use hardcoded domains
+  for (const [key, domain] of Object.entries(HARDCODED_DOMAINS)) {
+    const card = createDomainCard(key, domain);
+    
+    if (domain.type === 'certification') {
+      allCerts.appendChild(card.cloneNode(true));
+      if (currentUser.interests?.includes(domain.domainKey)) {
+        myCerts.appendChild(card.cloneNode(true));
       }
     } else {
-      roles.appendChild(card.cloneNode(true));
-      if (currentUser.interests?.includes(key)) {
-        myRoles.appendChild(card);
+      allRoles.appendChild(card.cloneNode(true));
+      if (currentUser.interests?.includes(domain.domainKey)) {
+        myRoles.appendChild(card.cloneNode(true));
       }
     }
   }
+
+  // Show message if no domains
+  if (allCerts.innerHTML === '') allCerts.innerHTML = '<p style="color: var(--muted);">No certifications available yet</p>';
+  if (allRoles.innerHTML === '') allRoles.innerHTML = '<p style="color: var(--muted);">No role domains available yet</p>';
 }
 
-function createDomainCard(key, bank) {
+function createDomainCard(key, domain) {
   const card = document.createElement('div');
-  card.className = bank.status === 'coming_soon' ? 'domain-card coming-soon' : 'domain-card';
-  if (bank.status !== 'coming_soon') {
-    card.onclick = () => startQuiz(key, bank);
+  card.className = domain.status === 'coming_soon' ? 'domain-card coming-soon' : 'domain-card';
+  
+  if (domain.status !== 'coming_soon') {
+    card.onclick = () => startQuiz(domain);
   }
 
-  const qCount = bank.questions?.length || 0;
+  const qCount = domain.questions?.length || 0;
+  
   card.innerHTML = `
-    <div class="domain-icon">${bank.icon}</div>
-    <div class="domain-name">${bank.displayName}</div>
-    <div class="domain-type">${bank.type === 'cert' ? '🔐 CERTIFICATION' : '💼 ROLE'}</div>
-    <div class="domain-desc">${bank.description || bank.displayName}</div>
+    <div class="domain-icon">${domain.icon}</div>
+    <div class="domain-name">${domain.displayName}</div>
+    <div class="domain-type">${domain.type === 'certification' ? '🔐 CERTIFICATION' : '💼 ROLE'}</div>
+    <div class="domain-desc">${domain.description}</div>
     <div class="domain-meta">
       <span class="domain-count">${qCount} QUESTIONS</span>
-      <span class="domain-status ${bank.status === 'coming_soon' ? 'coming-soon' : 'active'}">${bank.status === 'coming_soon' ? 'COMING SOON' : 'ACTIVE'}</span>
+      <span class="domain-status ${domain.status === 'coming_soon' ? 'coming-soon' : 'active'}">${domain.status === 'coming_soon' ? 'COMING SOON' : 'ACTIVE'}</span>
     </div>
   `;
+  
   return card;
 }
 
 async function renderLeaderboard() {
-  // Mock data - replace with API call
-  const mockLeaders = [
-    { rank: 1, username: 'Alex Johnson', points: 2850 },
-    { rank: 2, username: 'Sarah Chen', points: 2720 },
-    { rank: 3, username: 'Marcus Rivera', points: 2510 },
-    { rank: 4, username: 'Emma Davis', points: 1920 },
-    { rank: 5, username: 'Jordan Smith', points: 1750 }
-  ];
+  try {
+    // Get leaderboards from API
+    const weeklyRes = await fetch(`${API_URL}/leaderboard/weekly`);
+    const alltimeRes = await fetch(`${API_URL}/leaderboard/alltime`);
+    
+    const weeklyData = await weeklyRes.json();
+    const alltimeData = await alltimeRes.json();
 
-  const weeklyHtml = mockLeaders.map((l, i) => `
-    <div class="leaderboard-item">
-      <div class="rank ${i < 3 ? 'top-3' : ''}">#${l.rank}</div>
-      <div class="user-details">
-        <div class="lb-username">${l.username}</div>
-        <div class="lb-score">Weekly score</div>
+    const formatLeaderboard = (items) => items.slice(0, 5).map((item, i) => `
+      <div class="leaderboard-item">
+        <div class="rank ${i < 3 ? 'top-3' : ''}">#${item.rank}</div>
+        <div class="user-details">
+          <div class="lb-username">${item.username}</div>
+          <div class="lb-score">${item.quizzesCompleted} quiz${item.quizzesCompleted !== 1 ? 'zes' : ''}</div>
+        </div>
+        <div class="lb-points">${item.points || 0}</div>
       </div>
-      <div class="lb-points">${l.points}</div>
-    </div>
-  `).join('');
+    `).join('');
 
-  document.getElementById('weekly-board').innerHTML = weeklyHtml;
-  document.getElementById('alltime-board').innerHTML = weeklyHtml;
+    document.getElementById('weekly-board').innerHTML = weeklyData.leaderboard.length > 0 
+      ? formatLeaderboard(weeklyData.leaderboard)
+      : '<p style="color: var(--muted);">No data yet</p>';
+    
+    document.getElementById('alltime-board').innerHTML = alltimeData.leaderboard.length > 0
+      ? formatLeaderboard(alltimeData.leaderboard)
+      : '<p style="color: var(--muted);">No data yet</p>';
+
+  } catch (err) {
+    console.error('Leaderboard error:', err);
+    // Show empty state
+    document.getElementById('weekly-board').innerHTML = '<p style="color: var(--muted);">Unable to load leaderboard</p>';
+    document.getElementById('alltime-board').innerHTML = '<p style="color: var(--muted);">Unable to load leaderboard</p>';
+  }
 }
 
 // ==================== QUIZ ====================
-function startQuiz(domainKey, domainBank) {
-  currentQuiz = { key: domainKey, bank: domainBank };
-  quizQuestions = domainBank.questions || [];
-  quizAnswers = new Array(quizQuestions.length).fill(null);
-  quizScores = new Array(quizQuestions.length).fill(0);
-  currentQuestionIndex = 0;
+async function startQuiz(domain) {
+  try {
+    const token = localStorage.getItem('token');
+    
+    // Start quiz via API
+    const res = await fetch(`${API_URL}/quizzes/start`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ domainId: domain.id })
+    });
 
-  showScreen('quiz-screen');
-  document.getElementById('quiz-domain-name').textContent = domainBank.displayName;
-  renderQuestion();
+    const data = await res.json();
+
+    if (!res.ok) {
+      showError(data.error || 'Failed to start quiz');
+      return;
+    }
+
+    currentSessionId = data.sessionId;
+    currentQuiz = domain;
+    quizQuestions = data.questions;
+    currentQuestionIndex = 0;
+    quizAnswers = {};
+    quizScores = [];
+
+    showScreen('quiz-screen');
+    document.getElementById('quiz-domain-name').textContent = domain.displayName;
+    renderQuestion();
+
+  } catch (err) {
+    showError('Error starting quiz: ' + err.message);
+  }
 }
 
 function renderQuestion() {
@@ -1539,37 +1651,34 @@ function renderQuestion() {
 
   document.getElementById('quiz-progress').textContent = `${progress} / ${quizQuestions.length}`;
   document.getElementById('q-num').textContent = `Q${progress}`;
-  document.getElementById('q-text').textContent = q.question;
-  document.getElementById('q-tag').textContent = currentQuiz.bank.displayName;
-  document.getElementById('q-tag').style.borderColor = currentQuiz.bank.color;
-  document.getElementById('q-tag').style.color = currentQuiz.bank.color;
+  document.getElementById('q-text').textContent = q.questionText;
+  document.getElementById('q-tag').textContent = currentQuiz.displayName;
+  document.getElementById('q-tag').style.borderColor = currentQuiz.color;
+  document.getElementById('q-tag').style.color = currentQuiz.color;
   document.getElementById('q-diff').textContent = `DIFFICULTY: ${q.difficulty}`;
 
-  document.getElementById('q-code').textContent = q.codeBlock || '';
-  document.getElementById('q-code').style.display = q.codeBlock ? 'block' : 'none';
-
-  // Render answers based on type
+  // Render answers
   const ansArea = document.getElementById('ans-area');
   ansArea.innerHTML = '';
 
-  if (q.type === 'mcq') {
-    document.getElementById('open-wrap').classList.remove('active');
+  if (q.options && q.options.length > 0) {
+    // Shuffle options
     const shuffled = q.options.map((opt, i) => ({ opt, origIdx: i })).sort(() => Math.random() - 0.5);
     
     shuffled.forEach(({ opt, origIdx }, i) => {
       const btn = document.createElement('button');
       btn.className = 'aopt';
+      btn.type = 'button';
       btn.dataset.index = origIdx;
-      btn.onclick = () => selectOption(origIdx);
+      btn.onclick = (e) => { e.preventDefault(); selectOption(origIdx); };
       btn.innerHTML = `<span class="opt-l">${String.fromCharCode(65 + i)}.</span><span class="opt-t">${opt}</span>`;
-      if (quizAnswers[currentQuestionIndex] === origIdx) {
+      
+      if (quizAnswers[q.id] === origIdx) {
         btn.classList.add('sel');
       }
+      
       ansArea.appendChild(btn);
     });
-  } else if (q.type === 'free_response') {
-    document.getElementById('open-wrap').classList.add('active');
-    document.getElementById('open-ans').value = quizAnswers[currentQuestionIndex] || '';
   }
 
   document.getElementById('fb-box').classList.remove('active');
@@ -1581,7 +1690,9 @@ function renderQuestion() {
 }
 
 function selectOption(idx) {
-  quizAnswers[currentQuestionIndex] = idx;
+  const q = quizQuestions[currentQuestionIndex];
+  quizAnswers[q.id] = idx;
+  
   document.querySelectorAll('.aopt').forEach(btn => btn.classList.remove('sel'));
   document.querySelector(`[data-index="${idx}"]`).classList.add('sel');
 }
@@ -1591,45 +1702,40 @@ function updateProgressBar() {
   document.getElementById('progress-fill').style.width = progress + '%';
 }
 
-function submitAnswer() {
+async function submitAnswer() {
   const q = quizQuestions[currentQuestionIndex];
-  let isCorrect = false;
-
-  if (q.type === 'mcq') {
-    isCorrect = quizAnswers[currentQuestionIndex] === q.correctAnswer;
-    quizScores[currentQuestionIndex] = isCorrect ? 1 : 0;
-
-    // Show feedback
-    document.querySelectorAll('.aopt').forEach((btn, i) => {
-      btn.classList.add('disabled');
-      if (i === q.correctAnswer) {
-        btn.classList.add('correct');
-      } else if (btn.dataset.index == quizAnswers[currentQuestionIndex] && !isCorrect) {
-        btn.classList.add('wrong');
-      }
-    });
-  } else {
-    // Free response - always 0.5 points (for comparison purposes)
-    quizScores[currentQuestionIndex] = 0.5;
+  
+  if (quizAnswers[q.id] === undefined) {
+    showError('Please select an answer');
+    return;
   }
+
+  const isCorrect = quizAnswers[q.id] === q.correctAnswer;
+  quizScores.push(isCorrect ? 1 : 0);
+
+  // Show feedback
+  document.querySelectorAll('.aopt').forEach((btn) => {
+    btn.classList.add('disabled');
+    const btnIndex = parseInt(btn.dataset.index);
+    
+    if (btnIndex === q.correctAnswer) {
+      btn.classList.add('correct');
+    } else if (btnIndex === quizAnswers[q.id] && !isCorrect) {
+      btn.classList.add('wrong');
+    }
+  });
 
   // Show feedback box
   const fbBox = document.getElementById('fb-box');
   fbBox.classList.add('active');
-  fbBox.classList.toggle('neg', !isCorrect && q.type === 'mcq');
+  fbBox.classList.toggle('neg', !isCorrect);
 
-  const label = q.type === 'mcq' 
-    ? (isCorrect ? '✓ CORRECT' : '✗ INCORRECT')
-    : '📝 MODEL ANSWER';
-
-  document.getElementById('fb-lbl').textContent = label;
-  document.getElementById('fb-text').textContent = q.explanation || q.modelAnswer || 'No explanation available.';
+  document.getElementById('fb-lbl').textContent = isCorrect ? '✓ CORRECT' : '✗ INCORRECT';
+  document.getElementById('fb-text').textContent = q.explanation || 'No explanation available.';
 
   const correct = quizScores.filter(s => s === 1).length;
-  const attempted = quizAnswers.filter(a => a !== null).length;
-  document.getElementById('score-run').textContent = `Progress: ${correct}/${attempted} correct so far`;
+  document.getElementById('score-run').textContent = `Progress: ${correct}/${quizScores.length} correct`;
 
-  // Show post-question content
   if (q.explanation) {
     document.getElementById('explanation-section').innerHTML = `
       <div class="post-title">📚 DEEPER EXPLANATION</div>
@@ -1638,21 +1744,10 @@ function submitAnswer() {
     document.getElementById('explanation-section').classList.remove('hidden');
   }
 
-  if (q.homelab) {
-    document.getElementById('homelab-section').innerHTML = `
-      <div class="post-title">🏗️ HOME LAB SCENARIO</div>
-      <div class="post-content"><strong>${q.homelab.title}</strong></div>
-      <div class="post-content">${q.homelab.description}</div>
-      <div class="lab-steps">${q.homelab.steps.map(step => `<div class="lab-step">• ${step}</div>`).join('')}</div>
-    `;
-    document.getElementById('homelab-section').classList.remove('hidden');
-  }
-
   document.getElementById('post-question').style.display = 'block';
-
   document.getElementById('submit-btn').style.display = 'none';
   document.getElementById('next-btn').style.display = 'inline-flex';
-  document.getElementById('next-btn').textContent = currentQuestionIndex < quizQuestions.length - 1 ? 'NEXT QUESTION →' : 'SEE MY RESULTS →';
+  document.getElementById('next-btn').textContent = currentQuestionIndex < quizQuestions.length - 1 ? 'NEXT QUESTION →' : 'SEE RESULTS →';
 }
 
 function nextQuestion() {
@@ -1660,20 +1755,52 @@ function nextQuestion() {
     currentQuestionIndex++;
     renderQuestion();
   } else {
-    showResults();
+    submitQuiz();
   }
 }
 
-// ==================== RESULTS ====================
-function showResults() {
+async function submitQuiz() {
+  try {
+    const token = localStorage.getItem('token');
+
+    const res = await fetch(`${API_URL}/quizzes/submit`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        sessionId: currentSessionId,
+        answers: quizAnswers
+      })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      showError(data.error || 'Failed to submit quiz');
+      return;
+    }
+
+    // Update user points
+    currentUser.points = (currentUser.points || 0) + data.pointsEarned;
+    document.getElementById('display-points').textContent = `${currentUser.points} PTS`;
+
+    showResults(data);
+
+  } catch (err) {
+    showError('Error submitting quiz: ' + err.message);
+  }
+}
+
+function showResults(quizResult) {
   showScreen('results-screen');
-  const totalCorrect = quizScores.filter(s => s === 1).length;
-  const totalFree = quizScores.filter(s => s === 0.5).length;
-  const earnedPoints = totalCorrect + (totalFree * 0.5);
-  const percentage = Math.round((earnedPoints / quizScores.length) * 100);
+  
+  const score = parseFloat(quizResult.score);
+  const percentage = Math.round(score);
 
   document.getElementById('gpct').textContent = percentage + '%';
-  document.getElementById('rsub').textContent = `${earnedPoints} / ${quizScores.length} pts`;
+  document.getElementById('rsub').textContent = `${quizResult.correctAnswers} / ${quizResult.totalQuestions} correct`;
 
   const tier = percentage >= 90 ? 'ELITE' : percentage >= 78 ? 'STRONG' : percentage >= 62 ? 'DEVELOPING' : percentage >= 45 ? 'FOUNDATIONAL' : 'NEEDS WORK';
   document.getElementById('gtier').textContent = tier;
@@ -1688,26 +1815,87 @@ function showResults() {
   }, 150);
 
   // Domain breakdown
-  const breakdown = quizQuestions.map((q, i) => ({
-    domain: currentQuiz.bank.displayName,
-    score: quizScores[i] || 0
-  }));
-
   const bkEl = document.getElementById('bk-wrap');
   bkEl.innerHTML = `
     <div class="bk-row">
-      <div class="bk-icon">${currentQuiz.bank.icon}</div>
-      <div class="bk-name">${currentQuiz.bank.displayName}</div>
-      <div class="bk-bar-wrap"><div class="bk-bar" style="width:${percentage}%;background:${currentQuiz.bank.color}"></div></div>
-      <div class="bk-score">${earnedPoints}/${quizScores.length} · ${percentage}%</div>
+      <div class="bk-icon">${currentQuiz.icon}</div>
+      <div class="bk-name">${currentQuiz.displayName}</div>
+      <div class="bk-bar-wrap"><div class="bk-bar" style="width:${percentage}%;background:${currentQuiz.color}"></div></div>
+      <div class="bk-score">${quizResult.correctAnswers}/${quizResult.totalQuestions} · ${percentage}%</div>
     </div>
   `;
 
   // Verdict
   let verdict = '';
   if (percentage >= 88) {
-    verdict = `Elite-tier performance. You've mastered ${currentQuiz.bank.displayName}. Strength shown in all areas. Next: take advanced certification exams or move to different domain.`;
+    verdict = `Elite-tier performance. You've mastered ${currentQuiz.displayName}. Strength shown in all areas. Next: take advanced certification exams or move to different domain.`;
   } else if (percentage >= 72) {
-    verdict = `Strong knowledge with clear understanding of ${currentQuiz.bank.displayName}. Gaps in advanced scenarios. Next: focus on 1-2 weak areas for 30 days, then retake.`;
+    verdict = `Strong knowledge with clear understanding of ${currentQuiz.displayName}. Gaps in advanced scenarios. Next: focus on 1-2 weak areas for 30 days, then retake.`;
   } else if (percentage >= 55) {
-    verdict = `Solid foundations but significant gaps in advanced concepts.
+    verdict = `Solid foundations but significant gaps in advanced concepts. Recommend: re-study weak topic areas, then retake this assessment in 2 weeks.`;
+  } else {
+    verdict = `Significant gaps found. This domain requires focused study. Recommend: start with fundamentals resources and retake in 30 days.`;
+  }
+
+  document.getElementById('verdict-text').textContent = verdict;
+
+  // Question review
+  const revEl = document.getElementById('q-review');
+  revEl.innerHTML = quizQuestions.map((q, i) => {
+    const userAnswer = quizAnswers[q.id];
+    const isCorrect = userAnswer === q.correctAnswer;
+
+    return `
+      <div class="rev-item">
+        <div class="rev-head" onclick="this.parentElement.querySelector('.rev-body').classList.toggle('active')">
+          <div class="rev-icon">${isCorrect ? '✓' : '✗'}</div>
+          <div>
+            <div class="rev-meta">Q${i + 1} - ${q.difficulty}</div>
+            <div class="rev-q">${q.questionText}</div>
+          </div>
+        </div>
+        <div class="rev-body">
+          <div class="ua"><strong>Your Answer:</strong> ${q.options[userAnswer]}</div>
+          <div><strong>Correct Answer:</strong> ${q.options[q.correctAnswer]}</div>
+          <div style="margin-top: 12px;"><strong>Explanation:</strong> ${q.explanation}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function restart() {
+  showDashboard();
+}
+
+function changeDomains() {
+  showScreen('dashboard-screen');
+  switchTab('all-domains');
+}
+
+// ==================== INITIALIZATION ====================
+// Check if already logged in
+window.addEventListener('load', () => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    // Verify token is still valid by fetching profile
+    fetch(`${API_URL}/users/profile`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    }).then(res => {
+      if (res.ok) {
+        return res.json();
+      } else {
+        throw new Error('Token invalid');
+      }
+    }).then(data => {
+      currentUser = data.user;
+      showDashboard();
+    }).catch(() => {
+      localStorage.removeItem('token');
+      showScreen('login-screen');
+    });
+  }
+});
+</script>
+</body>
+</html>
