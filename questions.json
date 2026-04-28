@@ -1,11 +1,9 @@
 {
-  "certDomains": {
+  "questionBanks": {
     "secplus": {
       "displayName": "CompTIA Security+",
       "icon": "🔐",
       "color": "#ff1493",
-      "status": "active",
-      "description": "Entry-level cybersecurity certification",
       "questions": [
         {
           "id": "secplus_001",
@@ -34,103 +32,53 @@
         }
       ]
     },
-    "aplus": {
-      "displayName": "CompTIA A+",
-      "icon": "💻",
-      "color": "#ff6b9d",
-      "status": "coming_soon",
-      "description": "Foundation IT certification covering hardware and software",
-      "questions": []
-    },
-    "networkplus": {
-      "displayName": "CompTIA Network+",
-      "icon": "🌐",
-      "color": "#c44569",
-      "status": "coming_soon",
-      "description": "Networking fundamentals and best practices",
-      "questions": []
-    }
-  },
-  "roleDomains": {
     "helpdesk": {
       "displayName": "Help Desk / SysAdmin",
       "icon": "🖥️",
       "color": "#00e5ff",
-      "type": "role",
-      "description": "System Administration and User Support",
-      "questions": [
-        {
-          "id": "hd_001",
-          "difficulty": "foundational",
-          "type": "mcq",
-          "question": "A user's PC is showing IP address 169.254.88.34...",
-          "options": [],
-          "correctAnswer": 1,
-          "explanation": "",
-          "homelab": {}
-        }
-      ]
+      "questions": []
     },
     "networking": {
       "displayName": "Network Engineering",
       "icon": "🌐",
       "color": "#b8ff57",
-      "type": "role",
-      "description": "Network Design and Implementation",
       "questions": []
     },
     "secarchitecture": {
       "displayName": "Security Architecture",
       "icon": "🏰",
       "color": "#ff006e",
-      "type": "role",
-      "description": "Enterprise Security Design",
       "questions": []
     },
     "m365": {
       "displayName": "Microsoft 365 / Teams",
       "icon": "☁️",
       "color": "#00d9ff",
-      "type": "role",
-      "description": "Cloud Collaboration Platform",
       "questions": []
     },
     "azure": {
       "displayName": "Azure / Cloud Infrastructure",
       "icon": "🚀",
       "color": "#0080d9",
-      "type": "role",
-      "description": "Cloud Infrastructure & Services",
       "questions": []
     },
     "scripting": {
       "displayName": "PowerShell / Scripting",
       "icon": "⚙️",
       "color": "#00d9ff",
-      "type": "role",
-      "description": "Automation & Scripting",
       "questions": []
     },
     "emailsecurity": {
       "displayName": "Email Security / Exchange",
       "icon": "📧",
       "color": "#ff6b00",
-      "type": "role",
-      "description": "Email Infrastructure & Security",
       "questions": []
     },
     "architecture": {
       "displayName": "IT Architecture & Strategy",
       "icon": "🏗️",
       "color": "#c084fc",
-      "type": "role",
-      "description": "Enterprise Architecture",
       "questions": []
     }
-  },
-  "leaderboard": {
-    "weekly": [],
-    "allTime": [],
-    "byDomain": {}
   }
 }
