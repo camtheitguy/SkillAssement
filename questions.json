@@ -1,84 +1,1078 @@
 {
-  "questionBanks": {
-    "secplus": {
-      "displayName": "CompTIA Security+",
-      "icon": "🔐",
-      "color": "#ff1493",
-      "questions": [
-        {
-          "id": "secplus_001",
-          "difficulty": "foundational",
-          "type": "mcq",
-          "question": "Under the CIA triad, which component ensures that data cannot be altered without authorization?",
-          "options": [
-            "Confidentiality - data is kept secret",
-            "Integrity - data is accurate, complete, and has not been altered",
-            "Availability - data is accessible when needed",
-            "Authenticity - user identity is verified"
-          ],
-          "correctAnswer": 1,
-          "explanation": "CIA Triad: Confidentiality (secrecy), Integrity (accuracy/no alteration), Availability (accessible). Integrity is violated if data is modified without authorization.",
-          "homelab": {
-            "title": "Understand & Test CIA Triad Violations",
-            "description": "Create scenarios demonstrating CIA triad violations.",
-            "steps": [
-              "Create test file with sensitive data",
-              "Scenario 1 - Confidentiality breach: unauthorized user reads file",
-              "Fix: restrict read permissions to authorized users",
-              "Scenario 2 - Integrity breach: file contents modified without logging",
-              "Fix: enable File Integrity Monitoring (FIM)"
-            ]
-          }
+  "quizzes": {
+    "aplus_core1": {
+      "title": "CompTIA A+ Core 1 (220-1101)",
+      "description": "Hardware, Networking, Troubleshooting, Virtualization & Cloud",
+      "passingScore": 675,
+      "totalQuestions": 45,
+      "domains": {
+        "mobile_devices": {
+          "name": "Mobile Devices (15%)",
+          "questions": [
+            {
+              "id": 1,
+              "question": "Which of the following wireless technologies would be best for connecting a smartphone to a speaker at close range?",
+              "category": "Mobile Devices",
+              "difficulty": "easy",
+              "options": [
+                "WiFi 6",
+                "Bluetooth",
+                "5G",
+                "NFC"
+              ],
+              "correct": 1,
+              "explanation": "Bluetooth is designed for short-range wireless communication between devices. It's ideal for connecting speakers, headphones, and other personal devices."
+            },
+            {
+              "id": 2,
+              "question": "What does MDM stand for in the context of mobile device management?",
+              "category": "Mobile Devices",
+              "difficulty": "easy",
+              "options": [
+                "Mobile Device Management",
+                "Mobile Data Model",
+                "Mobile Deployment Method",
+                "Multi-Device Monitoring"
+              ],
+              "correct": 0,
+              "explanation": "MDM (Mobile Device Management) is a software solution that allows IT administrators to manage and monitor mobile devices in an enterprise environment."
+            },
+            {
+              "id": 3,
+              "question": "A user's mobile phone has stopped charging. The technician inspects the port for dirt or debris. Which of the following should the technician try next?",
+              "category": "Mobile Devices",
+              "difficulty": "medium",
+              "options": [
+                "Restart the phone",
+                "Try a known-good charging cable",
+                "Restore to factory defaults",
+                "Replace the charging port"
+              ],
+              "correct": 1,
+              "explanation": "After checking the port, the next logical step is to test with a known-good cable to determine if the issue is with the cable or the device's charging circuitry."
+            },
+            {
+              "id": 4,
+              "question": "Which of the following payment technologies allows a smartphone to communicate with a payment terminal by tapping it?",
+              "category": "Mobile Devices",
+              "difficulty": "medium",
+              "options": [
+                "RFID",
+                "NFC",
+                "Bluetooth",
+                "WiFi Direct"
+              ],
+              "correct": 1,
+              "explanation": "NFC (Near Field Communication) enables short-range wireless communication and is commonly used for contactless payments and tap-to-pay technologies."
+            },
+            {
+              "id": 5,
+              "question": "What is the primary function of a digitizer in a touch-screen monitor?",
+              "category": "Mobile Devices",
+              "difficulty": "hard",
+              "options": [
+                "Converts analog video to digital",
+                "Registers inputs on the touch-screen",
+                "Amplifies the display brightness",
+                "Manages color calibration"
+              ],
+              "correct": 1,
+              "explanation": "A digitizer is a touch-sensitive layer that detects and converts touch inputs into digital signals that the device can process."
+            }
+          ]
+        },
+        "networking": {
+          "name": "Networking (20%)",
+          "questions": [
+            {
+              "id": 6,
+              "question": "Which of the following IP addresses is considered private according to RFC 1918?",
+              "category": "Networking",
+              "difficulty": "easy",
+              "options": [
+                "8.8.8.8",
+                "192.168.1.1",
+                "1.1.1.1",
+                "208.67.222.222"
+              ],
+              "correct": 1,
+              "explanation": "RFC 1918 defines private IP address ranges: 10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16. These are used internally and not routed on the public internet."
+            },
+            {
+              "id": 7,
+              "question": "What does DHCP provide to a client computer when it connects to a network?",
+              "category": "Networking",
+              "difficulty": "easy",
+              "options": [
+                "Operating system installation",
+                "IP address, subnet mask, gateway, and DNS",
+                "Encrypted data transmission",
+                "Network printer installation"
+              ],
+              "correct": 1,
+              "explanation": "DHCP (Dynamic Host Configuration Protocol) automatically assigns IP addresses and other network configuration parameters to clients on the network."
+            },
+            {
+              "id": 8,
+              "question": "Which of the following ports is associated with HTTPS traffic?",
+              "category": "Networking",
+              "difficulty": "easy",
+              "options": [
+                "80",
+                "443",
+                "25",
+                "53"
+              ],
+              "correct": 1,
+              "explanation": "Port 443 is the standard port for HTTPS (HTTP Secure), which encrypts data in transit using SSL/TLS protocols."
+            },
+            {
+              "id": 9,
+              "question": "What is the maximum transmission distance for standard Cat5e Ethernet cable?",
+              "category": "Networking",
+              "difficulty": "medium",
+              "options": [
+                "50 meters",
+                "100 meters",
+                "150 meters",
+                "200 meters"
+              ],
+              "correct": 1,
+              "explanation": "Cat5e cables have a maximum transmission distance of 100 meters (328 feet) before signal attenuation becomes significant."
+            },
+            {
+              "id": 10,
+              "question": "Which protocol is used to convert domain names into IP addresses?",
+              "category": "Networking",
+              "difficulty": "medium",
+              "options": [
+                "SMTP",
+                "DNS",
+                "DHCP",
+                "NTP"
+              ],
+              "correct": 1,
+              "explanation": "DNS (Domain Name System) translates domain names (like www.example.com) into IP addresses that computers can understand."
+            }
+          ]
+        },
+        "hardware": {
+          "name": "Hardware (25%)",
+          "questions": [
+            {
+              "id": 11,
+              "question": "Which of the following RAM technologies is commonly used in modern gaming desktops?",
+              "category": "Hardware",
+              "difficulty": "easy",
+              "options": [
+                "DDR2",
+                "DDR3",
+                "DDR4",
+                "DDR5"
+              ],
+              "correct": 3,
+              "explanation": "DDR5 is the latest standard for high-performance desktop memory, offering increased speeds and bandwidth compared to older generations."
+            },
+            {
+              "id": 12,
+              "question": "What type of connector is commonly used for connecting modern SSDs to a motherboard?",
+              "category": "Hardware",
+              "difficulty": "easy",
+              "options": [
+                "SATA",
+                "IDE",
+                "M.2 NVMe",
+                "SCSI"
+              ],
+              "correct": 2,
+              "explanation": "M.2 NVMe is the modern standard for high-speed SSD connections, offering significantly faster data transfer rates than SATA."
+            },
+            {
+              "id": 13,
+              "question": "A user's computer displays the wrong time. After restarting and manually setting the time, it's incorrect again after one day. Which component is most likely failing?",
+              "category": "Hardware",
+              "difficulty": "medium",
+              "options": [
+                "RAM",
+                "Video Card",
+                "CMOS Battery",
+                "Power Supply"
+              ],
+              "correct": 2,
+              "explanation": "The CMOS battery maintains system time and BIOS settings when the computer is powered off. A failing battery causes time drift."
+            },
+            {
+              "id": 14,
+              "question": "Which of the following video connection types supports the highest resolution at 60Hz?",
+              "category": "Hardware",
+              "difficulty": "medium",
+              "options": [
+                "VGA",
+                "DVI",
+                "HDMI 2.1",
+                "DisplayPort 1.2"
+              ],
+              "correct": 2,
+              "explanation": "HDMI 2.1 supports up to 10K resolution at 60Hz, making it one of the highest-capacity video connections available."
+            },
+            {
+              "id": 15,
+              "question": "What is the primary advantage of using RAID 1 on a workstation?",
+              "category": "Hardware",
+              "difficulty": "hard",
+              "options": [
+                "Increased storage capacity",
+                "Faster read/write speeds",
+                "Data redundancy through mirroring",
+                "Automatic backup to the cloud"
+              ],
+              "correct": 2,
+              "explanation": "RAID 1 (mirroring) creates an exact duplicate of data on two drives, providing protection against drive failure."
+            }
+          ]
+        },
+        "virtualization": {
+          "name": "Virtualization & Cloud (11%)",
+          "questions": [
+            {
+              "id": 16,
+              "question": "Which cloud deployment model involves servers hosted on a company's premises used only by that organization?",
+              "category": "Virtualization & Cloud",
+              "difficulty": "easy",
+              "options": [
+                "Public",
+                "Private",
+                "Hybrid",
+                "Community"
+              ],
+              "correct": 1,
+              "explanation": "A private cloud is hosted on premises or by a dedicated provider and is exclusively used by one organization."
+            },
+            {
+              "id": 17,
+              "question": "What is the primary purpose of virtualization in an IT environment?",
+              "category": "Virtualization & Cloud",
+              "difficulty": "easy",
+              "options": [
+                "To increase hardware costs",
+                "To run multiple operating systems on one physical machine",
+                "To eliminate the need for backups",
+                "To replace all networking equipment"
+              ],
+              "correct": 1,
+              "explanation": "Virtualization allows multiple virtual machines (VMs) to run on a single physical server, improving resource utilization and flexibility."
+            },
+            {
+              "id": 18,
+              "question": "Which of the following is a benefit of using virtual machines for testing purposes?",
+              "category": "Virtualization & Cloud",
+              "difficulty": "medium",
+              "options": [
+                "Reduced network bandwidth",
+                "Sandbox environment to test software without affecting the host system",
+                "Automatic viral protection",
+                "Improved physical hardware performance"
+              ],
+              "correct": 1,
+              "explanation": "Virtual machines provide isolated sandbox environments where applications can be tested safely without risking the host system."
+            },
+            {
+              "id": 19,
+              "question": "What does IaaS stand for in cloud computing?",
+              "category": "Virtualization & Cloud",
+              "difficulty": "medium",
+              "options": [
+                "Infrastructure as a Service",
+                "Integrated Application Support",
+                "Internet and App Services",
+                "Internal Architecture System"
+              ],
+              "correct": 0,
+              "explanation": "IaaS (Infrastructure as a Service) provides virtualized computing resources over the internet, including servers, storage, and networking."
+            },
+            {
+              "id": 20,
+              "question": "Which of the following cloud characteristics refers to the ability to quickly add or remove resources?",
+              "category": "Virtualization & Cloud",
+              "difficulty": "hard",
+              "options": [
+                "Multitenancy",
+                "Rapid Elasticity",
+                "Measured Service",
+                "Metered Billing"
+              ],
+              "correct": 1,
+              "explanation": "Rapid elasticity describes the cloud's ability to automatically scale resources up or down based on demand."
+            }
+          ]
+        },
+        "troubleshooting": {
+          "name": "Troubleshooting (29%)",
+          "questions": [
+            {
+              "id": 21,
+              "question": "What is the first step in the troubleshooting methodology?",
+              "category": "Troubleshooting",
+              "difficulty": "easy",
+              "options": [
+                "Establish a plan of action",
+                "Identify the problem",
+                "Test the theory",
+                "Document findings"
+              ],
+              "correct": 1,
+              "explanation": "Identifying the problem by gathering information and determining symptoms is the critical first step in any troubleshooting process."
+            },
+            {
+              "id": 22,
+              "question": "A computer automatically assigned itself an IP address of 169.254.x.x. What does this indicate?",
+              "category": "Troubleshooting",
+              "difficulty": "easy",
+              "options": [
+                "The computer is on a VPN",
+                "DHCP is not available",
+                "The DNS server is down",
+                "A static IP was misconfigured"
+              ],
+              "correct": 1,
+              "explanation": "An APIPA (Automatic Private IP Addressing) address of 169.254.x.x indicates that the computer could not reach a DHCP server."
+            },
+            {
+              "id": 23,
+              "question": "A user reports slow printer performance. Which of the following should the technician check first?",
+              "category": "Troubleshooting",
+              "difficulty": "medium",
+              "options": [
+                "Replace the printer",
+                "Check paper tray levels and clear paper jams",
+                "Upgrade the printer drivers",
+                "Check the print queue and network connection"
+              ],
+              "correct": 1,
+              "explanation": "Basic physical checks (paper, jams, toner levels) are the first troubleshooting steps before diving into software or network issues."
+            },
+            {
+              "id": 24,
+              "question": "What should a technician do when a troubleshooting solution is successful?",
+              "category": "Troubleshooting",
+              "difficulty": "medium",
+              "options": [
+                "Immediately move to the next ticket",
+                "Document findings, actions, and outcomes",
+                "Restart the computer one more time",
+                "Charge the customer for additional hours"
+              ],
+              "correct": 1,
+              "explanation": "Documentation is crucial for creating knowledge bases, identifying patterns, and helping future support efforts."
+            },
+            {
+              "id": 25,
+              "question": "A computer displays a BSOD (Blue Screen of Death) repeatedly. After reviewing Event Viewer, a driver is found to be corrupted. What is the best resolution?",
+              "category": "Troubleshooting",
+              "difficulty": "hard",
+              "options": [
+                "Reinstall Windows immediately",
+                "Update or reinstall the problematic driver",
+                "Replace the motherboard",
+                "Replace the hard drive"
+              ],
+              "correct": 1,
+              "explanation": "A corrupted driver can be updated or reinstalled through Device Manager or the manufacturer's website, which is the simplest solution."
+            }
+          ]
         }
-      ]
+      }
     },
-    "helpdesk": {
-      "displayName": "Help Desk / SysAdmin",
-      "icon": "🖥️",
-      "color": "#00e5ff",
-      "questions": []
+    "aplus_core2": {
+      "title": "CompTIA A+ Core 2 (220-1102)",
+      "description": "Operating Systems, Security, Software, Operational Procedures",
+      "passingScore": 675,
+      "totalQuestions": 45,
+      "domains": {
+        "operating_systems": {
+          "name": "Operating Systems (31%)",
+          "questions": [
+            {
+              "id": 26,
+              "question": "Which Windows edition includes Bitlocker full disk encryption?",
+              "category": "Operating Systems",
+              "difficulty": "easy",
+              "options": [
+                "Windows 10 Home",
+                "Windows 10 Pro",
+                "Windows 10 Enterprise",
+                "Windows 10 S Mode"
+              ],
+              "correct": 1,
+              "explanation": "Windows 10 Pro (and higher editions) include BitLocker encryption. Home edition does not support this feature."
+            },
+            {
+              "id": 27,
+              "question": "What command is used to check network connectivity in Windows?",
+              "category": "Operating Systems",
+              "difficulty": "easy",
+              "options": [
+                "ipconfig",
+                "ping",
+                "netstat",
+                "tracert"
+              ],
+              "correct": 1,
+              "explanation": "The 'ping' command tests connectivity to remote hosts by sending ICMP echo requests and measuring response times."
+            },
+            {
+              "id": 28,
+              "question": "Which Control Panel utility would you use to manage device drivers on a Windows computer?",
+              "category": "Operating Systems",
+              "difficulty": "easy",
+              "options": [
+                "Programs and Features",
+                "Device Manager",
+                "Network and Sharing Center",
+                "System and Security"
+              ],
+              "correct": 1,
+              "explanation": "Device Manager allows users to view, update, and troubleshoot hardware devices and their drivers."
+            },
+            {
+              "id": 29,
+              "question": "What is the difference between a workgroup and a domain in Windows?",
+              "category": "Operating Systems",
+              "difficulty": "medium",
+              "options": [
+                "Workgroups are more secure than domains",
+                "Workgroups are peer-to-peer; domains use centralized management",
+                "Domains can only use Windows 7",
+                "Workgroups support more users than domains"
+              ],
+              "correct": 1,
+              "explanation": "Workgroups are simple peer-to-peer networks, while domains use Active Directory for centralized authentication and management."
+            },
+            {
+              "id": 30,
+              "question": "Which command would you use to repair Windows system files without performing a full reinstall?",
+              "category": "Operating Systems",
+              "difficulty": "hard",
+              "options": [
+                "fsutil repair",
+                "sfc /scannow",
+                "chkdsk /f",
+                "dism /restore"
+              ],
+              "correct": 1,
+              "explanation": "The 'sfc /scannow' (System File Checker) scans and repairs corrupted Windows system files."
+            }
+          ]
+        },
+        "security": {
+          "name": "Security (25%)",
+          "questions": [
+            {
+              "id": 31,
+              "question": "What is the primary purpose of Windows User Account Control (UAC)?",
+              "category": "Security",
+              "difficulty": "easy",
+              "options": [
+                "Prevent network access",
+                "Restrict administrative actions and prompt for elevated permissions",
+                "Encrypt all files on the computer",
+                "Monitor internet usage"
+              ],
+              "correct": 1,
+              "explanation": "UAC prompts users for permission before allowing actions that require administrative privileges, preventing unauthorized changes."
+            },
+            {
+              "id": 32,
+              "question": "Which encryption technology is used by BitLocker To Go for USB drives?",
+              "category": "Security",
+              "difficulty": "easy",
+              "options": [
+                "AES",
+                "RSA",
+                "MD5",
+                "SHA-256"
+              ],
+              "correct": 0,
+              "explanation": "BitLocker To Go uses AES (Advanced Encryption Standard) to encrypt removable drives like USB devices."
+            },
+            {
+              "id": 33,
+              "question": "What is a social engineering attack where someone watches a user enter their password over their shoulder?",
+              "category": "Security",
+              "difficulty": "easy",
+              "options": [
+                "Phishing",
+                "Shoulder surfing",
+                "Tailgating",
+                "Dumpster diving"
+              ],
+              "correct": 1,
+              "explanation": "Shoulder surfing is a social engineering technique where an attacker physically observes sensitive information being entered."
+            },
+            {
+              "id": 34,
+              "question": "Which of the following is a common security best practice for password management?",
+              "category": "Security",
+              "difficulty": "medium",
+              "options": [
+                "Use simple passwords that are easy to remember",
+                "Share passwords with trusted colleagues",
+                "Use strong, complex passwords with minimum 12 characters",
+                "Change passwords only when required by the system"
+              ],
+              "correct": 2,
+              "explanation": "Strong passwords with at least 12 characters, including uppercase, lowercase, numbers, and special characters, provide better security."
+            },
+            {
+              "id": 35,
+              "question": "What is the proper order for malware removal according to best practices?",
+              "category": "Security",
+              "difficulty": "hard",
+              "options": [
+                "Scan, quarantine, restart system",
+                "Investigate, disable System Restore, update anti-malware, scan, remove, re-enable System Restore",
+                "Delete all files, reinstall OS",
+                "Just use antivirus once and restart"
+              ],
+              "correct": 1,
+              "explanation": "Best practice includes investigating symptoms, isolating the system, disabling System Restore, updating signatures, scanning, removing, and re-enabling System Restore."
+            }
+          ]
+        },
+        "software_troubleshooting": {
+          "name": "Software Troubleshooting (22%)",
+          "questions": [
+            {
+              "id": 36,
+              "question": "What does BSOD stand for?",
+              "category": "Software Troubleshooting",
+              "difficulty": "easy",
+              "options": [
+                "Basic System Operation Display",
+                "Blue Screen of Death",
+                "Background System Outage Daemon",
+                "Backup Sector Operations Data"
+              ],
+              "correct": 1,
+              "explanation": "BSOD (Blue Screen of Death) is a critical error screen displayed when Windows encounters a fatal error."
+            },
+            {
+              "id": 37,
+              "question": "A user reports frequent application crashes. Which Windows tool should you check first for error details?",
+              "category": "Software Troubleshooting",
+              "difficulty": "easy",
+              "options": [
+                "Task Scheduler",
+                "Event Viewer",
+                "Resource Monitor",
+                "Registry Editor"
+              ],
+              "correct": 1,
+              "explanation": "Event Viewer logs all system and application errors, providing detailed information about crash causes and error codes."
+            },
+            {
+              "id": 38,
+              "question": "High CPU and memory usage with frequent pop-ups appearing on a computer suggests what type of problem?",
+              "category": "Software Troubleshooting",
+              "difficulty": "medium",
+              "options": [
+                "Missing operating system updates",
+                "Malware infection",
+                "Insufficient RAM installed",
+                "Network connectivity issues"
+              ],
+              "correct": 1,
+              "explanation": "These are classic signs of malware or adware consuming system resources and displaying unwanted advertisements."
+            },
+            {
+              "id": 39,
+              "question": "A newly installed application won't launch. What should you check first?",
+              "category": "Software Troubleshooting",
+              "difficulty": "medium",
+              "options": [
+                "Restart the entire computer",
+                "System requirements compatibility",
+                "Uninstall and reinstall",
+                "Contact the software vendor"
+              ],
+              "correct": 1,
+              "explanation": "Before troubleshooting further, verify that the system meets the application's minimum system requirements."
+            },
+            {
+              "id": 40,
+              "question": "What is the proper procedure to safely remove malware without data loss?",
+              "category": "Software Troubleshooting",
+              "difficulty": "hard",
+              "options": [
+                "Simply restart the computer",
+                "Quarantine infected files, run updated antivirus scans, enable System Restore",
+                "Immediately wipe the hard drive",
+                "Disconnect from network and shutdown"
+              ],
+              "correct": 1,
+              "explanation": "Proper malware removal involves quarantining files, running updated scans, and restoring system functionality while preserving data."
+            }
+          ]
+        },
+        "operational_procedures": {
+          "name": "Operational Procedures (22%)",
+          "questions": [
+            {
+              "id": 41,
+              "question": "What is the primary purpose of change management in IT?",
+              "category": "Operational Procedures",
+              "difficulty": "easy",
+              "options": [
+                "To eliminate the need for testing",
+                "To document and control changes to prevent disruptions",
+                "To reduce the number of IT staff",
+                "To automatically update all systems"
+              ],
+              "correct": 1,
+              "explanation": "Change management ensures that modifications to IT systems are documented, tested, approved, and implemented in a controlled manner."
+            },
+            {
+              "id": 42,
+              "question": "Which of the following is part of the 3-2-1 backup rule?",
+              "category": "Operational Procedures",
+              "difficulty": "easy",
+              "options": [
+                "3 copies of data on 2 different media types, 1 off-site",
+                "Backup every 3 days for 2 months, then 1 year",
+                "3TB capacity, 2 drive redundancy, 1 network connection",
+                "3 weekly, 2 monthly, 1 annual backup"
+              ],
+              "correct": 0,
+              "explanation": "The 3-2-1 rule states: keep 3 copies of data on 2 different media types with 1 copy stored off-site for disaster recovery."
+            },
+            {
+              "id": 43,
+              "question": "What should you verify before implementing a system update on critical infrastructure?",
+              "category": "Operational Procedures",
+              "difficulty": "medium",
+              "options": [
+                "Just install it immediately",
+                "Test in a sandbox environment, document changes, create rollback plan",
+                "Update only during business hours",
+                "Update all systems simultaneously"
+              ],
+              "correct": 1,
+              "explanation": "Critical updates should be tested thoroughly in a non-production environment with a documented rollback plan before deployment."
+            },
+            {
+              "id": 44,
+              "question": "Which documentation is most important for troubleshooting similar issues in the future?",
+              "category": "Operational Procedures",
+              "difficulty": "medium",
+              "options": [
+                "Employee vacation schedule",
+                "Hardware inventory list",
+                "Incident reports with findings, actions, and outcomes",
+                "Network topology diagrams only"
+              ],
+              "correct": 2,
+              "explanation": "Detailed incident documentation creates a knowledge base that helps technicians resolve similar issues more quickly in the future."
+            },
+            {
+              "id": 45,
+              "question": "What is the most important security consideration when disposing of old computers containing sensitive data?",
+              "category": "Operational Procedures",
+              "difficulty": "hard",
+              "options": [
+                "Simply delete files from the hard drive",
+                "Use secure data destruction methods or physically destroy the drive",
+                "Give computers to employees for personal use",
+                "Sell to refurbishers without any data wiping"
+              ],
+              "correct": 1,
+              "explanation": "Sensitive data must be securely destroyed through wiping utilities, encryption key destruction, or physical destruction before disposal."
+            }
+          ]
+        }
+      }
     },
-    "networking": {
-      "displayName": "Network Engineering",
-      "icon": "🌐",
-      "color": "#b8ff57",
-      "questions": []
-    },
-    "secarchitecture": {
-      "displayName": "Security Architecture",
-      "icon": "🏰",
-      "color": "#ff006e",
-      "questions": []
-    },
-    "m365": {
-      "displayName": "Microsoft 365 / Teams",
-      "icon": "☁️",
-      "color": "#00d9ff",
-      "questions": []
-    },
-    "azure": {
-      "displayName": "Azure / Cloud Infrastructure",
-      "icon": "🚀",
-      "color": "#0080d9",
-      "questions": []
-    },
-    "scripting": {
-      "displayName": "PowerShell / Scripting",
-      "icon": "⚙️",
-      "color": "#00d9ff",
-      "questions": []
-    },
-    "emailsecurity": {
-      "displayName": "Email Security / Exchange",
-      "icon": "📧",
-      "color": "#ff6b00",
-      "questions": []
-    },
-    "architecture": {
-      "displayName": "IT Architecture & Strategy",
-      "icon": "🏗️",
-      "color": "#c084fc",
-      "questions": []
+    "network_plus": {
+      "title": "CompTIA Network+ (N10-008)",
+      "description": "Networking Fundamentals, Implementation, Operations, Security, Troubleshooting",
+      "passingScore": 720,
+      "totalQuestions": 50,
+      "domains": {
+        "fundamentals": {
+          "name": "Networking Fundamentals (24%)",
+          "questions": [
+            {
+              "id": 46,
+              "question": "Which layer of the OSI model is responsible for routing data between networks?",
+              "category": "Networking Fundamentals",
+              "difficulty": "easy",
+              "options": [
+                "Layer 1 (Physical)",
+                "Layer 2 (Data Link)",
+                "Layer 3 (Network)",
+                "Layer 4 (Transport)"
+              ],
+              "correct": 2,
+              "explanation": "Layer 3 (Network layer) handles routing using IP addresses and routers to forward packets between networks."
+            },
+            {
+              "id": 47,
+              "question": "What is the primary function of a subnet mask?",
+              "category": "Networking Fundamentals",
+              "difficulty": "easy",
+              "options": [
+                "Encrypt network traffic",
+                "Identify which portion of an IP address is the network and which is the host",
+                "Store MAC addresses",
+                "Manage DHCP servers"
+              ],
+              "correct": 1,
+              "explanation": "A subnet mask determines the network and host portions of an IP address, enabling proper network segmentation."
+            },
+            {
+              "id": 48,
+              "question": "Which of the following IP addresses is in the private address range according to RFC 1918?",
+              "category": "Networking Fundamentals",
+              "difficulty": "easy",
+              "options": [
+                "10.0.0.50",
+                "172.15.0.1",
+                "8.8.8.8",
+                "200.100.50.1"
+              ],
+              "correct": 0,
+              "explanation": "10.0.0.0/8 is one of the private address ranges defined by RFC 1918 for internal network use."
+            },
+            {
+              "id": 49,
+              "question": "What is the difference between TCP and UDP?",
+              "category": "Networking Fundamentals",
+              "difficulty": "medium",
+              "options": [
+                "TCP is faster than UDP",
+                "TCP is connection-oriented and reliable; UDP is connectionless and faster but unreliable",
+                "UDP only works on WiFi networks",
+                "TCP can only be used for email"
+              ],
+              "correct": 1,
+              "explanation": "TCP establishes connections and ensures reliable delivery, while UDP is faster but doesn't guarantee delivery, making it suitable for streaming."
+            },
+            {
+              "id": 50,
+              "question": "What does CIDR notation represent?",
+              "category": "Networking Fundamentals",
+              "difficulty": "hard",
+              "options": [
+                "A type of firewall rule",
+                "Network address and prefix length notation (e.g., 192.168.1.0/24)",
+                "A VPN protocol",
+                "A method of data encryption"
+              ],
+              "correct": 1,
+              "explanation": "CIDR (Classless Inter-Domain Routing) notation combines an IP address with a prefix length (e.g., /24) to specify network ranges."
+            }
+          ]
+        },
+        "implementations": {
+          "name": "Network Implementations (19%)",
+          "questions": [
+            {
+              "id": 51,
+              "question": "What is the primary function of a Layer 3 switch?",
+              "category": "Network Implementations",
+              "difficulty": "easy",
+              "options": [
+                "To connect computers to a network",
+                "To forward data at Layer 2 only",
+                "To route traffic between VLANs at Layer 3",
+                "To provide WiFi connectivity"
+              ],
+              "correct": 2,
+              "explanation": "A Layer 3 switch combines switching and routing capabilities, enabling inter-VLAN communication without a separate router."
+            },
+            {
+              "id": 52,
+              "question": "Which dynamic routing protocol uses hop count as its metric?",
+              "category": "Network Implementations",
+              "difficulty": "medium",
+              "options": [
+                "OSPF",
+                "RIP",
+                "EIGRP",
+                "BGP"
+              ],
+              "correct": 1,
+              "explanation": "RIP (Routing Information Protocol) uses hop count as its metric, with a maximum of 15 hops per route."
+            },
+            {
+              "id": 53,
+              "question": "What is the primary benefit of using VLAN tagging (802.1Q)?",
+              "category": "Network Implementations",
+              "difficulty": "medium",
+              "options": [
+                "Increased bandwidth",
+                "Logical network segmentation on a single physical switch",
+                "Encryption of network traffic",
+                "Automatic IP address assignment"
+              ],
+              "correct": 1,
+              "explanation": "802.1Q VLAN tagging allows multiple logical networks to exist on a single physical switch by adding VLAN ID information to frames."
+            },
+            {
+              "id": 54,
+              "question": "What does PoE (Power over Ethernet) provide to connected devices?",
+              "category": "Network Implementations",
+              "difficulty": "medium",
+              "options": [
+                "Enhanced security features",
+                "Higher bandwidth for video streaming",
+                "Both network connectivity and electrical power",
+                "Wireless connectivity"
+              ],
+              "correct": 2,
+              "explanation": "PoE delivers both data and electrical power over standard Ethernet cables, eliminating the need for separate power connections."
+            },
+            {
+              "id": 55,
+              "question": "Which wireless encryption standard is considered most secure?",
+              "category": "Network Implementations",
+              "difficulty": "hard",
+              "options": [
+                "WEP",
+                "WPA",
+                "WPA2 with AES",
+                "Open network"
+              ],
+              "correct": 2,
+              "explanation": "WPA2 with AES (Advanced Encryption Standard) is significantly more secure than older standards like WEP and early WPA."
+            }
+          ]
+        },
+        "operations": {
+          "name": "Network Operations (16%)",
+          "questions": [
+            {
+              "id": 56,
+              "question": "What does SNMP stand for?",
+              "category": "Network Operations",
+              "difficulty": "easy",
+              "options": [
+                "Simple Network Management Protocol",
+                "Secure Network Monitoring Protocol",
+                "System Network Management Policy",
+                "Synchronized Network Multi-Protocol"
+              ],
+              "correct": 0,
+              "explanation": "SNMP is used for monitoring and managing network devices by collecting information and sending alerts."
+            },
+            {
+              "id": 57,
+              "question": "Which log type would you review to identify security threats and unauthorized access attempts?",
+              "category": "Network Operations",
+              "difficulty": "easy",
+              "options": [
+                "Application logs",
+                "Traffic logs and audit logs",
+                "Driver installation logs",
+                "Update installation logs"
+              ],
+              "correct": 1,
+              "explanation": "Traffic and audit logs contain information about network access, authentication attempts, and potential security incidents."
+            },
+            {
+              "id": 58,
+              "question": "What is the primary metric that measures the time it takes for a server to respond?",
+              "category": "Network Operations",
+              "difficulty": "medium",
+              "options": [
+                "Bandwidth",
+                "Jitter",
+                "Latency",
+                "Throughput"
+              ],
+              "correct": 2,
+              "explanation": "Latency is the delay between sending a request and receiving a response, typically measured in milliseconds."
+            },
+            {
+              "id": 59,
+              "question": "What does RTO stand for in disaster recovery planning?",
+              "category": "Network Operations",
+              "difficulty": "medium",
+              "options": [
+                "Remote Technical Operations",
+                "Recovery Time Objective",
+                "Redundant Topology Optimization",
+                "Remote Transfer Operation"
+              ],
+              "correct": 1,
+              "explanation": "RTO is the maximum acceptable downtime, specifying how quickly systems must be restored after a failure."
+            },
+            {
+              "id": 60,
+              "question": "Which technology provides automatic failover to ensure high availability?",
+              "category": "Network Operations",
+              "difficulty": "hard",
+              "options": [
+                "DHCP",
+                "VRRP (Virtual Router Redundancy Protocol)",
+                "DNS",
+                "NTP"
+              ],
+              "correct": 1,
+              "explanation": "VRRP allows multiple routers to share a virtual IP address, providing automatic failover if the primary router fails."
+            }
+          ]
+        },
+        "security": {
+          "name": "Network Security (19%)",
+          "questions": [
+            {
+              "id": 61,
+              "question": "What is the primary purpose of a firewall?",
+              "category": "Network Security",
+              "difficulty": "easy",
+              "options": [
+                "To increase internet speed",
+                "To control and filter network traffic based on security rules",
+                "To provide WiFi connectivity",
+                "To manage IP addresses"
+              ],
+              "correct": 1,
+              "explanation": "Firewalls enforce security policies by allowing or denying traffic based on predefined rules."
+            },
+            {
+              "id": 62,
+              "question": "Which attack type involves sending massive amounts of traffic to overwhelm a server?",
+              "category": "Network Security",
+              "difficulty": "easy",
+              "options": [
+                "Phishing",
+                "Man-in-the-Middle",
+                "DDoS",
+                "SQL Injection"
+              ],
+              "correct": 2,
+              "explanation": "A DDoS (Distributed Denial of Service) attack floods a server with traffic from multiple sources to make it unavailable."
+            },
+            {
+              "id": 63,
+              "question": "What does VPN stand for?",
+              "category": "Network Security",
+              "difficulty": "easy",
+              "options": [
+                "Virtual Personal Network",
+                "Virtual Private Network",
+                "Verified Private Network",
+                "Virtual Protected Network"
+              ],
+              "correct": 1,
+              "explanation": "A VPN creates an encrypted tunnel for secure communication over untrusted networks, protecting data in transit."
+            },
+            {
+              "id": 64,
+              "question": "Which of the following represents a best practice for network security?",
+              "category": "Network Security",
+              "difficulty": "medium",
+              "options": [
+                "Allow all incoming traffic",
+                "Disable firewalls for better performance",
+                "Implement the principle of least privilege",
+                "Share administrator credentials with all team members"
+              ],
+              "correct": 2,
+              "explanation": "The principle of least privilege ensures users have only the minimum permissions needed for their role, reducing security risks."
+            },
+            {
+              "id": 65,
+              "question": "What is an on-path attack (formerly called man-in-the-middle)?",
+              "category": "Network Security",
+              "difficulty": "hard",
+              "options": [
+                "An attack on network infrastructure",
+                "An intercepted communication where an attacker positions themselves between sender and receiver",
+                "A denial of service attack",
+                "A social engineering technique"
+              ],
+              "correct": 1,
+              "explanation": "An on-path attack involves an attacker intercepting and potentially modifying communications between two parties."
+            }
+          ]
+        },
+        "troubleshooting": {
+          "name": "Network Troubleshooting (22%)",
+          "questions": [
+            {
+              "id": 66,
+              "question": "Which command-line tool is used to test connectivity to a remote host?",
+              "category": "Network Troubleshooting",
+              "difficulty": "easy",
+              "options": [
+                "ipconfig",
+                "ping",
+                "netstat",
+                "tracert"
+              ],
+              "correct": 1,
+              "explanation": "The 'ping' command sends ICMP echo requests to test connectivity and measure response times to remote hosts."
+            },
+            {
+              "id": 67,
+              "question": "What does the 'tracert' command accomplish?",
+              "category": "Network Troubleshooting",
+              "difficulty": "easy",
+              "options": [
+                "Displays current network configuration",
+                "Shows the path packets take to reach a destination",
+                "Lists all active network connections",
+                "Renews DHCP lease"
+              ],
+              "correct": 1,
+              "explanation": "Tracert (traceroute on Linux) shows each hop along the path to a destination, helping identify where connectivity issues occur."
+            },
+            {
+              "id": 68,
+              "question": "A user cannot access the internet but can reach other computers on the local network. What is the most likely issue?",
+              "category": "Network Troubleshooting",
+              "difficulty": "medium",
+              "options": [
+                "Ethernet cable disconnected",
+                "Incorrect default gateway configuration",
+                "DHCP server down",
+                "Firewall blocking all ports"
+              ],
+              "correct": 1,
+              "explanation": "The default gateway is the path to external networks. Incorrect gateway settings prevent internet access while local communication works."
+            },
+            {
+              "id": 69,
+              "question": "Which network tool would you use to identify applications consuming bandwidth?",
+              "category": "Network Troubleshooting",
+              "difficulty": "medium",
+              "options": [
+                "Ping",
+                "Packet analyzer/Wireshark",
+                "DHCP client",
+                "FTP utility"
+              ],
+              "correct": 1,
+              "explanation": "Packet analyzers like Wireshark capture and display network traffic, showing which applications and protocols are using bandwidth."
+            },
+            {
+              "id": 70,
+              "question": "What is the first step in the network troubleshooting methodology?",
+              "category": "Network Troubleshooting",
+              "difficulty": "hard",
+              "options": [
+                "Restart all equipment",
+                "Identify and gather information about the problem",
+                "Replace network hardware",
+                "Contact the ISP immediately"
+              ],
+              "correct": 1,
+              "explanation": "Proper troubleshooting begins with gathering complete information about the problem, symptoms, and when it started."
+            }
+          ]
+        }
+      }
     }
   }
 }
