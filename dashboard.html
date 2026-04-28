@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillForge - Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0f0f0f; color: #fff; }
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo { font-size: 1.5rem; font-weight: bold; }
+        .user-info { display: flex; gap: 1rem; align-items: center; }
+        .logout-btn { background: #ff1493; padding: 0.5rem 1rem; border: none; border-radius: 4px; color: #fff; cursor: pointer; }
+        .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+        .domains-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        .domain-card {
+            background: #1a1a1a;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .domain-card:hover { transform: translateY(-5px); border-color: #ff1493; }
+        .domain-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .domain-title { font-weight: bold; margin: 0.5rem 0; }
+        .domain-desc { font-size: 0.85rem; color: #aaa; margin-bottom: 1rem; }
+        .start-btn { background: #667eea; color: #fff; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; width: 100%; }
+        .start-btn:hover { background: #764ba2; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">⚔️ SKILLFORGE</div>
+        <div class="user-info">
+            <span id="username">User</span>
+            <span id="points">0 PTS</span>
+            <button class="logout-btn" onclick="logout()">LOGOUT</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Welcome back, <span id="welcomeName">Tech</span>! 🎯</h1>
+        <p style="color: #aaa; margin-top: 0.5rem;">Choose a domain to start learning and testing your skills</p>
+
+        <h2 style="margin-top: 2rem; margin-bottom: 1rem;">📚 Certification Tracks</h2>
+        <div class="domains-grid" id="certDomainsContainer"></div>
+
+        <h2 style="margin-top: 2rem; margin-bottom: 1rem;">💼 Role Expertise</h2>
+        <div class="domains-grid" id="roleDomainsContainer"></div>
+    </div>
+
+    <script>
+        // Check if user is logged in
+        const token = localStorage.getItem('authToken');
+        const user = JSON.parse(localStorage.getItem('user'));
+
+        if (!token || !user) {
+            window.location.href = 'index.html'; // Redirect to login if not authenticated
+        }
+
+        document.getElementById('username').textContent = user.username || 'User';
+        document.getElementById('welcomeName').textContent = user.username || 'Tech';
+        document.getElementById('points').textContent = (user.points || 0) + ' PTS';
+
+        // Load domains from questions.json
+        async function loadDomains() {
+            try {
+                const response = await fetch('questions.json');
+                const data = await response.json();
+
+                // Render cert domains
+                const certContainer = document.getElementById('certDomainsContainer');
+                Object.entries(data.certDomains).forEach(([key, domain]) => {
+                    const card = document.createElement('div');
+                    card.className = 'domain-card';
+                    card.innerHTML = `
+                        <div class="domain-icon">${domain.icon}</div>
+                        <div class="domain-title">${domain.displayName}</div>
+                        <div class="domain-desc">${domain.description}</div>
+                        <button class="start-btn" onclick="startQuiz('${key}', 'cert')">
+                            ${domain.status === 'active' ? 'START QUIZ' : 'COMING SOON'}
+                        </button>
+                    `;
+                    if (domain.status === 'active') {
+                        certContainer.appendChild(card);
+                    }
+                });
+
+                // Render role domains
+                const roleContainer = document.getElementById('roleDomainsContainer');
+                Object.entries(data.roleDomains).forEach(([key, domain]) => {
+                    const card = document.createElement('div');
+                    card.className = 'domain-card';
+                    card.innerHTML = `
+                        <div class="domain-icon">${domain.icon}</div>
+                        <div class="domain-title">${domain.displayName}</div>
+                        <div class="domain-desc">${domain.description}</div>
+                        <button class="start-btn" onclick="startQuiz('${key}', 'role')">
+                            ${domain.questions && domain.questions.length > 0 ? 'START QUIZ' : 'COMING SOON'}
+                        </button>
+                    `;
+                    roleContainer.appendChild(card);
+                });
+            } catch (error) {
+                console.error('Error loading domains:', error);
+            }
+        }
+
+        function startQuiz(domainKey, domainType) {
+            // Store selected domain and redirect to quiz
+            localStorage.setItem('selectedDomain', domainKey);
+            localStorage.setItem('domainType', domainType);
+            window.location.href = 'quiz.html';
+        }
+
+        function logout() {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('user');
+            localStorage.removeItem('selectedDomain');
+            localStorage.removeItem('domainType');
+            window.location.href = 'index.html';
+        }
+
+        loadDomains();
+    </script>
+</body>
+</html>
