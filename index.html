@@ -1,954 +1,1962 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SkillForge - Demo</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
-      padding: 20px;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    /* HEADER */
-    header {
-      background: rgba(255, 255, 255, 0.95);
-      padding: 20px 30px;
-      border-radius: 12px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-      margin-bottom: 30px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .logo {
-      font-size: 28px;
-      font-weight: bold;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .user-info {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
-
-    .user-card {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 15px 25px;
-      border-radius: 8px;
-      font-weight: 600;
-    }
-
-    .rank-badge {
-      background: gold;
-      color: #333;
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-weight: bold;
-      font-size: 14px;
-    }
-
-    .theme-toggle {
-      background: none;
-      border: 2px solid #667eea;
-      color: #667eea;
-      padding: 10px 20px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: all 0.3s;
-    }
-
-    .theme-toggle:hover {
-      background: #667eea;
-      color: white;
-    }
-
-    /* MAIN CONTENT */
-    .main-content {
-      display: grid;
-      grid-template-columns: 1fr 2fr;
-      gap: 30px;
-      margin-bottom: 30px;
-    }
-
-    /* SIDEBAR */
-    .sidebar {
-      background: rgba(255, 255, 255, 0.95);
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-      height: fit-content;
-    }
-
-    .sidebar h3 {
-      margin-bottom: 20px;
-      color: #333;
-      font-size: 18px;
-    }
-
-    .domain-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .domain-btn {
-      padding: 15px;
-      border: 2px solid #e0e0e0;
-      background: white;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: all 0.3s;
-      text-align: left;
-    }
-
-    .domain-btn:hover {
-      border-color: #667eea;
-      background: #f5f5ff;
-      transform: translateX(5px);
-    }
-
-    .domain-btn.active {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border-color: transparent;
-    }
-
-    /* CONTENT AREA */
-    .content-area {
-      background: rgba(255, 255, 255, 0.95);
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    }
-
-    .screen {
-      display: none;
-    }
-
-    .screen.active {
-      display: block;
-      animation: slideIn 0.3s ease;
-    }
-
-    @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    /* DASHBOARD SCREEN */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 20px;
-      margin-bottom: 30px;
-    }
-
-    .stat-card {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 25px;
-      border-radius: 12px;
-      text-align: center;
-    }
-
-    .stat-value {
-      font-size: 32px;
-      font-weight: bold;
-      margin-bottom: 8px;
-    }
-
-    .stat-label {
-      font-size: 14px;
-      opacity: 0.9;
-    }
-
-    .quick-actions {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 15px;
-    }
-
-    .action-btn {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 15px 25px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 16px;
-      transition: all 0.3s;
-    }
-
-    .action-btn:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
-    }
-
-    /* QUIZ SCREEN */
-    .quiz-header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 20px;
-      border-radius: 8px;
-      margin-bottom: 30px;
-    }
-
-    .progress-bar {
-      width: 100%;
-      height: 8px;
-      background: #e0e0e0;
-      border-radius: 10px;
-      margin: 15px 0;
-      overflow: hidden;
-    }
-
-    .progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-      width: 0%;
-      transition: width 0.3s;
-    }
-
-    .question-container {
-      margin-bottom: 30px;
-    }
-
-    .question-text {
-      font-size: 18px;
-      font-weight: 600;
-      margin-bottom: 20px;
-      color: #333;
-    }
-
-    .options {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .option {
-      padding: 15px 20px;
-      border: 2px solid #e0e0e0;
-      background: white;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.3s;
-      font-weight: 500;
-    }
-
-    .option:hover {
-      border-color: #667eea;
-      background: #f5f5ff;
-    }
-
-    .option.selected {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border-color: transparent;
-    }
-
-    .option.correct {
-      background: #4caf50;
-      color: white;
-      border-color: transparent;
-    }
-
-    .option.incorrect {
-      background: #f44336;
-      color: white;
-      border-color: transparent;
-    }
-
-    .explanation {
-      background: #f5f5f5;
-      padding: 15px;
-      border-radius: 8px;
-      margin-top: 15px;
-      border-left: 4px solid #667eea;
-      display: none;
-    }
-
-    .explanation.show {
-      display: block;
-    }
-
-    .quiz-buttons {
-      display: flex;
-      gap: 15px;
-      margin-top: 30px;
-      justify-content: flex-end;
-    }
-
-    .btn {
-      padding: 12px 25px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: all 0.3s;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-    }
-
-    .btn-primary:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    .btn-secondary {
-      background: #e0e0e0;
-      color: #333;
-    }
-
-    .btn-secondary:hover {
-      background: #d0d0d0;
-    }
-
-    /* RESULTS SCREEN */
-    .results-container {
-      text-align: center;
-    }
-
-    .score-circle {
-      width: 200px;
-      height: 200px;
-      margin: 0 auto 30px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 48px;
-      font-weight: bold;
-      box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
-    }
-
-    .results-details {
-      background: #f5f5f5;
-      padding: 25px;
-      border-radius: 12px;
-      margin-bottom: 30px;
-      text-align: left;
-    }
-
-    .result-item {
-      display: flex;
-      justify-content: space-between;
-      padding: 15px 0;
-      border-bottom: 1px solid #ddd;
-    }
-
-    .result-item:last-child {
-      border-bottom: none;
-    }
-
-    .result-label {
-      font-weight: 600;
-      color: #333;
-    }
-
-    .result-value {
-      color: #667eea;
-      font-weight: bold;
-    }
-
-    .domain-breakdown {
-      margin-top: 30px;
-    }
-
-    .domain-score {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 15px;
-      background: white;
-      border-radius: 8px;
-      margin-bottom: 10px;
-    }
-
-    .domain-name {
-      font-weight: 600;
-    }
-
-    .domain-score-bar {
-      flex: 1;
-      height: 8px;
-      background: #e0e0e0;
-      border-radius: 10px;
-      margin: 0 15px;
-      overflow: hidden;
-    }
-
-    .domain-score-fill {
-      height: 100%;
-      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-    }
-
-    /* LEADERBOARD SCREEN */
-    .leaderboard-table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    .leaderboard-table thead {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-    }
-
-    .leaderboard-table th {
-      padding: 15px;
-      text-align: left;
-      font-weight: 600;
-    }
-
-    .leaderboard-table td {
-      padding: 15px;
-      border-bottom: 1px solid #e0e0e0;
-    }
-
-    .leaderboard-table tbody tr:hover {
-      background: #f5f5ff;
-    }
-
-    .rank-position {
-      font-weight: bold;
-      color: #667eea;
-      font-size: 18px;
-      width: 50px;
-    }
-
-    .rank-position.top3 {
-      color: gold;
-      font-size: 20px;
-    }
-
-    /* LOADING */
-    .spinner {
-      border: 4px solid #f3f3f3;
-      border-top: 4px solid #667eea;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      animation: spin 1s linear infinite;
-      margin: 20px auto;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    /* RESPONSIVE */
-    @media (max-width: 768px) {
-      .main-content {
-        grid-template-columns: 1fr;
-      }
-
-      header {
-        flex-direction: column;
-        gap: 15px;
-        text-align: center;
-      }
-
-      .stats-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .quiz-buttons {
-        flex-direction: column;
-      }
-
-      .btn {
-        width: 100%;
-      }
-    }
-
-    /* DARK MODE */
-    body.dark-mode {
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    }
-
-    body.dark-mode header,
-    body.dark-mode .sidebar,
-    body.dark-mode .content-area {
-      background: rgba(30, 30, 50, 0.95);
-      color: #e0e0e0;
-    }
-
-    body.dark-mode .question-text,
-    body.dark-mode .result-label,
-    body.dark-mode .domain-name {
-      color: #e0e0e0;
-    }
-
-    body.dark-mode .option,
-    body.dark-mode .results-details,
-    body.dark-mode .domain-score,
-    body.dark-mode .leaderboard-table td {
-      background: rgba(60, 60, 80, 0.5);
-      color: #e0e0e0;
-      border-color: rgba(102, 126, 234, 0.3);
-    }
-
-    body.dark-mode .leaderboard-table thead {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SkillForge - Company Learning Platform</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+:root {
+  --bg: #08090d;
+  --surface: #0e0f16;
+  --surface2: #14151e;
+  --surface3: #1a1b26;
+  --border: #232438;
+  --border2: #2e3050;
+  --accent: #00e5ff;
+  --accent2: #ff3c6e;
+  --accent3: #b8ff57;
+  --accent4: #ffaa00;
+  --accent5: #c084fc;
+  --text: #e8e8f2;
+  --text2: #a0a0c0;
+  --muted: #5a5a78;
+  --success: #4ade80;
+  --danger: #ef4444;
+  --warning: #f97316;
+}
+
+body.light-mode {
+@@ -43,13 +46,15 @@
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body { height: 100%; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  line-height: 1.6;
+}
+
+body::before {
+@@ -59,21 +64,29 @@
+  pointer-events: none; z-index: 999;
+}
+
+.wrap { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 36px 22px 100px; }
+.wrap { position: relative; z-index: 1; max-width: 1400px; margin: 0 auto; padding: 36px 22px 100px; }
+
+/* SCREENS */
+.screen { display: none; animation: fadeUp 0.4s ease; min-height: 100vh; }
+.screen.active { display: block; }
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+
+/* LOGIN SCREEN */
+#login-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.login-container {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 60px 40px;
+  border-radius: 8px;
+  border-radius: 12px;
+  max-width: 450px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+@@ -116,19 +129,19 @@
+  font-weight: 600;
+}
+
+.form-group input {
+.form-group input, .form-group select {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  border-radius: 4px;
+  border-radius: 6px;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus {
+.form-group input:focus, .form-group select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+@@ -145,133 +158,101 @@
+
+.btn {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 13px 30px;
+  border: none; cursor: pointer;
+  border: none;
+  cursor: pointer;
+  transition: all .18s;
+  display: inline-flex; align-items: center; gap: 9px;
+  flex: 1;
+  justify-content: center;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  border-radius: 6px;
+  font-weight: 700;
+}
+
+.btn-p { background: var(--accent); color: #000; font-weight: 700; }
+.btn-p:hover { background: #33eeff; box-shadow: 0 0 24px rgba(0,229,255,.35); transform: translateY(-1px); }
+
+.btn-g { background: transparent; color: var(--text2); border: 1px solid var(--border2); }
+.btn-g:hover { border-color: var(--text2); color: var(--text); }
+
+.toggle-form {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 12px;
+  color: var(--text2);
+.btn-p {
+  background: var(--accent);
+  color: #000;
+}
+
+.toggle-form a {
+  color: var(--accent);
+  cursor: pointer;
+  text-decoration: underline;
+.btn-p:hover {
+  background: #33eeff;
+  box-shadow: 0 0 24px rgba(0,229,255,.35);
+  transform: translateY(-1px);
+}
+
+/* INTERESTS SCREEN */
+#interests-screen {
+  display: none;
+  min-height: 100vh;
+.btn-p:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.interests-container {
+  text-align: center;
+  padding: 60px 20px;
+.btn-g {
+  background: transparent;
+  color: var(--text2);
+  border: 1px solid var(--border2);
+  flex: 1;
+}
+
+.interests-header {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 42px;
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent3) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+.btn-g:hover {
+  border-color: var(--text2);
+  color: var(--text);
+}
+
+.interests-subtitle {
+  font-size: 14px;
+.toggle-form {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 12px;
+  color: var(--text2);
+  margin-bottom: 50px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.interests-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.interest-card {
+  border: 2px solid var(--border);
+  background: var(--surface);
+  padding: 30px 20px;
+.toggle-form a {
+  color: var(--accent);
+  cursor: pointer;
+  transition: all .2s;
+  border-radius: 8px;
+}
+
+.interest-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0,229,255,0.1);
+}
+
+.interest-card.selected {
+  border-color: var(--accent3);
+  background: rgba(184,255,87,0.05);
+  text-decoration: underline;
+}
+
+.interest-card .icon {
+  font-size: 40px;
+/* ERROR MESSAGE */
+.error-msg {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+}
+
+.interest-card .name {
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.interest-card .desc {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.5;
+  border-left: 3px solid #ef4444;
+}
+
+.interests-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  max-width: 400px;
+  margin: 0 auto;
+.success-msg {
+  background: rgba(74, 222, 128, 0.1);
+  color: #4ade80;
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  font-size: 12px;
+  border-left: 3px solid #4ade80;
+}
+
+/* DASHBOARD */
+#dashboard-screen {
+  display: none;
+}
+
+#dashboard-screen.active {
+  display: block;
+}
+
+.nav-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.nav-logo {
+@@ -288,6 +269,7 @@
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.user-info {
+@@ -329,6 +311,8 @@
+  margin-bottom: 30px;
+  border-bottom: 1px solid var(--border2);
+  padding-bottom: 0;
+  overflow-x: auto;
+  flex-wrap: wrap;
+}
+
+.tab {
+@@ -343,11 +327,11 @@
+  text-transform: uppercase;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.tab:hover {
+  color: var(--text);
+  border-bottom-color: var(--border);
+}
+
+.tab.active {
+@@ -361,9 +345,10 @@
+
+.tab-content.active {
+  display: block;
+  animation: slideIn 0.3s ease;
+}
+
+/* DOMAIN SECTIONS */
+/* SECTION HEADERS */
+.section-header {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+@@ -378,6 +363,7 @@
+  margin-top: 0;
+}
+
+/* DOMAIN GRID */
+.domain-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+@@ -481,189 +467,727 @@
+  color: var(--accent4);
+}
+
+/* LEADERBOARD */
+.leaderboard-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+/* QUIZ SCREEN */
+#quiz-screen {
+  display: none;
+}
+
+.leaderboard-box {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 24px;
+  border-radius: 8px;
+#quiz-screen.active {
+  display: block;
+}
+
+.leaderboard-title {
+.quiz-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.quiz-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  font-size: 28px;
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+  color: var(--accent);
+}
+
+.leaderboard-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border2);
+.quiz-progress {
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.leaderboard-item:last-child {
+  border-bottom: none;
+.progress-bar {
+  background: var(--surface3);
+  height: 4px;
+  margin-bottom: 30px;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.rank {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  min-width: 30px;
+  color: var(--accent3);
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent3));
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.rank.top-3 {
+  color: var(--accent2);
+.progress-fill::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: -4px;
+  width: 9px;
+  height: 9px;
+  background: var(--accent3);
+  border-radius: 50%;
+  box-shadow: 0 0 12px var(--accent3);
+}
+
+.user-details {
+  flex: 1;
+  margin-left: 15px;
+.quiz-meta {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+
+.lb-username {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text);
+.q-tag {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2.5px;
+  padding: 5px 12px;
+  border: 1px solid;
+  text-transform: uppercase;
+  border-radius: 4px;
+}
+
+.lb-score {
+  font-size: 11px;
+.q-diff {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  color: var(--muted);
+}
+
+.lb-points {
+.q-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 13px;
+  letter-spacing: 3px;
+  color: var(--muted);
+  margin-bottom: 14px;
+  line-height: 1;
+}
+
+.q-text {
+  font-size: 17px;
+  line-height: 1.7;
+  font-weight: 500;
+  margin-bottom: 28px;
+  color: var(--text);
+}
+
+.q-code {
+  font-family: 'Space Mono', monospace;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent);
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-left: 3px solid var(--accent);
+  padding: 16px 20px;
+  font-size: 12px;
+  line-height: 1.8;
+  margin-bottom: 26px;
+  white-space: pre-wrap;
+  color: var(--accent3);
+  overflow-x: auto;
+  border-radius: 4px;
+}
+
+@media (max-width: 768px) {
+  .leaderboard-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .domain-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .login-container {
+    padding: 40px 30px;
+  }
+.ans-area {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 22px;
+}
+</style>
+
 </head>
 <body>
-  <div class="container">
-    <!-- HEADER -->
-    <header>
-      <div class="logo">🚀 SkillForge</div>
-      <div class="user-info">
-        <div class="user-card">
-          <div id="userName">Welcome, User</div>
-          <div id="userPoints">Points: 1,250</div>
-        </div>
-        <div class="rank-badge" id="rankBadge">🥇 Gold</div>
-        <button class="theme-toggle" onclick="toggleTheme()">🌙 Dark Mode</button>
+.aopt {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 14px 18px;
+  cursor: pointer;
+  transition: all .13s;
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+  text-align: left;
+  width: 100%;
+  border-radius: 6px;
+}
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen" class="wrap">
+  <div class="login-container">
+    <div class="login-header">
+      <div class="login-logo">SKILLFORGE</div>
+      <div class="login-tagline">Company Learning Platform</div>
+    </div>
+.aopt:hover:not(.disabled) {
+  border-color: var(--accent);
+  background: rgba(0,229,255,.04);
+}
+
+    <form id="login-form" onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" id="username" placeholder="Enter your username" required>
       </div>
-    </header>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="password" placeholder="Enter your password" required>
+      </div>
+      <div class="login-actions">
+        <button type="submit" class="btn btn-p">SIGN IN</button>
+        <button type="button" class="btn btn-g" onclick="toggleAuthForm()">CREATE ACCOUNT</button>
+      </div>
+    </form>
+.aopt.sel {
+  border-color: var(--accent);
+  background: rgba(0,229,255,.07);
+}
 
-    <!-- MAIN CONTENT -->
-    <div class="main-content">
-      <!-- SIDEBAR -->
-      <div class="sidebar">
-        <h3>📚 Domains</h3>
-        <div class="domain-list" id="domainList">
-          <!-- Populated by JS -->
+    <form id="register-form" style="display:none;" onsubmit="handleRegister(event)">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="email" placeholder="Your company email" required>
+      </div>
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" id="reg-username" placeholder="Choose username" required>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="reg-password" placeholder="Choose password" required>
+      </div>
+      <div class="login-actions">
+        <button type="submit" class="btn btn-p">CREATE ACCOUNT</button>
+        <button type="button" class="btn btn-g" onclick="toggleAuthForm()">SIGN IN</button>
+      </div>
+    </form>
+.aopt.correct {
+  border-color: var(--accent3) !important;
+  background: rgba(184,255,87,.07) !important;
+}
+
+    <div class="toggle-form" style="display:none;" id="toggle-text">
+      Don't have an account? <a onclick="toggleAuthForm()">Create one</a>
+    </div>
+  </div>
+</div>
+.aopt.wrong {
+  border-color: var(--accent2) !important;
+  background: rgba(255,60,110,.07) !important;
+}
+
+<!-- INTERESTS SELECTION SCREEN -->
+<div id="interests-screen">
+  <div class="wrap">
+    <div class="interests-container">
+      <div class="interests-header">SELECT YOUR LEARNING PATH</div>
+      <div class="interests-subtitle">Choose up to 2 roles or certifications to focus on. You can always change these later from your dashboard.</div>
+      
+      <div class="interests-grid" id="interests-grid"></div>
+
+      <div class="interests-actions">
+        <button class="btn btn-p" onclick="confirmInterests()">CONFIRM SELECTIONS</button>
+        <button class="btn btn-g" onclick="skipInterests()">SKIP FOR NOW</button>
+      </div>
+    </div>
+  </div>
+</div>
+.aopt.disabled {
+  cursor: default;
+}
+
+<!-- MAIN DASHBOARD -->
+<div id="dashboard-screen">
+  <div class="wrap">
+    <div class="nav-header">
+      <div class="nav-logo">SKILLFORGE</div>
+      <div class="nav-right">
+        <div class="user-info">
+          <div class="username" id="display-username">User</div>
+          <div class="user-rank" id="display-rank">Bronze</div>
         </div>
+        <button class="theme-toggle" onclick="toggleTheme()">☀️ LIGHT</button>
+        <button class="logout-btn" onclick="logout()">LOGOUT</button>
+      </div>
+    </div>
+.opt-l {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  min-width: 18px;
+  padding-top: 2px;
+  flex-shrink: 0;
+}
+
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('my-learning')">MY LEARNING</button>
+      <button class="tab" onclick="switchTab('all-domains')">ALL DOMAINS</button>
+      <button class="tab" onclick="switchTab('leaderboard')">LEADERBOARD</button>
+      <button class="tab" onclick="switchTab('study-materials')">STUDY MATERIALS</button>
+    </div>
+.opt-t {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text);
+}
+
+    <!-- MY LEARNING TAB -->
+    <div id="my-learning" class="tab-content active">
+      <div class="section-header">📚 CERTIFICATION TRACKS</div>
+      <div class="domain-grid" id="my-cert-domains"></div>
+/* FREE RESPONSE */
+.open-wrap {
+  margin-bottom: 22px;
+  display: none;
+}
+
+      <div class="section-header">💼 ROLE EXPERTISE</div>
+      <div class="domain-grid" id="my-role-domains"></div>
+    </div>
+.open-wrap.active {
+  display: block;
+}
+
+    <!-- ALL DOMAINS TAB -->
+.open-wrap textarea {
+  width: 100%;
+  min-height: 150px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  line-height: 1.65;
+  padding: 15px;
+  resize: vertical;
+  outline: none;
+  transition: border-color .2s;
+  border-radius: 6px;
+}
+
+.open-wrap textarea:focus {
+  border-color: var(--accent);
+}
+
+.open-wrap textarea::placeholder {
+  color: var(--muted);
+}
+
+.open-hint {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+/* FEEDBACK BOX */
+#fb-box {
+  display: none;
+  background: var(--surface2);
+  border-left: 3px solid var(--accent3);
+  padding: 20px 24px;
+  margin-bottom: 22px;
+  animation: fadeUp .3s ease;
+  border-radius: 4px;
+}
+
+#fb-box.active {
+  display: block;
+}
+
+#fb-box.neg {
+  border-left-color: var(--accent2);
+}
+
+#fb-box.neutral {
+  border-left-color: var(--accent);
+}
+
+.fb-lbl {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+#fb-text {
+  font-size: 13px;
+  line-height: 1.75;
+  color: var(--text);
+  white-space: pre-line;
+}
+
+.score-run {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  color: var(--muted);
+  margin-top: 12px;
+}
+
+/* POST-QUESTION CONTENT */
+.post-question-section {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 6px;
+}
+
+.post-question-section.hidden {
+  display: none;
+}
+
+.post-title {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.post-content {
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--text2);
+  margin-bottom: 15px;
+}
+
+.lab-steps {
+  font-size: 12px;
+  color: var(--text);
+}
+
+.lab-step {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.lab-step:last-child {
+  border-bottom: none;
+}
+
+.q-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+#submit-btn {
+  flex: 1;
+}
+
+#next-btn {
+  display: none;
+  flex: 1;
+}
+
+/* RESULTS SCREEN */
+#results-screen {
+  display: none;
+  animation: fadeUp .5s ease;
+}
+
+#results-screen.active {
+  display: block;
+}
+
+.res-head {
+  text-align: center;
+  padding: 44px 0 52px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 44px;
+}
+
+.grade-ring {
+  width: 150px;
+  height: 150px;
+  margin: 0 auto 26px;
+  position: relative;
+}
+
+.grade-ring svg {
+  transform: rotate(-90deg);
+}
+
+.ring-bg {
+  fill: none;
+  stroke: var(--surface3);
+  stroke-width: 7;
+}
+
+.ring-fill {
+  fill: none;
+  stroke-width: 7;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1.8s cubic-bezier(0.2, 1, 0.4, 1);
+}
+
+.grade-inner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.grade-pct {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 46px;
+  letter-spacing: 2px;
+  line-height: 1;
+}
+
+.grade-tier {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: var(--muted);
+  margin-top: 3px;
+}
+
+.res-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 34px;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+
+.res-sub {
+  font-size: 13px;
+  color: var(--text2);
+}
+
+.bk-section {
+  margin-bottom: 44px;
+}
+
+.bk-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.bk-icon {
+  font-size: 16px;
+  min-width: 24px;
+}
+
+.bk-name {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  min-width: 175px;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.bk-bar-wrap {
+  flex: 1;
+  background: var(--surface3);
+  height: 4px;
+  border-radius: 2px;
+}
+
+.bk-bar {
+  height: 100%;
+  transition: width 1.2s ease;
+  border-radius: 2px;
+}
+
+.bk-score {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  min-width: 65px;
+  text-align: right;
+}
+
+.verdict-box {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  padding: 28px;
+  margin-bottom: 36px;
+  border-radius: 6px;
+}
+
+.verdict-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  letter-spacing: 2px;
+  color: var(--accent);
+  margin-bottom: 14px;
+}
+
+#verdict-text {
+  font-size: 14px;
+  line-height: 1.9;
+  color: var(--text);
+}
+
+.rev-section {
+  margin-bottom: 36px;
+}
+
+.rev-item {
+  border: 1px solid var(--border);
+  margin-bottom: 6px;
+  overflow: hidden;
+  border-radius: 6px;
+}
+
+.rev-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 13px 16px;
+  cursor: pointer;
+  background: var(--surface);
+  transition: background .15s;
+}
+
+.rev-head:hover {
+  background: var(--surface2);
+}
+
+.rev-icon {
+  font-size: 13px;
+  min-width: 20px;
+  margin-top: 1px;
+  flex-shrink: 0;
+}
+
+.rev-meta {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1px;
+  color: var(--muted);
+  margin-bottom: 3px;
+  text-transform: uppercase;
+}
+
+.rev-q {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.45;
+  flex: 1;
+}
+
+.rev-body {
+  display: none;
+  padding: 16px 18px;
+  background: var(--surface2);
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--text2);
+}
+
+.rev-body.active {
+  display: block;
+}
+
+.rev-body b {
+  color: var(--text);
+}
+
+.rev-body .ua {
+  background: var(--surface3);
+  border-left: 2px solid var(--accent4);
+  padding: 10px 14px;
+  margin-bottom: 14px;
+  font-size: 13px;
+  color: var(--text);
+  border-radius: 4px;
+}
+
+/* LEADERBOARD */
+.leaderboard-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+}
+
+.leaderboard-box {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 24px;
+  border-radius: 8px;
+}
+
+.leaderboard-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+  color: var(--accent);
+}
+
+.leaderboard-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border2);
+}
+
+.leaderboard-item:last-child {
+  border-bottom: none;
+}
+
+.rank {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  min-width: 30px;
+  color: var(--accent3);
+}
+
+.rank.top-3 {
+  color: var(--accent2);
+}
+
+.user-details {
+  flex: 1;
+  margin-left: 15px;
+}
+
+.lb-username {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text);
+}
+
+.lb-score {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.lb-points {
+  font-family: 'Space Mono', monospace;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .leaderboard-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .domain-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .login-container {
+    padding: 40px 30px;
+  }
+  
+  .nav-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .nav-right {
+    width: 100%;
+  }
+}
+
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen" class="screen active">
+  <div class="wrap">
+    <div class="login-container">
+      <div class="login-header">
+        <div class="login-logo">SKILLFORGE</div>
+        <div class="login-tagline">Company Learning Platform</div>
       </div>
 
-      <!-- CONTENT AREA -->
-      <div class="content-area">
-        <!-- DASHBOARD SCREEN -->
-        <div class="screen active" id="dashboardScreen">
-          <h2>Dashboard</h2>
-          <div class="stats-grid">
-            <div class="stat-card">
-              <div class="stat-value" id="totalScore">1,250</div>
-              <div class="stat-label">Total Points</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-value" id="assessmentCount">5</div>
-              <div class="stat-label">Assessments Completed</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-value" id="domainCount">3</div>
-              <div class="stat-label">Domains Attempted</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-value" id="avgScore">85%</div>
-              <div class="stat-label">Average Score</div>
-            </div>
-          </div>
+      <div id="error-container"></div>
+      <div id="success-container"></div>
 
-          <h3 style="margin: 30px 0 20px 0;">Quick Actions</h3>
-          <div class="quick-actions">
-            <button class="action-btn" onclick="startQuiz()">Start Quiz</button>
-            <button class="action-btn" onclick="showScreen('leaderboardScreen')">View Leaderboard</button>
-            <button class="action-btn" onclick="showScreen('progressScreen')">View Progress</button>
-          </div>
+      <form id="login-form" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" id="login-username" placeholder="Enter your username" required>
         </div>
-
-        <!-- QUIZ SCREEN -->
-        <div class="screen" id="quizScreen">
-          <div class="quiz-header">
-            <h2 id="quizDomain">Computer Networks</h2>
-            <div style="margin-top: 10px; font-size: 14px;">Question <span id="currentQuestion">1</span> of <span id="totalQuestions">10</span></div>
-            <div class="progress-bar">
-              <div class="progress-fill" id="progressFill"></div>
-            </div>
-          </div>
-
-          <div class="question-container">
-            <div class="question-text" id="questionText">What is the OSI model?</div>
-            <div class="options" id="optionsContainer">
-              <!-- Populated by JS -->
-            </div>
-            <div class="explanation" id="explanation">
-              <strong>Explanation:</strong> <span id="explanationText">The OSI model is a conceptual framework...</span>
-            </div>
-          </div>
-
-          <div class="quiz-buttons">
-            <button class="btn btn-secondary" onclick="showScreen('dashboardScreen')">Exit Quiz</button>
-            <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" disabled>Next Question</button>
-          </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="login-password" placeholder="Enter your password" required>
         </div>
-
-        <!-- RESULTS SCREEN -->
-        <div class="screen" id="resultsScreen">
-          <div class="results-container">
-            <h2>Quiz Complete! 🎉</h2>
-            <div class="score-circle" id="finalScore">85%</div>
-
-            <div class="results-details">
-              <div class="result-item">
-                <span class="result-label">Your Score</span>
-                <span class="result-value" id="resultScore">85/100</span>
-              </div>
-              <div class="result-item">
-                <span class="result-label">Points Earned</span>
-                <span class="result-value" id="resultPoints">+425 points</span>
-              </div>
-              <div class="result-item">
-                <span class="result-label">Time Taken</span>
-                <span class="result-value">12:34</span>
-              </div>
-              <div class="result-item">
-                <span class="result-label">Correct Answers</span>
-                <span class="result-value" id="resultCorrect">17/20</span>
-              </div>
-            </div>
-
-            <div class="domain-breakdown">
-              <h3>Performance by Domain</h3>
-              <div class="domain-score">
-                <span class="domain-name">Networking Basics</span>
-                <div class="domain-score-bar">
-                  <div class="domain-score-fill" style="width: 90%;"></div>
-                </div>
-                <span style="margin-left: 15px; font-weight: bold;">90%</span>
-              </div>
-              <div class="domain-score">
-                <span class="domain-name">Protocols</span>
-                <div class="domain-score-bar">
-                  <div class="domain-score-fill" style="width: 80%;"></div>
-                </div>
-                <span style="margin-left: 15px; font-weight: bold;">80%</span>
-              </div>
-              <div class="domain-score">
-                <span class="domain-name">Security</span>
-                <div class="domain-score-bar">
-                  <div class="domain-score-fill" style="width: 85%;"></div>
-                </div>
-                <span style="margin-left: 15px; font-weight: bold;">85%</span>
-              </div>
-            </div>
-
-            <div style="margin-top: 30px; display: flex; gap: 15px;">
-              <button class="btn btn-primary" style="flex: 1;" onclick="showScreen('dashboardScreen')">Back to Dashboard</button>
-              <button class="btn btn-secondary" style="flex: 1;" onclick="startQuiz()">Take Another Quiz</button>
-            </div>
-          </div>
+        <div class="login-actions">
+          <button type="submit" class="btn btn-p">SIGN IN</button>
+          <button type="button" class="btn btn-g" onclick="toggleAuthForm()">CREATE ACCOUNT</button>
         </div>
+      </form>
 
-        <!-- LEADERBOARD SCREEN -->
-        <div class="screen" id="leaderboardScreen">
-          <h2>🏆 Leaderboard</h2>
-          <table class="leaderboard-table">
-            <thead>
-              <tr>
-                <th>Rank</th>
-                <th>Username</th>
-                <th>Points</th>
-                <th>Assessments</th>
-                <th>Level</th>
-              </tr>
-            </thead>
-            <tbody id="leaderboardBody">
-              <!-- Populated by JS -->
-            </tbody>
-          </table>
+      <form id="register-form" style="display:none;" onsubmit="handleRegister(event)">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="reg-email" placeholder="Your company email" required>
         </div>
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" id="reg-username" placeholder="Choose username" required>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="reg-password" placeholder="Min 8 chars: A-Z, number, special char" required>
+        </div>
+        <div class="login-actions">
+          <button type="submit" class="btn btn-p">CREATE ACCOUNT</button>
+          <button type="button" class="btn btn-g" onclick="toggleAuthForm()">SIGN IN</button>
+        </div>
+      </form>
 
-        <!-- PROGRESS SCREEN -->
-        <div class="screen" id="progressScreen">
-          <h2>📊 Your Progress</h2>
-          <div style="margin-top: 30px;">
-            <div id="progressContainer">
-              <!-- Populated by JS -->
-            </div>
-          </div>
-          <button class="btn btn-secondary" onclick="showScreen('dashboardScreen')" style="margin-top: 30px;">Back</button>
+      <div class="toggle-form" id="toggle-text" style="display:none;">
+        Don't have an account? <a onclick="toggleAuthForm()">Create one</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD SCREEN -->
+<div id="dashboard-screen" class="screen">
+  <div class="wrap">
+    <div class="nav-header">
+      <div class="nav-logo">SKILLFORGE</div>
+      <div class="nav-right">
+        <div class="user-info">
+          <div class="username" id="display-username">User</div>
+          <div class="user-rank" id="display-rank">Bronze</div>
+        </div>
+        <button class="theme-toggle" onclick="toggleTheme()">☀️ LIGHT</button>
+        <button class="logout-btn" onclick="logout()">LOGOUT</button>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('my-learning')">MY LEARNING</button>
+      <button class="tab" onclick="switchTab('all-domains')">ALL DOMAINS</button>
+      <button class="tab" onclick="switchTab('leaderboard')">LEADERBOARD</button>
+    </div>
+
+    <!-- MY LEARNING TAB -->
+    <div id="my-learning" class="tab-content active">
+      <div class="section-header">📚 CERTIFICATION TRACKS</div>
+      <div class="domain-grid" id="my-cert-domains"></div>
+
+      <div class="section-header">💼 ROLE EXPERTISE</div>
+      <div class="domain-grid" id="my-role-domains"></div>
+    </div>
+
+    <!-- ALL DOMAINS TAB -->
+    <div id="all-domains" class="tab-content">
+      <div class="section-header">🔐 CERTIFICATIONS</div>
+      <div class="domain-grid" id="all-cert-domains"></div>
+@@ -685,95 +1209,183 @@
         </div>
       </div>
     </div>
   </div>
+</div>
 
-  <script>
-    // DEMO DATA
-    const DOMAINS = [
-      { id: 1, name: 'Computer Networks', emoji: '🌐', color: '#667eea' },
-      { id: 2, name: 'Cybersecurity', emoji: '🔒', color: '#764ba2' },
-      { id: 3, name: 'Cloud Computing', emoji: '☁️', color: '#f093fb' },
-      { id: 4, name: 'DevOps', emoji: '⚙️', color: '#4facfe' },
-      { id: 5, name: 'Linux', emoji: '🐧', color: '#00f2fe' }
-    ];
+<!-- QUIZ SCREEN -->
+<div id="quiz-screen" class="screen">
+  <div class="wrap">
+    <div class="quiz-header">
+      <div class="quiz-title" id="quiz-domain-name">Quiz</div>
+      <div class="quiz-progress" id="quiz-progress">1 / 10</div>
+    </div>
 
-    const QUESTIONS = [
-      {
-        domain: 'Computer Networks',
-        text: 'What is the OSI model?',
-        options: [
-          'Open System Interconnection',
-          'Open Source Interface',
-          'Operating System Integration',
-          'Online System Interface'
-        ],
-        correct: 0,
-        explanation: 'The OSI model is the Open Systems Interconnection model, a conceptual framework for understanding network communication.'
-      },
-      {
-        domain: 'Computer Networks',
-        text: 'Which layer of the OSI model handles routing?',
-        options: [
-          'Data Link Layer',
-          'Network Layer',
-          'Transport Layer',
-          'Application Layer'
-        ],
-        correct: 1,
-        explanation: 'The Network Layer (Layer 3) is responsible for routing packets between networks using IP addresses.'
-      },
-      {
-        domain: 'Cybersecurity',
-        text: 'What is a firewall?',
-        options: [
-          'A type of malware',
-          'A network security device that filters traffic',
-          'A backup system',
-          'A password manager'
-        ],
-        correct: 1,
-        explanation: 'A firewall is a network security system that monitors and controls incoming and outgoing traffic.'
-      },
-      {
-        domain: 'Cybersecurity',
-        text: 'What is encryption?',
-        options: [
-          'Converting data to unreadable format',
-          'Compressing files',
-          'Backing up data',
-          'Deleting sensitive files'
-        ],
-        correct: 0,
-        explanation: 'Encryption converts data into a coded format to protect it from unauthorized access.'
-      },
-      {
-        domain: 'Cloud Computing',
-        text: 'What does IaaS stand for?',
-        options: [
-          'Internet as a Service',
-          'Infrastructure as a Service',
-          'Integration as a Service',
-          'Information as a Service'
-        ],
-        correct: 1,
-        explanation: 'IaaS (Infrastructure as a Service) provides virtualized computing resources over the internet.'
-      }
-    ];
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill" style="width: 0%;"></div>
+    </div>
 
-    const LEADERBOARD = [
-      { rank: 1, username: 'TechGuru', points: 5250, assessments: 12, level: '💎 Diamond' },
-      { rank: 2, username: 'NetworkNinja', points: 4890, assessments: 11, level: '👑 Platinum' },
-      { rank: 3, username: 'CloudKing', points: 4125, assessments: 9, level: '🥇 Gold' },
-      { rank: 4, username: 'SecurityPro', points: 3540, assessments: 8, level: '🥈 Silver' },
-      { rank: 5, username: 'CodeMaster', points: 3210, assessments: 7, level: '🥈 Silver' },
-      { rank: 6, username: 'DevOpsExp', points: 2890, assessments: 6, level: '🥉 Bronze' },
-      { rank: 7, username: 'You', points: 1250, assessments: 5, level: '🥉 Bronze' },
-      { rank: 8, username: 'Learner123', points: 890, assessments: 3, level: '🥉 Bronze' }
-    ];
+    <div class="quiz-meta">
+      <div class="q-tag" id="q-tag">DOMAIN</div>
+      <div class="q-diff" id="q-diff">DIFFICULTY: foundational</div>
+    </div>
 
-    let currentQuestionIndex = 0;
-    let currentDomain = null;
-    let selectedAnswer = null;
-    let quizAnswers = [];
-    let darkMode = false;
+    <div class="q-num" id="q-num">Q1</div>
+    <div class="q-text" id="q-text">Question text...</div>
+    <pre class="q-code" id="q-code"></pre>
 
-    // INITIALIZE
-    function init() {
-      renderDomains();
-      renderLeaderboard();
-      renderProgress();
-      loadTheme();
-    }
+    <div class="ans-area" id="ans-area"></div>
 
-    // RENDER DOMAINS
-    function renderDomains() {
-      const domainList = document.getElementById('domainList');
-      domainList.innerHTML = DOMAINS.map((domain, index) => `
-        <button class="domain-btn ${index === 0 ? 'active' : ''}" onclick="selectDomain('${domain.name}')">
-          ${domain.emoji} ${domain.name}
-        </button>
-      `).join('');
-      currentDomain = DOMAINS[0].name;
-    }
+    <div class="open-wrap" id="open-wrap">
+      <div class="open-hint">// FREE RESPONSE - Compare your answer to model answer after submission.</div>
+      <textarea id="open-ans" placeholder="Write your detailed answer here..."></textarea>
+    </div>
 
-    // SELECT DOMAIN
-    function selectDomain(domain) {
-      currentDomain = domain;
-      document.querySelectorAll('.domain-btn').forEach(btn => btn.classList.remove('active'));
-      event.target.classList.add('active');
-      showScreen('dashboardScreen');
-    }
+    <div id="fb-box">
+      <div class="fb-lbl" id="fb-lbl">FEEDBACK</div>
+      <div id="fb-text"></div>
+      <div class="score-run" id="score-run"></div>
+    </div>
 
-    // START QUIZ
-    function startQuiz() {
-      currentQuestionIndex = 0;
-      selectedAnswer = null;
-      quizAnswers = [];
-      showScreen('quizScreen');
-      loadQuestion();
-    }
+    <div id="post-question" style="display:none;">
+      <div class="post-question-section" id="explanation-section"></div>
+      <div class="post-question-section hidden" id="homelab-section"></div>
+      <div class="post-question-section hidden" id="resources-section"></div>
+    </div>
 
-    // LOAD QUESTION
-    function loadQuestion() {
-      const question = QUESTIONS[currentQuestionIndex];
-      document.getElementById('quizDomain').textContent = question.domain;
-      document.getElementById('questionText').textContent = question.text;
-      document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
-      document.getElementById('totalQuestions').textContent = QUESTIONS.length;
-      
-      const percentage = ((currentQuestionIndex + 1) / QUESTIONS.length) * 100;
-      document.getElementById('progressFill').style.width = percentage + '%';
+    <div class="q-actions">
+      <button class="btn btn-p" id="submit-btn" onclick="submitAnswer()">SUBMIT ANSWER</button>
+      <button class="btn btn-g" id="next-btn" onclick="nextQuestion()">NEXT QUESTION →</button>
+    </div>
+  </div>
+</div>
 
-      const optionsContainer = document.getElementById('optionsContainer');
-      optionsContainer.innerHTML = question.options.map((option, index) => `
-        <div class="option" onclick="selectOption(${index})">
-          <input type="radio" name="answer" value="${index}" style="margin-right: 10px;">
-          ${option}
+    <!-- STUDY MATERIALS TAB -->
+    <div id="study-materials" class="tab-content">
+      <div class="section-header">📖 STUDY GUIDES</div>
+      <div style="background: var(--surface); border: 1px solid var(--border); padding: 40px; text-align: center; border-radius: 8px;">
+        <p style="color: var(--muted); margin-bottom: 15px;">Study materials coming soon</p>
+        <p style="font-size: 12px; color: var(--text2);">Check back soon for official certification guides and learning resources</p>
+<!-- RESULTS SCREEN -->
+<div id="results-screen" class="screen">
+  <div class="wrap">
+    <div class="res-head">
+      <div class="grade-ring">
+        <svg width="150" height="150" viewBox="0 0 150 150">
+          <circle class="ring-bg" cx="75" cy="75" r="63"/>
+          <circle class="ring-fill" id="ring-fill" cx="75" cy="75" r="63"
+            stroke-dasharray="395.8" stroke-dashoffset="395.8"
+            stroke="url(#rg)"/>
+          <defs>
+            <linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#00e5ff"/>
+              <stop offset="50%" stop-color="#b8ff57"/>
+              <stop offset="100%" stop-color="#ff3c6e"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <div class="grade-inner">
+          <div class="grade-pct" id="gpct">-</div>
+          <div class="grade-tier" id="gtier">SCORE</div>
         </div>
-      `).join('');
+      </div>
+      <div class="res-title" id="rtitle">ASSESSMENT COMPLETE</div>
+      <div class="res-sub" id="rsub">0 / 0 pts</div>
+    </div>
 
-      document.getElementById('nextBtn').disabled = true;
-      document.getElementById('explanation').classList.remove('show');
-      selectedAnswer = null;
+    <div class="section-header">Domain Breakdown</div>
+    <div class="bk-section" id="bk-wrap"></div>
+
+    <div class="section-header">Honest Verdict</div>
+    <div class="verdict-box">
+      <div class="verdict-title">// DEBRIEF</div>
+      <div id="verdict-text"></div>
+    </div>
+
+    <div class="section-header">Question Review - tap to expand</div>
+    <div class="rev-section" id="q-review"></div>
+
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:30px;">
+      <button class="btn btn-p" onclick="restart()">RETAKE ASSESSMENT</button>
+      <button class="btn btn-g" onclick="changeDomains()">CHANGE DOMAINS</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// STATE MANAGEMENT
+// ==================== STATE ====================
+const API_BASE = 'http://localhost:5000/api';
+const API_URL = window.location.hostname === 'localhost' 
+  ? 'http://localhost:5000/api'
+  : 'https://yourdomain.com/api';
+
+let currentUser = null;
+let userInterests = [];
+let currentQuiz = null;
+let quizQuestions = [];
+let currentQuestionIndex = 0;
+let quizAnswers = [];
+let quizScores = [];
+let selectedInterests = [];
+let BANK = null;
+let CERT_DOMAINS = null;
+let ROLE_DOMAINS = null;
+
+// INIT
+window.addEventListener('load', () => {
+  loadTheme();
+  loadSession();
+  loadDomainData();
+});
+
+// THEME MANAGEMENT
+function toggleTheme() {
+  document.body.classList.toggle('light-mode');
+  localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
+  document.querySelector('.theme-toggle').textContent = 
+    document.body.classList.contains('light-mode') ? '🌙 DARK' : '☀️ LIGHT';
+}
+let QUESTIONS_DATA = null;
+
+function loadTheme() {
+  if (localStorage.getItem('theme') === 'light') {
+    document.body.classList.add('light-mode');
+    document.querySelector('.theme-toggle').textContent = '🌙 DARK';
+  }
+}
+// ==================== AUTH ====================
+async function handleLogin(e) {
+  e.preventDefault();
+  const username = document.getElementById('login-username').value;
+  const password = document.getElementById('login-password').value;
+
+// SESSION MANAGEMENT
+function saveSession() {
+  if (currentUser) {
+    sessionStorage.setItem('user', JSON.stringify(currentUser));
+    sessionStorage.setItem('userInterests', JSON.stringify(userInterests));
+  try {
+    const res = await fetch(`${API_URL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    });
+    const data = await res.json();
+
+    if (res.ok) {
+      currentUser = data.user;
+      localStorage.setItem('token', data.tokens.accessToken);
+      showSuccess('Login successful!');
+      setTimeout(() => showDashboard(), 1500);
+    } else {
+      showError(data.error || 'Login failed');
     }
+  } catch (err) {
+    showError('Network error: ' + err.message);
+  }
+}
 
-    // SELECT OPTION
-    function selectOption(index) {
-      selectedAnswer = index;
-      document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
-      event.target.closest('.option').classList.add('selected');
-      document.getElementById('nextBtn').disabled = false;
+function loadSession() {
+  const user = sessionStorage.getItem('user');
+  const interests = sessionStorage.getItem('userInterests');
+  
+  if (user) {
+    currentUser = JSON.parse(user);
+    userInterests = interests ? JSON.parse(interests) : [];
+    showDashboard();
+  }
+}
+async function handleRegister(e) {
+  e.preventDefault();
+  const email = document.getElementById('reg-email').value;
+  const username = document.getElementById('reg-username').value;
+  const password = document.getElementById('reg-password').value;
+
+function clearSession() {
+  sessionStorage.removeItem('user');
+  sessionStorage.removeItem('userInterests');
+  currentUser = null;
+  userInterests = [];
+  selectedInterests = [];
+}
+  if (password.length < 8 || !/[A-Z]/.test(password) || !/[0-9]/.test(password) || !/[!@#$%^&*]/.test(password)) {
+    showError('Password must have 8+ chars, uppercase, number, and special char');
+    return;
+  }
+
+// LOAD DOMAIN DATA
+async function loadDomainData() {
+  try {
+    const response = await fetch('questions.json');
+    const data = await response.json();
+    CERT_DOMAINS = data.certDomains;
+    ROLE_DOMAINS = data.roleDomains;
+    
+    if (!currentUser) {
+      renderInterests();
+    const res = await fetch(`${API_URL}/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, username, password })
+    });
+    const data = await res.json();
+
+    if (res.ok) {
+      currentUser = data.user;
+      localStorage.setItem('token', data.tokens.accessToken);
+      showSuccess('Account created! Redirecting...');
+      setTimeout(() => showDashboard(), 1500);
+    } else {
+      renderDashboard();
+      showError(data.error || 'Registration failed');
     }
+  } catch (err) {
+    console.error('Error loading domains:', err);
+    showError('Network error: ' + err.message);
+  }
+}
 
-    // NEXT QUESTION
-    function nextQuestion() {
-      quizAnswers.push({ questionIndex: currentQuestionIndex, answer: selectedAnswer });
-      currentQuestionIndex++;
+// AUTH FUNCTIONS
+function logout() {
+  currentUser = null;
+  localStorage.removeItem('token');
+  showScreen('login-screen');
+}
 
-      if (currentQuestionIndex < QUESTIONS.length) {
-        loadQuestion();
-      } else {
-        showResults();
+function toggleAuthForm() {
+  document.getElementById('login-form').style.display = 
+    document.getElementById('login-form').style.display === 'none' ? 'block' : 'none';
+@@ -783,198 +1395,115 @@
+    document.getElementById('toggle-text').style.display === 'none' ? 'block' : 'none';
+}
+
+function handleLogin(e) {
+  e.preventDefault();
+  const username = document.getElementById('username').value;
+  const password = document.getElementById('password').value;
+  
+  // TEMPORARY: In real scenario, validate against backend
+  if (username && password) {
+    currentUser = {
+      username: username,
+      email: username + '@company.com',
+      rank: 'Bronze',
+      points: 0,
+      joinDate: new Date()
+    };
+    saveSession();
+    showInterests();
+  }
+}
+
+function handleRegister(e) {
+  e.preventDefault();
+  const email = document.getElementById('email').value;
+  const username = document.getElementById('reg-username').value;
+  const password = document.getElementById('reg-password').value;
+  
+  // TEMPORARY: In real scenario, register with backend
+  if (email && username && password) {
+    currentUser = {
+      username: username,
+      email: email,
+      rank: 'Bronze',
+      points: 0,
+      joinDate: new Date()
+    };
+    saveSession();
+    showInterests();
+  }
+// ==================== THEME ====================
+function toggleTheme() {
+  document.body.classList.toggle('light-mode');
+  localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
+  document.querySelector('.theme-toggle').textContent = 
+    document.body.classList.contains('light-mode') ? '🌙 DARK' : '☀️ LIGHT';
+}
+
+function logout() {
+  clearSession();
+  location.reload();
+// ==================== UI HELPERS ====================
+function showScreen(screenId) {
+  document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+  document.getElementById(screenId).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// SCREEN NAVIGATION
+function showLogin() {
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('interests-screen').style.display = 'none';
+  document.getElementById('dashboard-screen').style.display = 'none';
+function showError(msg) {
+  const container = document.getElementById('error-container');
+  container.innerHTML = `<div class="error-msg">${msg}</div>`;
+  setTimeout(() => container.innerHTML = '', 5000);
+}
+
+function showInterests() {
+  if (userInterests.length === 0) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('interests-screen').style.display = 'block';
+    document.getElementById('dashboard-screen').style.display = 'none';
+    renderInterests();
+  } else {
+    showDashboard();
+  }
+function showSuccess(msg) {
+  const container = document.getElementById('success-container');
+  container.innerHTML = `<div class="success-msg">${msg}</div>`;
+  setTimeout(() => container.innerHTML = '', 5000);
+}
+
+function showDashboard() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('interests-screen').style.display = 'none';
+  document.getElementById('dashboard-screen').style.display = 'block';
+  renderDashboard();
+function switchTab(tabName) {
+  document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById(tabName).classList.add('active');
+}
+
+// INTERESTS SELECTION
+function renderInterests() {
+  const grid = document.getElementById('interests-grid');
+  let html = '';
+  
+  // Add cert domains
+  Object.entries(CERT_DOMAINS || {}).forEach(([key, domain]) => {
+    html += `
+      <div class="interest-card ${selectedInterests.includes(key) ? 'selected' : ''}" onclick="toggleInterest('${key}')">
+        <div class="icon">${domain.icon}</div>
+        <div class="name">${domain.displayName}</div>
+        <div class="desc">${domain.description}</div>
+      </div>
+    `;
+  });
+  
+  // Add role domains
+  Object.entries(ROLE_DOMAINS || {}).forEach(([key, domain]) => {
+    html += `
+      <div class="interest-card ${selectedInterests.includes(key) ? 'selected' : ''}" onclick="toggleInterest('${key}')">
+        <div class="icon">${domain.icon}</div>
+        <div class="name">${domain.displayName}</div>
+        <div class="desc">${domain.description}</div>
+      </div>
+    `;
+  });
+  
+  grid.innerHTML = html;
+}
+// ==================== DASHBOARD ====================
+async function showDashboard() {
+  showScreen('dashboard-screen');
+  document.getElementById('display-username').textContent = currentUser.username;
+  document.getElementById('display-rank').textContent = currentUser.rank || 'Bronze';
+
+function toggleInterest(domain) {
+  if (selectedInterests.includes(domain)) {
+    selectedInterests = selectedInterests.filter(d => d !== domain);
+  } else if (selectedInterests.length < 2) {
+    selectedInterests.push(domain);
+  // Load questions from questions.json
+  try {
+    const res = await fetch('./questions.json');
+    QUESTIONS_DATA = await res.json();
+    renderDomains();
+    renderLeaderboard();
+  } catch (err) {
+    console.error('Failed to load questions:', err);
+  }
+  renderInterests();
+}
+
+function confirmInterests() {
+  if (selectedInterests.length > 0) {
+    userInterests = selectedInterests;
+    saveSession();
+    showDashboard();
+function renderDomains() {
+  const certs = document.getElementById('all-cert-domains');
+  const roles = document.getElementById('all-role-domains');
+  const myCerts = document.getElementById('my-cert-domains');
+  const myRoles = document.getElementById('my-role-domains');
+
+  certs.innerHTML = '';
+  roles.innerHTML = '';
+  myCerts.innerHTML = '';
+  myRoles.innerHTML = '';
+
+  for (const [key, bank] of Object.entries(QUESTIONS_DATA.questionBanks)) {
+    const card = createDomainCard(key, bank);
+    if (bank.type === 'cert') {
+      certs.appendChild(card.cloneNode(true));
+      if (currentUser.interests?.includes(key)) {
+        myCerts.appendChild(card);
+      }
+    } else {
+      roles.appendChild(card.cloneNode(true));
+      if (currentUser.interests?.includes(key)) {
+        myRoles.appendChild(card);
       }
     }
+  }
+}
 
-    // SHOW RESULTS
-    function showResults() {
-      const correctCount = quizAnswers.filter((q, i) => q.answer === QUESTIONS[i].correct).length;
-      const score = Math.round((correctCount / QUESTIONS.length) * 100);
-      const points = Math.round(score * 5);
+function skipInterests() {
+  userInterests = Object.keys(ROLE_DOMAINS).slice(0, 2);
+  saveSession();
+  showDashboard();
+}
 
-      document.getElementById('finalScore').textContent = score + '%';
-      document.getElementById('resultScore').textContent = correctCount + '/' + QUESTIONS.length;
-      document.getElementById('resultPoints').textContent = '+' + points + ' points';
-      document.getElementById('resultCorrect').textContent = correctCount + '/' + QUESTIONS.length;
-
-      showScreen('resultsScreen');
+// DASHBOARD RENDERING
+function renderDashboard() {
+  // Update user info
+  document.getElementById('display-username').textContent = currentUser.username;
+  document.getElementById('display-rank').textContent = currentUser.rank || 'Bronze';
+  
+  // Render my learning domains
+  let myCerts = '';
+  let myRoles = '';
+  
+  userInterests.forEach(key => {
+    if (CERT_DOMAINS[key]) {
+      myCerts += renderDomainCard(key, CERT_DOMAINS[key], 'cert');
     }
-
-    // RENDER LEADERBOARD
-    function renderLeaderboard() {
-      const tbody = document.getElementById('leaderboardBody');
-      tbody.innerHTML = LEADERBOARD.map((entry, index) => `
-        <tr>
-          <td class="rank-position ${index < 3 ? 'top3' : ''}">#${entry.rank}</td>
-          <td>${entry.username}</td>
-          <td><strong>${entry.points.toLocaleString()}</strong></td>
-          <td>${entry.assessments}</td>
-          <td>${entry.level}</td>
-        </tr>
-      `).join('');
+    if (ROLE_DOMAINS[key]) {
+      myRoles += renderDomainCard(key, ROLE_DOMAINS[key], 'role');
     }
+  });
+  
+  document.getElementById('my-cert-domains').innerHTML = myCerts || '<p style="color: var(--muted);">No certifications selected</p>';
+  document.getElementById('my-role-domains').innerHTML = myRoles || '<p style="color: var(--muted);">No roles selected</p>';
+  
+  // Render all domains
+  let allCerts = '';
+  let allRoles = '';
+  
+  Object.entries(CERT_DOMAINS).forEach(([key, domain]) => {
+    allCerts += renderDomainCard(key, domain, 'cert');
+  });
+  
+  Object.entries(ROLE_DOMAINS).forEach(([key, domain]) => {
+    allRoles += renderDomainCard(key, domain, 'role');
+  });
+  
+  document.getElementById('all-cert-domains').innerHTML = allCerts;
+  document.getElementById('all-role-domains').innerHTML = allRoles;
+  
+  // Render leaderboards
+  renderLeaderboards();
+}
+function createDomainCard(key, bank) {
+  const card = document.createElement('div');
+  card.className = bank.status === 'coming_soon' ? 'domain-card coming-soon' : 'domain-card';
+  if (bank.status !== 'coming_soon') {
+    card.onclick = () => startQuiz(key, bank);
+  }
 
-    // RENDER PROGRESS
-    function renderProgress() {
-      const container = document.getElementById('progressContainer');
-      container.innerHTML = DOMAINS.map(domain => {
-        const score = Math.floor(Math.random() * 40 + 60);
-        return `
-          <div style="margin-bottom: 25px;">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-              <span style="font-weight: 600;">${domain.emoji} ${domain.name}</span>
-              <span style="font-weight: bold; color: #667eea;">${score}%</span>
-            </div>
-            <div class="domain-score-bar">
-              <div class="domain-score-fill" style="width: ${score}%;"></div>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
+function renderDomainCard(key, domain, type) {
+  const qCount = (domain.questions || []).length;
+  const comingSoon = domain.status === 'coming_soon';
+  
+  return `
+    <div class="domain-card ${comingSoon ? 'coming-soon' : ''}" 
+         onclick="${!comingSoon ? `startQuiz('${key}')` : ''}">
+      <div class="domain-icon">${domain.icon}</div>
+      <div class="domain-name">${domain.displayName}</div>
+      <div class="domain-type">${type === 'cert' ? '🔐 CERTIFICATION' : '💼 ROLE'}</div>
+      <div class="domain-desc">${domain.description}</div>
+      <div class="domain-meta">
+        <span class="domain-count">${qCount} QUESTIONS</span>
+        <span class="domain-status ${domain.status}">${domain.status === 'coming_soon' ? 'COMING SOON' : 'ACTIVE'}</span>
+      </div>
+  const qCount = bank.questions?.length || 0;
+  card.innerHTML = `
+    <div class="domain-icon">${bank.icon}</div>
+    <div class="domain-name">${bank.displayName}</div>
+    <div class="domain-type">${bank.type === 'cert' ? '🔐 CERTIFICATION' : '💼 ROLE'}</div>
+    <div class="domain-desc">${bank.description || bank.displayName}</div>
+    <div class="domain-meta">
+      <span class="domain-count">${qCount} QUESTIONS</span>
+      <span class="domain-status ${bank.status === 'coming_soon' ? 'coming-soon' : 'active'}">${bank.status === 'coming_soon' ? 'COMING SOON' : 'ACTIVE'}</span>
+    </div>
+  `;
+  return card;
+}
 
-    // SHOW SCREEN
-    function showScreen(screenId) {
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      document.getElementById(screenId).classList.add('active');
-    }
+function renderLeaderboards() {
+  // TEMPORARY: Mock leaderboard data
+async function renderLeaderboard() {
+  // Mock data - replace with API call
+  const mockLeaders = [
+    { rank: 1, username: 'Alex Johnson', points: 2850 },
+    { rank: 2, username: 'Sarah Chen', points: 2720 },
+    { rank: 3, username: 'Marcus Rivera', points: 2510 },
+    { rank: 4, username: 'You', points: currentUser.points },
+    { rank: 5, username: 'Emma Davis', points: 1920 }
+    { rank: 4, username: 'Emma Davis', points: 1920 },
+    { rank: 5, username: 'Jordan Smith', points: 1750 }
+  ];
+  
 
-    // TOGGLE THEME
-    function toggleTheme() {
-      darkMode = !darkMode;
-      document.body.classList.toggle('dark-mode');
-      localStorage.setItem('darkMode', darkMode);
-      document.querySelector('.theme-toggle').textContent = darkMode ? '☀️ Light Mode' : '🌙 Dark Mode';
-    }
+  const weeklyHtml = mockLeaders.map((l, i) => `
+    <div class="leaderboard-item">
+      <div class="rank ${i < 3 ? 'top-3' : ''}">#${l.rank}</div>
+@@ -985,26 +1514,199 @@
+      <div class="lb-points">${l.points}</div>
+    </div>
+  `).join('');
+  
 
-    // LOAD THEME
-    function loadTheme() {
-      darkMode = localStorage.getItem('darkMode') === 'true';
-      if (darkMode) {
-        document.body.classList.add('dark-mode');
-        document.querySelector('.theme-toggle').textContent = '☀️ Light Mode';
+  document.getElementById('weekly-board').innerHTML = weeklyHtml;
+  document.getElementById('alltime-board').innerHTML = weeklyHtml;
+}
+
+// TAB SWITCHING
+function switchTab(tab) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+  
+  document.getElementById(tab).classList.add('active');
+  event.target.classList.add('active');
+// ==================== QUIZ ====================
+function startQuiz(domainKey, domainBank) {
+  currentQuiz = { key: domainKey, bank: domainBank };
+  quizQuestions = domainBank.questions || [];
+  quizAnswers = new Array(quizQuestions.length).fill(null);
+  quizScores = new Array(quizQuestions.length).fill(0);
+  currentQuestionIndex = 0;
+
+  showScreen('quiz-screen');
+  document.getElementById('quiz-domain-name').textContent = domainBank.displayName;
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = quizQuestions[currentQuestionIndex];
+  const progress = currentQuestionIndex + 1;
+
+  document.getElementById('quiz-progress').textContent = `${progress} / ${quizQuestions.length}`;
+  document.getElementById('q-num').textContent = `Q${progress}`;
+  document.getElementById('q-text').textContent = q.question;
+  document.getElementById('q-tag').textContent = currentQuiz.bank.displayName;
+  document.getElementById('q-tag').style.borderColor = currentQuiz.bank.color;
+  document.getElementById('q-tag').style.color = currentQuiz.bank.color;
+  document.getElementById('q-diff').textContent = `DIFFICULTY: ${q.difficulty}`;
+
+  document.getElementById('q-code').textContent = q.codeBlock || '';
+  document.getElementById('q-code').style.display = q.codeBlock ? 'block' : 'none';
+
+  // Render answers based on type
+  const ansArea = document.getElementById('ans-area');
+  ansArea.innerHTML = '';
+
+  if (q.type === 'mcq') {
+    document.getElementById('open-wrap').classList.remove('active');
+    const shuffled = q.options.map((opt, i) => ({ opt, origIdx: i })).sort(() => Math.random() - 0.5);
+    
+    shuffled.forEach(({ opt, origIdx }, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'aopt';
+      btn.dataset.index = origIdx;
+      btn.onclick = () => selectOption(origIdx);
+      btn.innerHTML = `<span class="opt-l">${String.fromCharCode(65 + i)}.</span><span class="opt-t">${opt}</span>`;
+      if (quizAnswers[currentQuestionIndex] === origIdx) {
+        btn.classList.add('sel');
       }
-    }
+      ansArea.appendChild(btn);
+    });
+  } else if (q.type === 'free_response') {
+    document.getElementById('open-wrap').classList.add('active');
+    document.getElementById('open-ans').value = quizAnswers[currentQuestionIndex] || '';
+  }
 
-    // START APP
-    init();
-  </script>
+  document.getElementById('fb-box').classList.remove('active');
+  document.getElementById('post-question').style.display = 'none';
+  document.getElementById('submit-btn').style.display = 'inline-flex';
+  document.getElementById('next-btn').style.display = 'none';
+
+  updateProgressBar();
+}
+
+function selectOption(idx) {
+  quizAnswers[currentQuestionIndex] = idx;
+  document.querySelectorAll('.aopt').forEach(btn => btn.classList.remove('sel'));
+  document.querySelector(`[data-index="${idx}"]`).classList.add('sel');
+}
+
+function updateProgressBar() {
+  const progress = ((currentQuestionIndex + 1) / quizQuestions.length) * 100;
+  document.getElementById('progress-fill').style.width = progress + '%';
+}
+
+function submitAnswer() {
+  const q = quizQuestions[currentQuestionIndex];
+  let isCorrect = false;
+
+  if (q.type === 'mcq') {
+    isCorrect = quizAnswers[currentQuestionIndex] === q.correctAnswer;
+    quizScores[currentQuestionIndex] = isCorrect ? 1 : 0;
+
+    // Show feedback
+    document.querySelectorAll('.aopt').forEach((btn, i) => {
+      btn.classList.add('disabled');
+      if (i === q.correctAnswer) {
+        btn.classList.add('correct');
+      } else if (btn.dataset.index == quizAnswers[currentQuestionIndex] && !isCorrect) {
+        btn.classList.add('wrong');
+      }
+    });
+  } else {
+    // Free response - always 0.5 points (for comparison purposes)
+    quizScores[currentQuestionIndex] = 0.5;
+  }
+
+  // Show feedback box
+  const fbBox = document.getElementById('fb-box');
+  fbBox.classList.add('active');
+  fbBox.classList.toggle('neg', !isCorrect && q.type === 'mcq');
+
+  const label = q.type === 'mcq' 
+    ? (isCorrect ? '✓ CORRECT' : '✗ INCORRECT')
+    : '📝 MODEL ANSWER';
+
+  document.getElementById('fb-lbl').textContent = label;
+  document.getElementById('fb-text').textContent = q.explanation || q.modelAnswer || 'No explanation available.';
+
+  const correct = quizScores.filter(s => s === 1).length;
+  const attempted = quizAnswers.filter(a => a !== null).length;
+  document.getElementById('score-run').textContent = `Progress: ${correct}/${attempted} correct so far`;
+
+  // Show post-question content
+  if (q.explanation) {
+    document.getElementById('explanation-section').innerHTML = `
+      <div class="post-title">📚 DEEPER EXPLANATION</div>
+      <div class="post-content">${q.explanation}</div>
+    `;
+    document.getElementById('explanation-section').classList.remove('hidden');
+  }
+
+  if (q.homelab) {
+    document.getElementById('homelab-section').innerHTML = `
+      <div class="post-title">🏗️ HOME LAB SCENARIO</div>
+      <div class="post-content"><strong>${q.homelab.title}</strong></div>
+      <div class="post-content">${q.homelab.description}</div>
+      <div class="lab-steps">${q.homelab.steps.map(step => `<div class="lab-step">• ${step}</div>`).join('')}</div>
+    `;
+    document.getElementById('homelab-section').classList.remove('hidden');
+  }
+
+  document.getElementById('post-question').style.display = 'block';
+
+  document.getElementById('submit-btn').style.display = 'none';
+  document.getElementById('next-btn').style.display = 'inline-flex';
+  document.getElementById('next-btn').textContent = currentQuestionIndex < quizQuestions.length - 1 ? 'NEXT QUESTION →' : 'SEE MY RESULTS →';
+}
+
+// QUIZ FUNCTIONS
+function startQuiz(domain) {
+  console.log('Starting quiz for domain:', domain);
+  // Will implement full quiz view next
+function nextQuestion() {
+  if (currentQuestionIndex < quizQuestions.length - 1) {
+    currentQuestionIndex++;
+    renderQuestion();
+  } else {
+    showResults();
+  }
+}
+</script>
+
 </body>
 </html>
+// ==================== RESULTS ====================
+function showResults() {
+  showScreen('results-screen');
+  const totalCorrect = quizScores.filter(s => s === 1).length;
+  const totalFree = quizScores.filter(s => s === 0.5).length;
+  const earnedPoints = totalCorrect + (totalFree * 0.5);
+  const percentage = Math.round((earnedPoints / quizScores.length) * 100);
+
+  document.getElementById('gpct').textContent = percentage + '%';
+  document.getElementById('rsub').textContent = `${earnedPoints} / ${quizScores.length} pts`;
+
+  const tier = percentage >= 90 ? 'ELITE' : percentage >= 78 ? 'STRONG' : percentage >= 62 ? 'DEVELOPING' : percentage >= 45 ? 'FOUNDATIONAL' : 'NEEDS WORK';
+  document.getElementById('gtier').textContent = tier;
+
+  document.getElementById('rtitle').textContent = percentage >= 78 ? 'STRONG PERFORMANCE' : percentage >= 55 ? 'PASSING - GAPS IDENTIFIED' : 'SIGNIFICANT GAPS FOUND';
+
+  // Animate ring
+  setTimeout(() => {
+    const circumference = 2 * Math.PI * 63;
+    const offset = circumference - (percentage / 100) * circumference;
+    document.getElementById('ring-fill').style.strokeDashoffset = offset;
+  }, 150);
+
+  // Domain breakdown
+  const breakdown = quizQuestions.map((q, i) => ({
+    domain: currentQuiz.bank.displayName,
+    score: quizScores[i] || 0
+  }));
+
+  const bkEl = document.getElementById('bk-wrap');
+  bkEl.innerHTML = `
+    <div class="bk-row">
+      <div class="bk-icon">${currentQuiz.bank.icon}</div>
+      <div class="bk-name">${currentQuiz.bank.displayName}</div>
+      <div class="bk-bar-wrap"><div class="bk-bar" style="width:${percentage}%;background:${currentQuiz.bank.color}"></div></div>
+      <div class="bk-score">${earnedPoints}/${quizScores.length} · ${percentage}%</div>
+    </div>
+  `;
+
+  // Verdict
+  let verdict = '';
+  if (percentage >= 88) {
+    verdict = `Elite-tier performance. You've mastered ${currentQuiz.bank.displayName}. Strength shown in all areas. Next: take advanced certification exams or move to different domain.`;
+  } else if (percentage >= 72) {
+    verdict = `Strong knowledge with clear understanding of ${currentQuiz.bank.displayName}. Gaps in advanced scenarios. Next: focus on 1-2 weak areas for 30 days, then retake.`;
+  } else if (percentage >= 55) {
+    verdict = `Solid foundations but significant gaps in advanced concepts.
