@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SkillForge - Company Learning Platform</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔐</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚔️</text></svg>">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap');
 
@@ -73,6 +73,7 @@ body::before {
 
 @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
 /* LOGIN SCREEN */
 #login-screen {
@@ -145,6 +146,7 @@ body::before {
 .form-group input:focus {
   outline: none;
   border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.1);
 }
 
 .form-group input::placeholder {
@@ -168,9 +170,15 @@ body::before {
   transition: all .18s;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 9px;
   border-radius: 6px;
   font-weight: 700;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .btn-p {
@@ -179,7 +187,7 @@ body::before {
   flex: 1;
 }
 
-.btn-p:hover {
+.btn-p:hover:not(:disabled) {
   background: #33eeff;
   box-shadow: 0 0 24px rgba(0,229,255,.35);
   transform: translateY(-1px);
@@ -192,7 +200,7 @@ body::before {
   flex: 1;
 }
 
-.btn-g:hover {
+.btn-g:hover:not(:disabled) {
   border-color: var(--text2);
   color: var(--text);
 }
@@ -210,25 +218,37 @@ body::before {
   text-decoration: underline;
 }
 
-/* ERROR MESSAGE */
-.error-msg {
-  background: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
+/* MESSAGE ALERTS */
+.error-msg, .success-msg {
   padding: 12px 16px;
   border-radius: 6px;
   margin-bottom: 15px;
   font-size: 12px;
-  border-left: 3px solid #ef4444;
+  border-left: 3px solid;
+  animation: slideIn 0.3s ease;
+}
+
+.error-msg {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border-left-color: #ef4444;
 }
 
 .success-msg {
   background: rgba(74, 222, 128, 0.1);
   color: #4ade80;
-  padding: 12px 16px;
-  border-radius: 6px;
-  margin-bottom: 15px;
-  font-size: 12px;
-  border-left: 3px solid #4ade80;
+  border-left-color: #4ade80;
+}
+
+/* LOADING SPINNER */
+.spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
 }
 
 /* DASHBOARD */
@@ -237,8 +257,8 @@ body::before {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 40px;
-  border-bottom: 1px solid var(--border);
   padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
   flex-wrap: wrap;
   gap: 20px;
 }
@@ -932,14 +952,14 @@ body::before {
       <form id="login-form" onsubmit="return handleLogin(event)">
         <div class="form-group">
           <label>Username</label>
-          <input type="text" id="login-username" placeholder="Enter your username" required>
+          <input type="text" id="login-username" placeholder="Enter your username" required autocomplete="username">
         </div>
         <div class="form-group">
           <label>Password</label>
-          <input type="password" id="login-password" placeholder="Enter your password" required>
+          <input type="password" id="login-password" placeholder="Enter your password" required autocomplete="current-password">
         </div>
         <div class="login-actions">
-          <button type="submit" class="btn btn-p">SIGN IN</button>
+          <button type="submit" class="btn btn-p" id="login-submit-btn">SIGN IN</button>
           <button type="button" class="btn btn-g" onclick="toggleAuthForm()">CREATE ACCOUNT</button>
         </div>
       </form>
@@ -947,18 +967,18 @@ body::before {
       <form id="register-form" style="display:none;" onsubmit="return handleRegister(event)">
         <div class="form-group">
           <label>Email</label>
-          <input type="email" id="reg-email" placeholder="Your company email" required>
+          <input type="email" id="reg-email" placeholder="Your company email" required autocomplete="email">
         </div>
         <div class="form-group">
           <label>Username</label>
-          <input type="text" id="reg-username" placeholder="Choose username" required>
+          <input type="text" id="reg-username" placeholder="Choose username" required autocomplete="username">
         </div>
         <div class="form-group">
           <label>Password</label>
-          <input type="password" id="reg-password" placeholder="Min 8 chars: A-Z, number, special char" required>
+          <input type="password" id="reg-password" placeholder="Min 8 chars: A-Z, number, special char" required autocomplete="new-password">
         </div>
         <div class="login-actions">
-          <button type="submit" class="btn btn-p">CREATE ACCOUNT</button>
+          <button type="submit" class="btn btn-p" id="register-submit-btn">CREATE ACCOUNT</button>
           <button type="button" class="btn btn-g" onclick="toggleAuthForm()">SIGN IN</button>
         </div>
       </form>
@@ -974,7 +994,7 @@ body::before {
 <div id="dashboard-screen" class="screen">
   <div class="wrap">
     <div class="nav-header">
-      <div class="nav-logo">SKILLFORGE</div>
+      <div class="nav-logo">⚔️ SKILLFORGE</div>
       <div class="nav-right">
         <div class="user-info">
           <div class="username" id="display-username">User</div>
@@ -1104,7 +1124,7 @@ const API_URL = window.location.hostname === 'localhost'
 
 console.log('🔧 API URL:', API_URL);
 
-// Hardcoded domains
+// Hardcoded domains with expanded question pools
 const DOMAINS = {
   '3': {
     id: 3,
@@ -1126,6 +1146,32 @@ const DOMAINS = {
         ],
         correctAnswer: 1,
         explanation: 'CIA Triad: Confidentiality (secrecy), Integrity (accuracy/no alteration), Availability (accessible). Integrity is violated if data is modified without authorization.'
+      },
+      {
+        id: 2,
+        difficulty: 'intermediate',
+        questionText: 'Which cryptographic algorithm is commonly used for both encryption and digital signatures?',
+        options: [
+          'AES (Advanced Encryption Standard)',
+          'RSA (Rivest-Shamir-Adleman)',
+          'SHA-256',
+          'MD5'
+        ],
+        correctAnswer: 1,
+        explanation: 'RSA is an asymmetric encryption algorithm that supports both encryption and digital signatures. AES is symmetric, SHA-256 and MD5 are hashing algorithms, not encryption.'
+      },
+      {
+        id: 3,
+        difficulty: 'foundational',
+        questionText: 'What is a common method of social engineering?',
+        options: [
+          'Phishing emails',
+          'Port scanning',
+          'SQL injection',
+          'Buffer overflow'
+        ],
+        correctAnswer: 0,
+        explanation: 'Phishing is a social engineering attack using deceptive emails. Port scanning, SQL injection, and buffer overflow are technical attacks, not social engineering.'
       }
     ]
   },
@@ -1138,7 +1184,7 @@ const DOMAINS = {
     description: 'System Administration and User Support',
     questions: [
       {
-        id: 2,
+        id: 4,
         difficulty: 'foundational',
         questionText: 'A user\'s PC is showing IP address 169.254.88.34. What does this indicate?',
         options: [
@@ -1149,6 +1195,68 @@ const DOMAINS = {
         ],
         correctAnswer: 1,
         explanation: '169.254.x.x is the APIPA range. It means the DHCP server is unreachable and Windows assigned a link-local address automatically.'
+      },
+      {
+        id: 5,
+        difficulty: 'intermediate',
+        questionText: 'What is the primary purpose of Group Policy Objects (GPO) in Windows environments?',
+        options: [
+          'To manage file permissions only',
+          'To centrally manage computer and user configurations across the domain',
+          'To create backup copies of user files',
+          'To monitor network traffic'
+        ],
+        correctAnswer: 1,
+        explanation: 'GPOs allow administrators to centrally manage thousands of computers and user configurations simultaneously in Active Directory domains.'
+      },
+      {
+        id: 6,
+        difficulty: 'foundational',
+        questionText: 'Which command would you use in Windows to view all active network connections?',
+        options: [
+          'ipconfig',
+          'netstat',
+          'ping',
+          'tracert'
+        ],
+        correctAnswer: 1,
+        explanation: 'netstat displays all active network connections, listening ports, and network statistics. ipconfig shows IP configuration, ping tests connectivity, tracert traces route to host.'
+      }
+    ]
+  },
+  '5': {
+    id: 5,
+    displayName: 'Network Administration',
+    type: 'certification',
+    icon: '🌐',
+    color: '#b8ff57',
+    description: 'Core networking concepts and protocols',
+    questions: [
+      {
+        id: 7,
+        difficulty: 'foundational',
+        questionText: 'Which layer of the OSI model is responsible for routing packets?',
+        options: [
+          'Physical Layer (Layer 1)',
+          'Data Link Layer (Layer 2)',
+          'Network Layer (Layer 3)',
+          'Transport Layer (Layer 4)'
+        ],
+        correctAnswer: 2,
+        explanation: 'Layer 3 (Network Layer) handles routing, IP addressing, and logical network paths. Layer 2 handles MAC addresses, Layer 4 handles protocols like TCP/UDP.'
+      },
+      {
+        id: 8,
+        difficulty: 'intermediate',
+        questionText: 'What is the difference between TCP and UDP?',
+        options: [
+          'TCP is faster than UDP',
+          'TCP is connection-oriented and reliable; UDP is connectionless and faster',
+          'UDP is more secure than TCP',
+          'There is no functional difference'
+        ],
+        correctAnswer: 1,
+        explanation: 'TCP provides guaranteed delivery in order (connection-oriented), while UDP sends datagrams without guarantees (connectionless). UDP is faster but less reliable.'
       }
     ]
   }
@@ -1167,8 +1275,17 @@ async function handleLogin(e) {
   e.preventDefault();
   console.log('📝 Login attempt...');
   
-  const username = document.getElementById('login-username').value;
+  const username = document.getElementById('login-username').value.trim();
   const password = document.getElementById('login-password').value;
+  const submitBtn = document.getElementById('login-submit-btn');
+
+  if (!username || !password) {
+    showError('Please fill in all fields');
+    return false;
+  }
+
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = '<span class="spinner"></span>';
 
   try {
     const res = await fetch(`${API_URL}/auth/login`, {
@@ -1179,24 +1296,32 @@ async function handleLogin(e) {
     
     const data = await res.json();
 
-    if (res.ok) {
+    if (res.ok && data.tokens) {
       console.log('✅ Login successful');
       currentUser = data.user;
-      localStorage.setItem('token', data.tokens.accessToken);
+      localStorage.setItem('authToken', data.tokens.accessToken);
+      localStorage.setItem('refreshToken', data.tokens.refreshToken);
+      localStorage.setItem('user', JSON.stringify(data.user));
       showSuccess('Login successful!');
       
       setTimeout(() => {
         showDashboard();
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'SIGN IN';
       }, 500);
       
       return false;
     } else {
-      showError(data.error || 'Login failed');
+      showError(data.error || data.message || 'Login failed');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'SIGN IN';
       return false;
     }
   } catch (err) {
     console.error('❌ Login error:', err);
-    showError('Network error: ' + err.message);
+    showError('Network error. Check your connection or try again later.');
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'SIGN IN';
     return false;
   }
 }
@@ -1205,14 +1330,38 @@ async function handleRegister(e) {
   e.preventDefault();
   console.log('📝 Register attempt...');
   
-  const email = document.getElementById('reg-email').value;
-  const username = document.getElementById('reg-username').value;
+  const email = document.getElementById('reg-email').value.trim();
+  const username = document.getElementById('reg-username').value.trim();
   const password = document.getElementById('reg-password').value;
+  const submitBtn = document.getElementById('register-submit-btn');
 
-  if (password.length < 8 || !/[A-Z]/.test(password) || !/[0-9]/.test(password) || !/[!@#$%^&*]/.test(password)) {
-    showError('Password: 8+ chars, uppercase, number, special char');
+  if (!email || !username || !password) {
+    showError('Please fill in all fields');
     return false;
   }
+
+  if (password.length < 8) {
+    showError('Password must be at least 8 characters');
+    return false;
+  }
+
+  if (!/[A-Z]/.test(password)) {
+    showError('Password must contain an uppercase letter');
+    return false;
+  }
+
+  if (!/[0-9]/.test(password)) {
+    showError('Password must contain a number');
+    return false;
+  }
+
+  if (!/[!@#$%^&*]/.test(password)) {
+    showError('Password must contain a special character (!@#$%^&*)');
+    return false;
+  }
+
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = '<span class="spinner"></span>';
 
   try {
     const res = await fetch(`${API_URL}/auth/register`, {
@@ -1223,41 +1372,60 @@ async function handleRegister(e) {
     
     const data = await res.json();
 
-    if (res.ok) {
+    if (res.ok && data.tokens) {
       console.log('✅ Register successful');
       currentUser = data.user;
-      localStorage.setItem('token', data.tokens.accessToken);
+      localStorage.setItem('authToken', data.tokens.accessToken);
+      localStorage.setItem('refreshToken', data.tokens.refreshToken);
+      localStorage.setItem('user', JSON.stringify(data.user));
       showSuccess('Account created!');
       
       setTimeout(() => {
         showDashboard();
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'CREATE ACCOUNT';
       }, 500);
       
       return false;
     } else {
-      showError(data.error || 'Registration failed');
+      showError(data.error || data.message || 'Registration failed');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'CREATE ACCOUNT';
       return false;
     }
   } catch (err) {
     console.error('❌ Register error:', err);
-    showError('Network error: ' + err.message);
+    showError('Network error. Check your connection or try again later.');
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'CREATE ACCOUNT';
     return false;
   }
 }
 
 function logout() {
   currentUser = null;
-  localStorage.removeItem('token');
+  localStorage.removeItem('authToken');
+  localStorage.removeItem('refreshToken');
+  localStorage.removeItem('user');
   showScreen('login-screen');
+  document.getElementById('login-form').reset();
+  document.getElementById('register-form').reset();
 }
 
 function toggleAuthForm() {
-  document.getElementById('login-form').style.display = 
-    document.getElementById('login-form').style.display === 'none' ? 'block' : 'none';
-  document.getElementById('register-form').style.display = 
-    document.getElementById('register-form').style.display === 'none' ? 'block' : 'none';
-  document.getElementById('toggle-text').style.display = 
-    document.getElementById('toggle-text').style.display === 'none' ? 'block' : 'none';
+  const loginForm = document.getElementById('login-form');
+  const regForm = document.getElementById('register-form');
+  const toggleText = document.getElementById('toggle-text');
+  
+  if (loginForm.style.display === 'none') {
+    loginForm.style.display = 'block';
+    regForm.style.display = 'none';
+    toggleText.style.display = 'none';
+  } else {
+    loginForm.style.display = 'none';
+    regForm.style.display = 'block';
+    toggleText.style.display = 'block';
+  }
 }
 
 // ==================== THEME ====================
@@ -1270,7 +1438,9 @@ function toggleTheme() {
 
 if (localStorage.getItem('theme') === 'light') {
   document.body.classList.add('light-mode');
-  document.querySelector('.theme-toggle').textContent = '🌙 DARK';
+  if (document.querySelector('.theme-toggle')) {
+    document.querySelector('.theme-toggle').textContent = '🌙 DARK';
+  }
 }
 
 // ==================== UI ====================
@@ -1292,16 +1462,16 @@ function showScreen(screenId) {
 function showError(msg) {
   const container = document.getElementById('error-container');
   if (container) {
-    container.innerHTML = `<div class="error-msg">${msg}</div>`;
-    setTimeout(() => container.innerHTML = '', 5000);
+    container.innerHTML = `<div class="error-msg">❌ ${msg}</div>`;
+    setTimeout(() => container.innerHTML = '', 6000);
   }
 }
 
 function showSuccess(msg) {
   const container = document.getElementById('success-container');
   if (container) {
-    container.innerHTML = `<div class="success-msg">${msg}</div>`;
-    setTimeout(() => container.innerHTML = '', 5000);
+    container.innerHTML = `<div class="success-msg">✅ ${msg}</div>`;
+    setTimeout(() => container.innerHTML = '', 6000);
   }
 }
 
@@ -1345,6 +1515,7 @@ function renderDomains() {
 function createDomainCard(domain) {
   const card = document.createElement('div');
   card.className = 'domain-card';
+  card.style.borderColor = domain.color;
   card.onclick = () => startQuiz(domain);
   card.innerHTML = `
     <div class="domain-icon">${domain.icon}</div>
@@ -1360,26 +1531,33 @@ function createDomainCard(domain) {
 
 async function renderLeaderboard() {
   try {
+    const token = localStorage.getItem('authToken');
     const [weekly, alltime] = await Promise.all([
-      fetch(`${API_URL}/leaderboard/weekly`).then(r => r.json()),
-      fetch(`${API_URL}/leaderboard/alltime`).then(r => r.json())
+      fetch(`${API_URL}/leaderboard/weekly`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      }).then(r => r.ok ? r.json() : Promise.resolve({ leaderboard: [] })),
+      fetch(`${API_URL}/leaderboard/alltime`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      }).then(r => r.ok ? r.json() : Promise.resolve({ leaderboard: [] }))
     ]);
 
-    const format = (items) => items.length ? items.slice(0, 5).map((u, i) => `
+    const format = (items) => items && items.length ? items.slice(0, 5).map((u, i) => `
       <div class="leaderboard-item">
         <div class="rank ${i < 3 ? 'top-3' : ''}">#${i + 1}</div>
         <div class="user-details">
           <div class="lb-username">${u.username}</div>
-          <div class="lb-score">${u.quizzesCompleted} quizzes</div>
+          <div class="lb-score">${u.quizzesCompleted || 0} quizzes</div>
         </div>
-        <div class="lb-points">${u.points}</div>
+        <div class="lb-points">${u.points || 0}</div>
       </div>
-    `).join('') : '<p style="color: var(--muted); padding: 20px;">No data yet</p>';
+    `).join('') : '<p style="color: var(--muted); padding: 20px; text-align: center;">No leaderboard data yet</p>';
 
-    document.getElementById('weekly-board').innerHTML = format(weekly.leaderboard || []);
-    document.getElementById('alltime-board').innerHTML = format(alltime.leaderboard || []);
+    document.getElementById('weekly-board').innerHTML = format(weekly.leaderboard);
+    document.getElementById('alltime-board').innerHTML = format(alltime.leaderboard);
   } catch (err) {
     console.error('Leaderboard error:', err);
+    document.getElementById('weekly-board').innerHTML = '<p style="color: var(--muted); padding: 20px; text-align: center;">Unable to load leaderboard</p>';
+    document.getElementById('alltime-board').innerHTML = '<p style="color: var(--muted); padding: 20px; text-align: center;">Unable to load leaderboard</p>';
   }
 }
 
@@ -1387,7 +1565,12 @@ async function renderLeaderboard() {
 function startQuiz(domain) {
   console.log('🎯 Starting quiz:', domain.displayName);
   currentQuiz = domain;
-  quizQuestions = domain.questions;
+  
+  // Shuffle and select random questions (max 10)
+  let questions = [...domain.questions];
+  questions = questions.sort(() => Math.random() - 0.5).slice(0, 10);
+  
+  quizQuestions = questions;
   currentQuestionIndex = 0;
   quizAnswers = {};
   quizScores = [];
@@ -1407,11 +1590,14 @@ function renderQuestion() {
   document.getElementById('q-tag').textContent = currentQuiz.displayName;
   document.getElementById('q-tag').style.borderColor = currentQuiz.color;
   document.getElementById('q-tag').style.color = currentQuiz.color;
+  document.getElementById('q-diff').textContent = `DIFFICULTY: ${q.difficulty}`;
 
   const ansArea = document.getElementById('ans-area');
   ansArea.innerHTML = '';
 
+  // Shuffle options but track correct answer
   const shuffled = q.options.map((opt, i) => ({ opt, idx: i })).sort(() => Math.random() - 0.5);
+  
   shuffled.forEach(({ opt, idx }, i) => {
     const btn = document.createElement('button');
     btn.className = 'aopt';
@@ -1475,19 +1661,19 @@ function nextQuestion() {
   }
 }
 
-function showResults() {
+async function showResults() {
   showScreen('results-screen');
   
   const correct = quizScores.filter(s => s === 1).length;
   const total = quizScores.length;
-  const pct = Math.round((correct / total) * 100);
+  const pct = total > 0 ? Math.round((correct / total) * 100) : 0;
 
   document.getElementById('gpct').textContent = pct + '%';
   document.getElementById('rsub').textContent = `${correct} / ${total} correct`;
 
   const tier = pct >= 90 ? 'ELITE' : pct >= 78 ? 'STRONG' : pct >= 62 ? 'DEVELOPING' : pct >= 45 ? 'FOUNDATIONAL' : 'NEEDS WORK';
   document.getElementById('gtier').textContent = tier;
-  document.getElementById('rtitle').textContent = pct >= 78 ? '🎉 STRONG!' : pct >= 55 ? '✓ PASSING' : '⚠️ NEEDS WORK';
+  document.getElementById('rtitle').textContent = pct >= 88 ? '🎉 ELITE!' : pct >= 78 ? '✓ STRONG' : pct >= 55 ? '⚡ PASSING' : '⚠️ NEEDS WORK';
 
   setTimeout(() => {
     const circumference = 2 * Math.PI * 63;
@@ -1504,11 +1690,16 @@ function showResults() {
     </div>
   `;
 
-  const verdict = pct >= 88 ? `Elite! Mastered ${currentQuiz.displayName}.` 
-               : pct >= 72 ? `Strong knowledge. Study weak areas and retake in 30 days.`
-               : pct >= 55 ? `Solid foundations. Focus on gaps and retake in 2 weeks.`
-               : `Significant gaps. Study fundamentals and retake in 30 days.`;
-  document.getElementById('verdict-text').textContent = verdict;
+  const verdictMap = {
+    elite: `Elite! You've mastered ${currentQuiz.displayName}. Consider advancing to intermediate material.`,
+    strong: `Strong performance! Study weak areas and retake in 30 days to reinforce knowledge.`,
+    developing: `Solid fundamentals. Focus on gaps and retake in 2 weeks.`,
+    foundational: `You're building foundational knowledge. Review core concepts and retake in 1 week.`,
+    needs: `Significant gaps identified. Study fundamentals and retake in 2-3 days.`
+  };
+
+  let verdictKey = pct >= 88 ? 'elite' : pct >= 72 ? 'strong' : pct >= 55 ? 'developing' : pct >= 45 ? 'foundational' : 'needs';
+  document.getElementById('verdict-text').textContent = verdictMap[verdictKey];
 
   document.getElementById('q-review').innerHTML = quizQuestions.map((q, i) => {
     const userAns = quizAnswers[q.id];
@@ -1518,18 +1709,42 @@ function showResults() {
         <div class="rev-head" onclick="this.nextElementSibling.classList.toggle('active')">
           <div class="rev-icon">${isCorrect ? '✓' : '✗'}</div>
           <div>
-            <div class="rev-meta">Q${i + 1}</div>
+            <div class="rev-meta">Q${i + 1} · ${q.difficulty}</div>
             <div class="rev-q">${q.questionText}</div>
           </div>
         </div>
         <div class="rev-body">
-          <strong>Your Answer:</strong> ${q.options[userAns]}<br>
-          <strong>Correct:</strong> ${q.options[q.correctAnswer]}<br>
-          <strong>Explanation:</strong> ${q.explanation}
+          <b>Your Answer:</b> ${q.options[userAns] || 'Not answered'}<br>
+          <b>Correct Answer:</b> ${q.options[q.correctAnswer]}<br>
+          <br>
+          <b>Explanation:</b> ${q.explanation}
         </div>
       </div>
     `;
   }).join('');
+
+  // Send quiz results to backend
+  try {
+    const token = localStorage.getItem('authToken');
+    await fetch(`${API_URL}/quizzes/submit`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        domainId: currentQuiz.id,
+        domainName: currentQuiz.displayName,
+        score: pct,
+        correct,
+        total,
+        answers: quizAnswers,
+        timestamp: new Date().toISOString()
+      })
+    }).catch(err => console.log('Submission logged locally:', err));
+  } catch (err) {
+    console.log('Results saved locally');
+  }
 }
 
 function restart() {
@@ -1543,22 +1758,30 @@ function changeDomains() {
 // ==================== INIT ====================
 window.addEventListener('load', () => {
   console.log('🚀 Page loaded');
-  const token = localStorage.getItem('token');
-  if (token) {
-    console.log('🔑 Token found, verifying...');
-    fetch(`${API_URL}/users/profile`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    }).then(res => res.ok ? res.json() : Promise.reject('Invalid token'))
-      .then(data => {
-        console.log('✅ User verified:', data.user.username);
-        currentUser = data.user;
-        showDashboard();
-      })
-      .catch(err => {
-        console.error('❌ Token invalid:', err);
-        localStorage.removeItem('token');
-        showScreen('login-screen');
-      });
+  const token = localStorage.getItem('authToken');
+  const user = localStorage.getItem('user');
+  
+  if (token && user) {
+    console.log('🔑 Token found, loading dashboard...');
+    try {
+      currentUser = JSON.parse(user);
+      showDashboard();
+    } catch (err) {
+      console.error('Failed to parse stored user:', err);
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('user');
+      showScreen('login-screen');
+    }
+  } else {
+    showScreen('login-screen');
+  }
+});
+
+// Handle visibility change (refresh user data when tab regains focus)
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && currentUser) {
+    console.log('👁️ Page regained focus');
+    // Could refresh leaderboard here
   }
 });
 </script>
