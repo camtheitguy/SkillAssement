@@ -282,16 +282,16 @@ body::before {
   color: var(--text);
 }
 
-.user-rank {
-  font-size: 10px;
-  color: var(--accent3);
-  text-transform: uppercase;
-}
-
 .user-points {
   font-size: 11px;
   color: var(--accent);
   font-family: 'Space Mono', monospace;
+}
+
+.user-rank {
+  font-size: 10px;
+  color: var(--accent3);
+  text-transform: uppercase;
 }
 
 .theme-toggle, .logout-btn {
@@ -646,48 +646,6 @@ body::before {
   color: var(--text);
 }
 
-/* FREE RESPONSE */
-.open-wrap {
-  margin-bottom: 22px;
-  display: none;
-}
-
-.open-wrap.active {
-  display: block;
-}
-
-.open-wrap textarea {
-  width: 100%;
-  min-height: 150px;
-  background: var(--surface2);
-  border: 1px solid var(--border2);
-  color: var(--text);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 14px;
-  line-height: 1.65;
-  padding: 15px;
-  resize: vertical;
-  outline: none;
-  transition: border-color .2s;
-  border-radius: 6px;
-}
-
-.open-wrap textarea:focus {
-  border-color: var(--accent);
-}
-
-.open-wrap textarea::placeholder {
-  color: var(--muted);
-}
-
-.open-hint {
-  font-family: 'Space Mono', monospace;
-  font-size: 9px;
-  letter-spacing: 2px;
-  color: var(--muted);
-  margin-bottom: 8px;
-}
-
 /* FEEDBACK BOX */
 #fb-box {
   display: none;
@@ -760,20 +718,6 @@ body::before {
   line-height: 1.8;
   color: var(--text2);
   margin-bottom: 15px;
-}
-
-.lab-steps {
-  font-size: 12px;
-  color: var(--text);
-}
-
-.lab-step {
-  padding: 8px 0;
-  border-bottom: 1px solid var(--border);
-}
-
-.lab-step:last-child {
-  border-bottom: none;
 }
 
 .q-actions {
@@ -1241,11 +1185,6 @@ body::before {
 
     <div class="ans-area" id="ans-area"></div>
 
-    <div class="open-wrap" id="open-wrap">
-      <div class="open-hint">// FREE RESPONSE - Compare your answer to model answer after submission.</div>
-      <textarea id="open-ans" placeholder="Write your detailed answer here..."></textarea>
-    </div>
-
     <div id="fb-box">
       <div class="fb-lbl" id="fb-lbl">FEEDBACK</div>
       <div id="fb-text"></div>
@@ -1254,8 +1193,6 @@ body::before {
 
     <div id="post-question" style="display:none;">
       <div class="post-question-section" id="explanation-section"></div>
-      <div class="post-question-section hidden" id="homelab-section"></div>
-      <div class="post-question-section hidden" id="resources-section"></div>
     </div>
 
     <div class="q-actions">
@@ -1317,7 +1254,9 @@ const API_URL = window.location.hostname === 'localhost'
   ? 'http://localhost:5000/api'
   : 'https://skill-forgeapi.onrender.com/api';
 
-// Hardcoded domains for now (API seeding issue)
+console.log('API URL:', API_URL);
+
+// Hardcoded domains (API seeding issue workaround)
 const HARDCODED_DOMAINS = {
   '3': {
     id: 3,
@@ -1332,7 +1271,7 @@ const HARDCODED_DOMAINS = {
       {
         id: 1,
         difficulty: 'foundational',
-        question: 'Under the CIA triad, which component ensures that data cannot be altered without authorization?',
+        questionText: 'Under the CIA triad, which component ensures that data cannot be altered without authorization?',
         options: [
           'Confidentiality - data is kept secret',
           'Integrity - data is accurate, complete, and has not been altered',
@@ -1355,9 +1294,9 @@ const HARDCODED_DOMAINS = {
     description: 'System Administration and User Support',
     questions: [
       {
-        id: 1,
+        id: 2,
         difficulty: 'foundational',
-        question: 'A user\'s PC is showing IP address 169.254.88.34. What does this indicate?',
+        questionText: 'A user\'s PC is showing IP address 169.254.88.34. What does this indicate?',
         options: [
           'Normal DHCP assignment',
           'APIPA (Automatic Private IP Addressing) - DHCP server unavailable',
@@ -1383,34 +1322,47 @@ let quizScores = [];
 // ==================== AUTH ====================
 async function handleLogin(e) {
   e.preventDefault();
+  console.log('Login attempt...');
+  
   const username = document.getElementById('login-username').value;
   const password = document.getElementById('login-password').value;
 
   try {
+    console.log('Sending login request to:', API_URL + '/auth/login');
     const res = await fetch(`${API_URL}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password })
     });
+    
     const data = await res.json();
+    console.log('Login response:', data);
 
     if (res.ok) {
       currentUser = data.user;
       localStorage.setItem('token', data.tokens.accessToken);
       document.getElementById('login-username').value = '';
       document.getElementById('login-password').value = '';
-      showSuccess('Login successful!');
-      setTimeout(() => showDashboard(), 1500);
+      showSuccess('Login successful! Redirecting...');
+      
+      // Force redirect after 1.5 seconds
+      setTimeout(() => {
+        console.log('Redirecting to dashboard...');
+        showDashboard();
+      }, 1500);
     } else {
       showError(data.error || 'Login failed');
     }
   } catch (err) {
+    console.error('Login error:', err);
     showError('Network error: ' + err.message);
   }
 }
 
 async function handleRegister(e) {
   e.preventDefault();
+  console.log('Register attempt...');
+  
   const email = document.getElementById('reg-email').value;
   const username = document.getElementById('reg-username').value;
   const password = document.getElementById('reg-password').value;
@@ -1421,12 +1373,15 @@ async function handleRegister(e) {
   }
 
   try {
+    console.log('Sending register request to:', API_URL + '/auth/register');
     const res = await fetch(`${API_URL}/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, username, password })
     });
+    
     const data = await res.json();
+    console.log('Register response:', data);
 
     if (res.ok) {
       currentUser = data.user;
@@ -1435,11 +1390,17 @@ async function handleRegister(e) {
       document.getElementById('reg-username').value = '';
       document.getElementById('reg-password').value = '';
       showSuccess('Account created! Redirecting...');
-      setTimeout(() => showDashboard(), 1500);
+      
+      // Force redirect after 1.5 seconds
+      setTimeout(() => {
+        console.log('Redirecting to dashboard...');
+        showDashboard();
+      }, 1500);
     } else {
       showError(data.error || 'Registration failed');
     }
   } catch (err) {
+    console.error('Register error:', err);
     showError('Network error: ' + err.message);
   }
 }
@@ -1481,7 +1442,7 @@ function showScreen(screenId) {
 }
 
 function showError(msg) {
-  const container = document.getElementById('error-container') || document.getElementById('success-container');
+  const container = document.getElementById('error-container');
   if (container) {
     container.innerHTML = `<div class="error-msg">${msg}</div>`;
     setTimeout(() => container.innerHTML = '', 5000);
@@ -1489,7 +1450,7 @@ function showError(msg) {
 }
 
 function showSuccess(msg) {
-  const container = document.getElementById('success-container') || document.getElementById('error-container');
+  const container = document.getElementById('success-container');
   if (container) {
     container.innerHTML = `<div class="success-msg">${msg}</div>`;
     setTimeout(() => container.innerHTML = '', 5000);
@@ -1505,6 +1466,7 @@ function switchTab(tabName) {
 
 // ==================== DASHBOARD ====================
 async function showDashboard() {
+  console.log('Showing dashboard for user:', currentUser);
   showScreen('dashboard-screen');
   document.getElementById('display-username').textContent = currentUser.username;
   document.getElementById('display-rank').textContent = currentUser.rank || 'Bronze';
@@ -1515,6 +1477,7 @@ async function showDashboard() {
 }
 
 function renderDomains() {
+  console.log('Rendering domains...');
   const allCerts = document.getElementById('all-cert-domains');
   const allRoles = document.getElementById('all-role-domains');
   const myCerts = document.getElementById('my-cert-domains');
@@ -1526,8 +1489,16 @@ function renderDomains() {
   myRoles.innerHTML = '';
 
   // Use hardcoded domains
-  for (const [key, domain] of Object.entries(HARDCODED_DOMAINS)) {
-    const card = createDomainCard(key, domain);
+  const domains = Object.values(HARDCODED_DOMAINS);
+  
+  if (domains.length === 0) {
+    allCerts.innerHTML = '<p style="color: var(--muted); padding: 20px;">No domains available</p>';
+    allRoles.innerHTML = '<p style="color: var(--muted); padding: 20px;">No domains available</p>';
+    return;
+  }
+
+  domains.forEach(domain => {
+    const card = createDomainCard(domain.id.toString(), domain);
     
     if (domain.type === 'certification') {
       allCerts.appendChild(card.cloneNode(true));
@@ -1540,20 +1511,20 @@ function renderDomains() {
         myRoles.appendChild(card.cloneNode(true));
       }
     }
-  }
+  });
 
-  // Show message if no domains
-  if (allCerts.innerHTML === '') allCerts.innerHTML = '<p style="color: var(--muted);">No certifications available yet</p>';
-  if (allRoles.innerHTML === '') allRoles.innerHTML = '<p style="color: var(--muted);">No role domains available yet</p>';
+  if (myCerts.children.length === 0) {
+    myCerts.innerHTML = '<p style="color: var(--muted); padding: 20px;">Add domains to MY LEARNING from ALL DOMAINS tab</p>';
+  }
+  if (myRoles.children.length === 0) {
+    myRoles.innerHTML = '<p style="color: var(--muted); padding: 20px;">Add domains to MY LEARNING from ALL DOMAINS tab</p>';
+  }
 }
 
 function createDomainCard(key, domain) {
   const card = document.createElement('div');
-  card.className = domain.status === 'coming_soon' ? 'domain-card coming-soon' : 'domain-card';
-  
-  if (domain.status !== 'coming_soon') {
-    card.onclick = () => startQuiz(domain);
-  }
+  card.className = 'domain-card';
+  card.onclick = () => startQuiz(domain);
 
   const qCount = domain.questions?.length || 0;
   
@@ -1564,7 +1535,7 @@ function createDomainCard(key, domain) {
     <div class="domain-desc">${domain.description}</div>
     <div class="domain-meta">
       <span class="domain-count">${qCount} QUESTIONS</span>
-      <span class="domain-status ${domain.status === 'coming_soon' ? 'coming-soon' : 'active'}">${domain.status === 'coming_soon' ? 'COMING SOON' : 'ACTIVE'}</span>
+      <span class="domain-status active">ACTIVE</span>
     </div>
   `;
   
@@ -1573,35 +1544,37 @@ function createDomainCard(key, domain) {
 
 async function renderLeaderboard() {
   try {
-    // Get leaderboards from API
+    console.log('Fetching leaderboards...');
     const weeklyRes = await fetch(`${API_URL}/leaderboard/weekly`);
     const alltimeRes = await fetch(`${API_URL}/leaderboard/alltime`);
     
     const weeklyData = await weeklyRes.json();
     const alltimeData = await alltimeRes.json();
 
-    const formatLeaderboard = (items) => items.slice(0, 5).map((item, i) => `
-      <div class="leaderboard-item">
-        <div class="rank ${i < 3 ? 'top-3' : ''}">#${item.rank}</div>
-        <div class="user-details">
-          <div class="lb-username">${item.username}</div>
-          <div class="lb-score">${item.quizzesCompleted} quiz${item.quizzesCompleted !== 1 ? 'zes' : ''}</div>
-        </div>
-        <div class="lb-points">${item.points || 0}</div>
-      </div>
-    `).join('');
+    console.log('Weekly data:', weeklyData);
+    console.log('Alltime data:', alltimeData);
 
-    document.getElementById('weekly-board').innerHTML = weeklyData.leaderboard.length > 0 
-      ? formatLeaderboard(weeklyData.leaderboard)
-      : '<p style="color: var(--muted);">No data yet</p>';
-    
-    document.getElementById('alltime-board').innerHTML = alltimeData.leaderboard.length > 0
-      ? formatLeaderboard(alltimeData.leaderboard)
-      : '<p style="color: var(--muted);">No data yet</p>';
+    const formatLeaderboard = (items) => {
+      if (!items || items.length === 0) {
+        return '<p style="color: var(--muted);">No data yet</p>';
+      }
+      return items.slice(0, 5).map((item, i) => `
+        <div class="leaderboard-item">
+          <div class="rank ${i < 3 ? 'top-3' : ''}">#${item.rank || i + 1}</div>
+          <div class="user-details">
+            <div class="lb-username">${item.username}</div>
+            <div class="lb-score">${item.quizzesCompleted || 0} quiz${item.quizzesCompleted !== 1 ? 'zes' : ''}</div>
+          </div>
+          <div class="lb-points">${item.points || 0}</div>
+        </div>
+      `).join('');
+    };
+
+    document.getElementById('weekly-board').innerHTML = formatLeaderboard(weeklyData.leaderboard);
+    document.getElementById('alltime-board').innerHTML = formatLeaderboard(alltimeData.leaderboard);
 
   } catch (err) {
     console.error('Leaderboard error:', err);
-    // Show empty state
     document.getElementById('weekly-board').innerHTML = '<p style="color: var(--muted);">Unable to load leaderboard</p>';
     document.getElementById('alltime-board').innerHTML = '<p style="color: var(--muted);">Unable to load leaderboard</p>';
   }
@@ -1610,6 +1583,7 @@ async function renderLeaderboard() {
 // ==================== QUIZ ====================
 async function startQuiz(domain) {
   try {
+    console.log('Starting quiz for domain:', domain);
     const token = localStorage.getItem('token');
     
     // Start quiz via API
@@ -1623,6 +1597,7 @@ async function startQuiz(domain) {
     });
 
     const data = await res.json();
+    console.log('Start quiz response:', data);
 
     if (!res.ok) {
       showError(data.error || 'Failed to start quiz');
@@ -1636,11 +1611,14 @@ async function startQuiz(domain) {
     quizAnswers = {};
     quizScores = [];
 
+    console.log('Quiz started with', quizQuestions.length, 'questions');
+
     showScreen('quiz-screen');
     document.getElementById('quiz-domain-name').textContent = domain.displayName;
     renderQuestion();
 
   } catch (err) {
+    console.error('Error starting quiz:', err);
     showError('Error starting quiz: ' + err.message);
   }
 }
@@ -1648,6 +1626,8 @@ async function startQuiz(domain) {
 function renderQuestion() {
   const q = quizQuestions[currentQuestionIndex];
   const progress = currentQuestionIndex + 1;
+
+  console.log('Rendering question', progress, ':', q);
 
   document.getElementById('quiz-progress').textContent = `${progress} / ${quizQuestions.length}`;
   document.getElementById('q-num').textContent = `Q${progress}`;
@@ -1710,6 +1690,8 @@ async function submitAnswer() {
     return;
   }
 
+  console.log('Submitting answer for question', q.id, ':', quizAnswers[q.id]);
+
   const isCorrect = quizAnswers[q.id] === q.correctAnswer;
   quizScores.push(isCorrect ? 1 : 0);
 
@@ -1761,6 +1743,7 @@ function nextQuestion() {
 
 async function submitQuiz() {
   try {
+    console.log('Submitting quiz...');
     const token = localStorage.getItem('token');
 
     const res = await fetch(`${API_URL}/quizzes/submit`, {
@@ -1776,6 +1759,7 @@ async function submitQuiz() {
     });
 
     const data = await res.json();
+    console.log('Submit quiz response:', data);
 
     if (!res.ok) {
       showError(data.error || 'Failed to submit quiz');
@@ -1789,6 +1773,7 @@ async function submitQuiz() {
     showResults(data);
 
   } catch (err) {
+    console.error('Error submitting quiz:', err);
     showError('Error submitting quiz: ' + err.message);
   }
 }
@@ -1798,6 +1783,8 @@ function showResults(quizResult) {
   
   const score = parseFloat(quizResult.score);
   const percentage = Math.round(score);
+
+  console.log('Results:', quizResult);
 
   document.getElementById('gpct').textContent = percentage + '%';
   document.getElementById('rsub').textContent = `${quizResult.correctAnswers} / ${quizResult.totalQuestions} correct`;
@@ -1870,15 +1857,18 @@ function restart() {
 
 function changeDomains() {
   showScreen('dashboard-screen');
-  switchTab('all-domains');
+  document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab')[1].classList.add('active');
+  document.getElementById('all-domains').classList.add('active');
 }
 
 // ==================== INITIALIZATION ====================
-// Check if already logged in
 window.addEventListener('load', () => {
+  console.log('Page loaded');
   const token = localStorage.getItem('token');
   if (token) {
-    // Verify token is still valid by fetching profile
+    console.log('Token found, verifying...');
     fetch(`${API_URL}/users/profile`, {
       headers: { 'Authorization': `Bearer ${token}` }
     }).then(res => {
@@ -1888,12 +1878,17 @@ window.addEventListener('load', () => {
         throw new Error('Token invalid');
       }
     }).then(data => {
+      console.log('User verified:', data);
       currentUser = data.user;
       showDashboard();
-    }).catch(() => {
+    }).catch(err => {
+      console.error('Token verification failed:', err);
       localStorage.removeItem('token');
       showScreen('login-screen');
     });
+  } else {
+    console.log('No token found');
+    showScreen('login-screen');
   }
 });
 </script>
